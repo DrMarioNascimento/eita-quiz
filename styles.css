@@ -1516,3 +1516,6 @@ aside{background:rgba(15,25,44,.74);border-right:1px solid #779cb733}
 .boss{align-self:end}
 .battery-shell:before{box-sizing:border-box;left:38%;width:24%;height:24px;top:-3px;border:2px solid #9abec8;border-top-color:#ddf4f5;border-radius:7px 7px 0 0;background:linear-gradient(90deg,#294c60,#7cbecb 28%,#d5f6f6 48%,#6ca3b8 70%,#264657);box-shadow:inset 0 2px 0 #ffffff66,inset 0 -3px 4px #183445aa,3px 2px 0 #193344}
 .charge-terminal{bottom:calc(var(--team-battery-height,410px) - 5px)}
+
+/* A base fica fixa; somente os pontos acima dela se deslocam à esquerda. */
+.arena:before{transform:translateX(var(--floor-shear-offset,0px)) matrix(1,0,.12,1,0,0) perspective(560px) rotateX(62deg) skewX(50deg);transform-origin:center top}
