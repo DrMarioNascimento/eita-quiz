@@ -238,14 +238,14 @@ function updateBossShot(time){
  shot.classList.toggle('active',active);
  if(!active)return;
  const scene=$('arena').getBoundingClientRect(),video=$('bossVideo').getBoundingClientRect(),battery=$('teamBattery').getBoundingClientRect(),muzzle=muzzleAt(time);
- const x=video.left-scene.left+video.width*muzzle.x,y=video.top-scene.top+video.height*muzzle.y;
+ const x=video.left-scene.left+video.width*muzzle.x,y=video.top-scene.top+video.height*muzzle.y+2;
  const targetX=battery.left-scene.left+battery.width*.08,targetY=Math.max(battery.top-scene.top+20,Math.min(battery.bottom-scene.top-20,y));
  const dx=targetX-x,dy=targetY-y,distance=Math.hypot(dx,dy);
  shot.style.left=x+'px';shot.style.top=y+'px';shot.style.width=distance+'px';
  shot.style.transform='translateY(-50%) rotate('+Math.atan2(dy,dx)+'rad)';
  const arrival=Math.min(1,(time-BOSS_SHOT_START)/BOSS_SHOT_TRAVEL);
  shot.style.setProperty('--shot-arrival',arrival);
- shot.style.opacity=String(Math.min(1,(BOSS_SHOT_END-time)/.18)*(.85+.15*Math.sin(time*55)));
+ shot.style.setProperty('--shot-fade',String(Math.min(1,(BOSS_SHOT_END-time)/.18)));
  if(time>=BOSS_SHOT_START+BOSS_SHOT_TRAVEL)commitImpact();
 }
 function followBossShot(){

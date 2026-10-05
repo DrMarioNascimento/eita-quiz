@@ -1504,3 +1504,15 @@ aside{background:rgba(15,25,44,.74);border-right:1px solid #779cb733}
 .boss-shot:after{inset:-30px -25px;opacity:.6}
 .arena.counter .beam{background:linear-gradient(0deg,#278b25,#cbff80 35%,#ffffff 50%,#cbff80 65%,#278b25);box-shadow:0 0 12px 6px #d5ff95,0 0 35px 15px #8df431,0 0 70px #19cb85}
 .arena.counter .beam:before,.arena.counter .beam:after{border-color:#d9ff9b;box-shadow:0 0 20px #98ff46}
+
+/* Geometria única dos dois disparos: apenas a paleta muda. */
+.arena.counter .beam,.boss-shot{height:26px;border-radius:50%;background:linear-gradient(0deg,var(--shot-dark),var(--shot-light) 35%,#fff 50%,var(--shot-light) 65%,var(--shot-dark));box-shadow:0 0 12px 6px var(--shot-light),0 0 35px 15px var(--shot-color),0 0 70px var(--shot-color);animation:energy-shot-pulse .22s linear infinite}
+.arena.counter .beam{--shot-dark:#278b25;--shot-light:#cbff80;--shot-color:#8df431;--shot-fade:1;opacity:1}
+.boss-shot{--shot-dark:#b01432;--shot-light:#ff9aab;--shot-color:#ed234e}
+.arena.counter .beam:before,.arena.counter .beam:after,.boss-shot:before,.boss-shot:after{content:'';position:absolute;inset:-16px -10px;border-radius:50%;border:2px solid var(--shot-light);box-shadow:0 0 20px var(--shot-color);animation:shot-wave 1.1s ease-out infinite;animation-delay:0s;opacity:1}
+.arena.counter .beam:after,.boss-shot:after{inset:-30px -25px;animation-delay:.1s;opacity:1}
+@keyframes energy-shot-pulse{0%,100%{opacity:calc(var(--shot-fade,1)*.85)}50%{opacity:var(--shot-fade,1)}}
+/* As duas carcaças se assentam na mesma base da terceira linha. */
+.boss{align-self:end}
+.battery-shell:before{box-sizing:border-box;left:38%;width:24%;height:24px;top:-3px;border:2px solid #9abec8;border-top-color:#ddf4f5;border-radius:7px 7px 0 0;background:linear-gradient(90deg,#294c60,#7cbecb 28%,#d5f6f6 48%,#6ca3b8 70%,#264657);box-shadow:inset 0 2px 0 #ffffff66,inset 0 -3px 4px #183445aa,3px 2px 0 #193344}
+.charge-terminal{bottom:calc(var(--team-battery-height,410px) - 5px)}
