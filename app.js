@@ -188,6 +188,7 @@ function controls(){
   $('pause').textContent=paused?'Continuar':'Pausar';
 }
 function stopBossVideo(){
+  cancelBossShot();
   const v=$('bossVideo');
   v.pause();
   v.currentTime=0;
@@ -207,16 +208,56 @@ function playBossVideo(){
   const v=$('bossVideo');
   v.currentTime=0;
   $('boss').classList.add('video-active');
+  followBossShot();
   const playing=v.play();
   if(playing)playing.catch(()=>{
     commitImpact();stopBossVideo()
   })
 }
-$('bossVideo').ontimeupdate=()=>{
-  const v=$('bossVideo');
-  const impact=Number.isFinite(v.duration)?Math.min(1.5,v.duration*.4):1;
-  if(v.currentTime>=impact)commitImpact()
-};
+// Boca da arma: coordenadas normalizadas medidas nos quadros do novo vídeo.
+const muzzleTrack=[
+ [1.5,.884,.290],[2,.845,.232],[2.5,.866,.230],[3,.875,.233],
+ [3.5,.870,.235],[4,.865,.236],[4.5,.866,.249],[5,.875,.300]
+];
+const BOSS_SHOT_START=2, BOSS_SHOT_END=4.5, BOSS_SHOT_TRAVEL=.22;
+let bossShotFrame=null;
+function muzzleAt(time){
+ for(let i=1;i<muzzleTrack.length;i++)if(time<=muzzleTrack[i][0]){
+  const a=muzzleTrack[i-1],b=muzzleTrack[i],mix=Math.max(0,Math.min(1,(time-a[0])/(b[0]-a[0])));
+  return {x:a[1]+(b[1]-a[1])*mix,y:a[2]+(b[2]-a[2])*mix};
+ }
+ const point=muzzleTrack[muzzleTrack.length-1];return {x:point[1],y:point[2]};
+}
+function cancelBossShot(){
+ const v=$('bossVideo');
+ if(bossShotFrame!==null){if(v.cancelVideoFrameCallback)v.cancelVideoFrameCallback(bossShotFrame);else cancelAnimationFrame(bossShotFrame);}
+ bossShotFrame=null;$('bossShot').classList.remove('active');
+}
+function updateBossShot(time){
+ const shot=$('bossShot'),active=time>=BOSS_SHOT_START&&time<=BOSS_SHOT_END&&$('boss').classList.contains('video-active');
+ shot.classList.toggle('active',active);
+ if(!active)return;
+ const scene=$('arena').getBoundingClientRect(),video=$('bossVideo').getBoundingClientRect(),battery=$('teamBattery').getBoundingClientRect(),muzzle=muzzleAt(time);
+ const x=video.left-scene.left+video.width*muzzle.x,y=video.top-scene.top+video.height*muzzle.y;
+ const targetX=battery.left-scene.left+battery.width*.08,targetY=Math.max(battery.top-scene.top+20,Math.min(battery.bottom-scene.top-20,y));
+ const dx=targetX-x,dy=targetY-y,distance=Math.hypot(dx,dy);
+ shot.style.left=x+'px';shot.style.top=y+'px';shot.style.width=distance+'px';
+ shot.style.transform='translateY(-50%) rotate('+Math.atan2(dy,dx)+'rad)';
+ const arrival=Math.min(1,(time-BOSS_SHOT_START)/BOSS_SHOT_TRAVEL);
+ shot.style.setProperty('--shot-arrival',arrival);
+ shot.style.opacity=String(Math.min(1,(BOSS_SHOT_END-time)/.18)*(.85+.15*Math.sin(time*55)));
+ if(time>=BOSS_SHOT_START+BOSS_SHOT_TRAVEL)commitImpact();
+}
+function followBossShot(){
+ cancelBossShot();const v=$('bossVideo');
+ const frame=(now,metadata)=>{
+  if(!$('boss').classList.contains('video-active'))return;
+  updateBossShot(metadata?.mediaTime??v.currentTime);
+  bossShotFrame=v.requestVideoFrameCallback?v.requestVideoFrameCallback(frame):requestAnimationFrame(frame);
+ };
+ bossShotFrame=v.requestVideoFrameCallback?v.requestVideoFrameCallback(frame):requestAnimationFrame(frame);
+}
+$('bossVideo').ontimeupdate=()=>updateBossShot($('bossVideo').currentTime);
 $('bossVideo').onended=()=>{
   commitImpact();
   stopBossVideo()

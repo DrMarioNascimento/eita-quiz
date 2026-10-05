@@ -1496,3 +1496,11 @@ aside{background:rgba(15,25,44,.74);border-right:1px solid #779cb733}
 #roomQr{width:min(300px,65vw);margin:20px auto;background:white;border:10px solid white;border-radius:12px;box-sizing:border-box}
 #roomQr svg{display:block;width:100%;height:auto}
 #qrRoomCode{display:block;font-size:42px;letter-spacing:.15em;color:#ccff64}
+
+/* Mesmo desenho energético em ambos os ataques, cores distintas. */
+.boss-shot{position:absolute;z-index:14;height:26px;pointer-events:none;transform-origin:0 50%;border-radius:50%;display:none;background:linear-gradient(0deg,#b01432,#ff9aab 35%,#fff6ef 50%,#ff9aab 65%,#b01432);box-shadow:0 0 12px 6px #ff8c9c,0 0 35px 15px #ed234e,0 0 70px #ff263c;clip-path:inset(-80px calc((1 - var(--shot-arrival,0))*100%) -80px -35px)}
+.boss-shot.active{display:block}
+.boss-shot:before,.boss-shot:after{content:'';position:absolute;inset:-16px -10px;border-radius:50%;border:2px solid #ffb8bc;box-shadow:0 0 20px #ff4265}
+.boss-shot:after{inset:-30px -25px;opacity:.6}
+.arena.counter .beam{background:linear-gradient(0deg,#278b25,#cbff80 35%,#ffffff 50%,#cbff80 65%,#278b25);box-shadow:0 0 12px 6px #d5ff95,0 0 35px 15px #8df431,0 0 70px #19cb85}
+.arena.counter .beam:before,.arena.counter .beam:after{border-color:#d9ff9b;box-shadow:0 0 20px #98ff46}
