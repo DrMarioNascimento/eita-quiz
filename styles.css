@@ -1534,3 +1534,6 @@ aside{background:rgba(15,25,44,.74);border-right:1px solid #779cb733}
 .arena-floor line{fill:none;stroke:#50ccdf66;stroke-width:1;vector-effect:non-scaling-stroke}
 .arena-floor .floor-crosslines line{stroke:#48c6d944}
 .arena:before{left:0;right:0;top:48%;bottom:auto;height:2px;transform:none;background:#66deed99;box-shadow:0 -2px 4px #a6faffcc,0 -4px 16px #38e4ffaa,0 -9px 35px #24cbef66;opacity:.9}
+
+.brand-emblem{width:120px;height:120px}
+@media(max-width:600px){.brand-emblem{width:90px;height:90px}}
