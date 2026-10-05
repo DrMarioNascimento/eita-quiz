@@ -238,7 +238,7 @@ function updateBossShot(time){
  shot.classList.toggle('active',active);
  if(!active)return;
  const scene=$('arena').getBoundingClientRect(),video=$('bossVideo').getBoundingClientRect(),battery=$('teamBattery').getBoundingClientRect(),muzzle=muzzleAt(time);
- const x=video.left-scene.left+video.width*muzzle.x,y=video.top-scene.top+video.height*muzzle.y+2;
+ const x=video.left-scene.left+video.width*muzzle.x,y=video.top-scene.top+video.height*(muzzle.y-.035)+2;
  const targetX=battery.left-scene.left+battery.width*.08,targetY=Math.max(battery.top-scene.top+20,Math.min(battery.bottom-scene.top-20,y));
  const dx=targetX-x,dy=targetY-y,distance=Math.hypot(dx,dy);
  shot.style.left=x+'px';shot.style.top=y+'px';shot.style.width=distance+'px';

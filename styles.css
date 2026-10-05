@@ -1524,7 +1524,7 @@ aside{background:rgba(15,25,44,.74);border-right:1px solid #779cb733}
 .author-credit{text-align:right;margin-top:22px;padding:12px 0 2px;color:#d5e1f0;font-size:14px;text-shadow:0 2px 3px #0008}
 
 /* Cabeçalho com emblema alpha e exclamação com preenchimento próprio. */
-.brand-emblem{display:block;width:72px;height:72px;object-fit:contain;filter:drop-shadow(0 0 3px #ffc16b80) drop-shadow(0 0 8px #f0932533);flex:none}
+.brand-emblem{display:block;width:72px;height:72px;object-fit:contain;filter:drop-shadow(0 0 5px #ffc16bcc) drop-shadow(0 0 14px #f0932580) drop-shadow(0 0 24px #f0932540);flex:none}
 .brand h1{background:none;-webkit-text-fill-color:initial;color:#ffc16b;text-shadow:none;filter:drop-shadow(0 2px 0 #a65c1b) drop-shadow(1px 4px 4px #0005);display:flex;align-items:baseline;overflow:visible;padding-right:12px}
 .brand-word{display:inline-block;padding-right:3px;background:linear-gradient(#ffc16b,#f09325);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .brand-exclamation{display:inline-block;color:#ffc16b;-webkit-text-fill-color:#ffc16b;background:none;padding:0 8px 0 1px}
