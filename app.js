@@ -551,7 +551,7 @@ function fitSceneToViewport(force=false){
   boss.style.setProperty('--team-battery-height',rect.height+'px');
   boss.style.height=rect.height+'px';
   // Cisalhamento adicional ancorado na borda inferior visível do piso.
-  arena.style.setProperty('--floor-shear-offset',(-arena.clientHeight*.52*.12)+'px');
+  arena.style.setProperty('--floor-shear-offset',(-arena.clientHeight*.52*.70)+'px');
   fitVideoToStill();
 }
 if(typeof window!=='undefined'){

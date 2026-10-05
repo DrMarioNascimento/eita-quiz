@@ -1518,4 +1518,4 @@ aside{background:rgba(15,25,44,.74);border-right:1px solid #779cb733}
 .charge-terminal{bottom:calc(var(--team-battery-height,410px) - 5px)}
 
 /* A base fica fixa; somente os pontos acima dela se deslocam à esquerda. */
-.arena:before{transform:translateX(var(--floor-shear-offset,0px)) matrix(1,0,.12,1,0,0) perspective(560px) rotateX(62deg) skewX(50deg);transform-origin:center top}
+.arena:before{transform:translateX(var(--floor-shear-offset,0px)) matrix(1,0,.70,1,0,0) perspective(560px) rotateX(62deg) skewX(50deg);transform-origin:center top}
