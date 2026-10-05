@@ -1519,3 +1519,6 @@ aside{background:rgba(15,25,44,.74);border-right:1px solid #779cb733}
 
 /* A base fica fixa; somente os pontos acima dela se deslocam à esquerda. */
 .arena:before{transform:translateX(var(--floor-shear-offset,0px)) matrix(1,0,.70,1,0,0) perspective(560px) rotateX(62deg) skewX(50deg);transform-origin:center top}
+
+.brand h1{color:#f09325;background:linear-gradient(#ffc16b,#f09325);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 2px 1px #ad651a55,2px 5px 8px #0006}
+.author-credit{text-align:right;margin-top:22px;padding:12px 0 2px;color:#d5e1f0;font-size:14px;text-shadow:0 2px 3px #0008}
