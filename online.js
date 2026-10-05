@@ -1,4 +1,4 @@
-import {db,identifyTeacher,doc,collection,updateDoc,getDocs,onSnapshot,runTransaction,serverTimestamp,Timestamp,query,where} from './cloud.js';
+import {db,identifyTeacher,observeTeacher,doc,collection,updateDoc,getDocs,onSnapshot,runTransaction,serverTimestamp,Timestamp,query,where} from './cloud.js';
 const byId=id=>document.getElementById(id);
 let room=null,uid=null,roster=[],round=0,unsub=null;
 const notice=text=>byId('roomNotice').textContent=text;
@@ -42,7 +42,7 @@ byId('createRoom').onclick=async()=>{
   api.active=true;round=0;window.eitaGame.reset();
   byId('roomDetails').hidden=false;byId('roomCode').textContent='Código: '+room.id;
   const link=new URL('https://eita-quiz.web.app/aluno.html');link.searchParams.set('sala',room.id);byId('roomLink').href=link.href;openRoomQr();
-  ['count','chance','entry'].forEach(id=>byId(id).disabled=true);
+  ['count'].forEach(id=>byId(id).disabled=true);
   document.querySelector('header small').textContent='Sala online · respostas reais';
   notice('Compartilhe o link ou o código. Prepare a turma antes de iniciar.');
   unsub=onSnapshot(collection(room,'members'),snapshot=>{
@@ -56,8 +56,15 @@ byId('createRoom').onclick=async()=>{
 };
 byId('copyRoom').onclick=async()=>{try{await navigator.clipboard.writeText(byId('roomLink').href);notice('Link copiado!');}catch(e){notice('Copie o endereço do link dos alunos.');}};
 byId('closeRoom').onclick=async()=>{
- try{await updateDoc(room,{status:'closed'});unsub?.();room=null;api.active=false;roster=[];window.eitaGame.setRoster([]);window.eitaGame.reset();byId('roomDetails').hidden=true;byId('createRoom').disabled=false;['count','chance','entry'].forEach(id=>byId(id).disabled=false);notice('Sala encerrada.');}catch(e){report(e);}
+ try{await updateDoc(room,{status:'closed'});unsub?.();room=null;api.active=false;roster=[];window.eitaGame.setRoster([]);window.eitaGame.reset();byId('roomDetails').hidden=true;byId('createRoom').disabled=false;['count'].forEach(id=>byId(id).disabled=false);notice('Sala encerrada.');}catch(e){report(e);}
 };
 
 byId('showRoomQr').onclick=openRoomQr;
 byId('dismissRoomQr').onclick=()=>byId('roomQrDialog').close();
+
+observeTeacher(authorized=>{
+ window.eitaTeacherAuthorized=authorized;
+ byId('teacherTools').hidden=!authorized;
+ byId('edit').disabled=!authorized||window.eitaGame.isLocked();
+ if(!authorized)byId('editor').close();
+});

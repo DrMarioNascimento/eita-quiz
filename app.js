@@ -26,7 +26,6 @@ function prepareBattleQuestions(){
 let squads=[],students=[],bossLife=100,teamLife=100,index=-1,running=false,paused=false,locked=false,remaining=0,last=0,handle=null,intermission=false,visualTimer=null,suddenDeath=false,deathTimers=[],attackPending=false,pendingImpact=null,selected='individual';
 const safe=(el,text)=>el.textContent=text;
 const entrants=[],avatarByName=new Map();
-let chosenAvatar='🐶';
 const squadSymbols=[['🐯','Tigres'],['🦁','Leões'],['🐆','Leopardos'],['🐍','Cobras'],['🐺','Lobos'],['🦅','Águias'],['🐻','Ursos'],['🦈','Tubarões'],['🐊','Crocodilos'],['🦏','Rinocerontes']];
 function prepare(){
   if(locked)return;
@@ -181,7 +180,8 @@ function unlockAttackFrame(){
   $('boss').style.height=''
 }
 function controls(){
-  ['mode','count','edit','entry','advanceMode','questionCount'].forEach(id=>$(id).disabled=locked);
+  $('edit').disabled=locked||!window.eitaTeacherAuthorized;
+  ['mode','count','advanceMode','questionCount'].forEach(id=>$(id).disabled=locked);
   $('size').disabled=locked||selected==='individual';
   $('draw').disabled=locked||selected==='individual';
   $('draw').textContent='Sortear esquadrões';
@@ -307,7 +307,7 @@ async function resolve(){
   let hits=0,total=0;
   let onlineAnswers=null;
   if(window.eitaOnline?.active){try{onlineAnswers=await window.eitaOnline.finish();}catch(error){running=true;safe($('status'),'Falha ao buscar respostas. Clique em Encerrar tempo para tentar novamente.');controls();return;}}
-  const p=Number($('chance').value)/100;
+  const p=.20;
   squads.forEach(s=>{
     if(selected==='own'&&s.life<=0)return;s.hits=s.members.reduce((v,name)=>v+(onlineAnswers?Number(onlineAnswers.get(name)===quiz[index].correct):Number(Math.random()<p)),0);s.total+=s.hits;s.answers+=s.members.length;hits+=s.hits;total+=s.members.length
   });
@@ -413,44 +413,6 @@ function reset(){
   prepare();
   controls()
 }
-function showAvatars(){
-  $('avatarChoices').replaceChildren();
-  animalAvatars.forEach(animal=>{
-    const b=document.createElement('button');b.textContent=animal;b.setAttribute('aria-label','Escolher '+animal);b.setAttribute('aria-pressed',String(animal===chosenAvatar));b.onclick=()=>{
-      chosenAvatar=animal;showAvatars()
-    };$('avatarChoices').append(b)
-  })
-}
-$('entry').onclick=()=>{
-  showAvatars();
-  safe($('entryError'),'');
-  safe($('entryList'),entrants.map(e=>e.avatar+' '+e.name).join(' · '));
-  $('entryDialog').showModal()
-};
-$('closeEntry').onclick=()=>$('entryDialog').close();
-$('join').onclick=()=>{
-  if(locked)return;
-  const name=$('entryName').value.trim();
-  if(!name){
-    safe($('entryError'),'Digite seu nome.');
-    return
-  }if(entrants.some(e=>e.name.toLowerCase()===name.toLowerCase())){
-    safe($('entryError'),'Esse nome já entrou. Acrescente um sobrenome.');
-    return
-  }if(entrants.length>=60){
-    safe($('entryError'),'Limite de 60 alunos neste teste.');
-    return
-  }entrants.push({
-    name,avatar:chosenAvatar
-  });
-  avatarByName.set(name,chosenAvatar);
-  $('count').value=Math.max(Number($('count').value)||1,entrants.length);
-  $('count').min=entrants.length;
-  prepare();
-  safe($('entryList'),entrants.map(e=>e.avatar+' '+e.name).join(' · '));
-  safe($('entryError'),name+' entrou na turma!');
-  $('entryName').value=''
-};
 $('draw').onclick=prepare;
 $('mode').onchange=prepare;
 $('count').onchange=prepare;
@@ -467,8 +429,8 @@ $('pause').onclick=()=>{
 };
 $('finish').onclick=resolve;
 $('reset').onclick=reset;
-$('chance').oninput=()=>safe($('chanceLabel'),$('chance').value+'%');
 $('edit').onclick=()=>{
+  if(!window.eitaTeacherAuthorized||locked)return;
   $('quizText').value=(questionBank||quiz).map(q=>[q.q,...q.a,q.correct+1,q.time,q.explain].join('\n')).join('\n---\n');
   safe($('error'),'');
   $('editor').showModal()
@@ -476,6 +438,7 @@ $('edit').onclick=()=>{
 $('questionCount').onchange=()=>{if(!locked)reset();};
 $('cancel').onclick=()=>$('editor').close();
 $('save').onclick=()=>{
+  if(!window.eitaTeacherAuthorized||locked)return;
   try{
     const items=$('quizText').value.split(/^---\s*$/m).map(block=>{
       const lines=block.trim().split('\n').map(x=>x.trim());const correct=Number(lines[5])-1,time=Number(lines[6]);if(lines.length<7||lines.slice(0,5).some(x=>!x)||!Number.isInteger(correct)||correct<0||correct>3||!Number.isFinite(time)||time<5||time>300)throw Error('Cada bloco precisa de enunciado, 4 alternativas, correta de 1 a 4 e tempo de 5 a 300 segundos.');return{

@@ -1,5 +1,5 @@
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js';
-import {getAuth,signInAnonymously,GoogleAuthProvider,signInWithPopup} from 'https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js';
+import {getAuth,onAuthStateChanged,signInAnonymously,GoogleAuthProvider,signInWithPopup} from 'https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js';
 import {getFirestore} from 'https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js';
 import {firebaseConfig} from './firebase-config.js';
 export const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
@@ -12,3 +12,5 @@ export function identifyTeacher(){
  if(user?.providerData.some(provider=>provider.providerId==='google.com'))return Promise.resolve(user.uid);
  return signInWithPopup(auth,new GoogleAuthProvider()).then(credential=>credential.user.uid);
 }
+
+export function observeTeacher(callback){return onAuthStateChanged(auth,user=>callback(!!user?.providerData.some(p=>p.providerId==='google.com')));}
