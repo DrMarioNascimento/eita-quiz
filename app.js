@@ -219,7 +219,7 @@ const muzzleTrack=[
  [1.5,.884,.290],[2,.845,.232],[2.5,.866,.230],[3,.875,.233],
  [3.5,.870,.235],[4,.865,.236],[4.5,.866,.249],[5,.875,.300]
 ];
-const BOSS_SHOT_START=2, BOSS_SHOT_END=4.5, BOSS_SHOT_TRAVEL=.22;
+const BOSS_SHOT_START=2, BOSS_SHOT_END=3.85, BOSS_SHOT_TRAVEL=.22;
 let bossShotFrame=null;
 function muzzleAt(time){
  for(let i=1;i<muzzleTrack.length;i++)if(time<=muzzleTrack[i][0]){
