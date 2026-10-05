@@ -1,8 +1,17 @@
-import {db,identify,doc,collection,updateDoc,getDocs,onSnapshot,runTransaction,serverTimestamp,Timestamp,query,where} from './cloud.js';
+import {db,identifyTeacher,doc,collection,updateDoc,getDocs,onSnapshot,runTransaction,serverTimestamp,Timestamp,query,where} from './cloud.js';
 const byId=id=>document.getElementById(id);
 let room=null,uid=null,roster=[],round=0,unsub=null;
 const notice=text=>byId('roomNotice').textContent=text;
-function report(error){console.error(error);notice('Não foi possível conectar. Confira a internet e tente novamente.');}
+function report(error){
+ console.error(error);
+ const messages={'auth/popup-blocked':'O navegador bloqueou o Google. Permita pop-ups para este site e tente novamente.','auth/popup-closed-by-user':'Login cancelado. Clique em Abrir sala com Google para tentar de novo.','auth/unauthorized-domain':'Abra pelo endereço https://eita-quiz.web.app/ para entrar com Google.','auth/operation-not-allowed':'Ative o Google no Authentication do projeto Eita Quiz.'};
+ notice(messages[error.code]||'Não foi possível conectar. Confira a internet e tente novamente.');
+}
+function openRoomQr(){
+ byId('qrRoomCode').textContent=room.id;
+ byId('roomQr').innerHTML=window.MosaicoQR.svg(byId('roomLink').href,{nivel:'M',margem:4,rotulo:'QR Code de entrada na sala',fundo:'#ffffff',tinta:'#05070c'});
+ byId('roomQrDialog').showModal();
+}
 const api={active:false,
  async begin(q,squads,mode){
    round++;
@@ -20,9 +29,11 @@ const api={active:false,
 };
 window.eitaOnline=api;
 byId('createRoom').onclick=async()=>{
- byId('createRoom').disabled=true;notice('Criando sala…');
+ if(location.protocol!=='https:'&&location.hostname!=='localhost'){notice('Abra https://eita-quiz.web.app/ para criar a sala online.');return;}
+ byId('createRoom').disabled=true;notice('Entrando com Google…');
  try{
-  uid=await identify();
+  uid=await identifyTeacher();
+  notice('Criando sala…');
   for(let attempt=0;attempt<5;attempt++){
    const bytes=crypto.getRandomValues(new Uint32Array(1));const code=String(100000+bytes[0]%900000);const candidate=doc(db,'rooms',code);
    try{await runTransaction(db,async tx=>{const existing=await tx.get(candidate);if(existing.exists())throw new Error('collision');tx.set(candidate,{owner:uid,status:'waiting',round:0,question:null,result:null,paused:false,deadline:Timestamp.now(),createdAt:serverTimestamp(),expiresAt:Timestamp.fromMillis(Date.now()+86400000),participants:[],groups:[],mode:'individual'});});room=candidate;break;}catch(e){if(e.message!=='collision')throw e;}
@@ -30,7 +41,7 @@ byId('createRoom').onclick=async()=>{
   if(!room)throw new Error('Não foi possível gerar código');
   api.active=true;round=0;window.eitaGame.reset();
   byId('roomDetails').hidden=false;byId('roomCode').textContent='Código: '+room.id;
-  const link=new URL('aluno.html',location.href);link.searchParams.set('sala',room.id);byId('roomLink').href=link.href;
+  const link=new URL('https://eita-quiz.web.app/aluno.html');link.searchParams.set('sala',room.id);byId('roomLink').href=link.href;openRoomQr();
   ['count','chance','entry'].forEach(id=>byId(id).disabled=true);
   document.querySelector('header small').textContent='Sala online · respostas reais';
   notice('Compartilhe o link ou o código. Prepare a turma antes de iniciar.');
@@ -39,7 +50,7 @@ byId('createRoom').onclick=async()=>{
    if(!window.eitaGame.isLocked()){
     roster=members.map(p=>({...p,name:p.name+' · '+p.uid.slice(0,4)}));window.eitaGame.setRoster(roster);
    }
-   byId('roomRoster').textContent=members.length+' aluno(s) na sala';
+   byId('roomRoster').textContent=members.length+' aluno(s) na sala';byId('qrRoster').textContent=byId('roomRoster').textContent;
   },report);
  }catch(e){report(e);byId('createRoom').disabled=false;}
 };
@@ -47,3 +58,6 @@ byId('copyRoom').onclick=async()=>{try{await navigator.clipboard.writeText(byId(
 byId('closeRoom').onclick=async()=>{
  try{await updateDoc(room,{status:'closed'});unsub?.();room=null;api.active=false;roster=[];window.eitaGame.setRoster([]);window.eitaGame.reset();byId('roomDetails').hidden=true;byId('createRoom').disabled=false;['count','chance','entry'].forEach(id=>byId(id).disabled=false);notice('Sala encerrada.');}catch(e){report(e);}
 };
+
+byId('showRoomQr').onclick=openRoomQr;
+byId('dismissRoomQr').onclick=()=>byId('roomQrDialog').close();

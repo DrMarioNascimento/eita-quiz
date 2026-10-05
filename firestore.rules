@@ -2,6 +2,7 @@ rules_version = '2';
 service cloud.firestore {
  match /databases/{database}/documents {
   function signed(){return request.auth != null;}
+  function teacher(){return signed() && request.auth.token.firebase.sign_in_provider == 'google.com';}
   function room(code){return get(/databases/$(database)/documents/rooms/$(code)).data;}
   function owner(code){return signed() && room(code).owner == request.auth.uid;}
   function validRoom(d){return d.keys().hasAll(['owner','status','round','question','result','paused','deadline','createdAt','expiresAt','participants','groups','mode']) && d.keys().hasOnly(['owner','status','round','question','result','paused','deadline','createdAt','expiresAt','participants','groups','mode']) && d.owner is string && d.status in ['waiting','question','resolving','result','ended','closed'] && d.round is int && d.round >= 0 && d.paused is bool && d.deadline is timestamp && d.createdAt is timestamp && d.expiresAt is timestamp && d.participants is list && d.participants.size() <= 60 && d.groups is list && d.mode in ['individual','shared','own'];}
@@ -10,7 +11,7 @@ service cloud.firestore {
   match /rooms/{code} {
    allow get: if signed();
    allow list: if false;
-   allow create: if signed() && code.matches('[0-9]{6}') && validRoom(request.resource.data) && request.resource.data.owner==request.auth.uid && request.resource.data.createdAt==request.time && request.resource.data.expiresAt>request.time && request.resource.data.expiresAt<=request.time+duration.value(25,'h') && request.resource.data.status=='waiting';
+   allow create: if teacher() && code.matches('[0-9]{6}') && validRoom(request.resource.data) && request.resource.data.owner==request.auth.uid && request.resource.data.createdAt==request.time && request.resource.data.expiresAt>request.time && request.resource.data.expiresAt<=request.time+duration.value(25,'h') && request.resource.data.status=='waiting';
    allow update: if owner(code) && validRoom(request.resource.data) && request.resource.data.owner==resource.data.owner && request.resource.data.createdAt==resource.data.createdAt && request.resource.data.expiresAt==resource.data.expiresAt;
    match /members/{uid} {
     allow get: if signed() && (request.auth.uid==uid || owner(code));
