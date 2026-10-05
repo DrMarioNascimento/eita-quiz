@@ -60,7 +60,7 @@ function chip(name){
   avatar.setAttribute('aria-hidden','true');
   const label=document.createElement('span');
   label.className='student-name';
-  label.textContent=name;
+  label.textContent=name.replace(/ · [A-Za-z0-9]{4}$/, '');
   e.append(avatar);
   e.append(label);
   return e
@@ -122,7 +122,7 @@ function createSquadCard(s){
   emblem.textContent=s.name.split(' ')[0];
   el.querySelector('.content').prepend(emblem);
   s.members.forEach(name=>{
-    const member=document.createElement('span');member.className='squad-member';member.textContent=name;el.querySelector('.students').append(member)
+    const member=document.createElement('span');member.className='squad-member';member.textContent=name.replace(/ · [A-Za-z0-9]{4}$/, '');el.querySelector('.students').append(member)
   });
   return el;
 }
@@ -297,7 +297,7 @@ async function start(){
   q.a.forEach((a,i)=>{
     let el=document.createElement('div');el.className='option';el.textContent=String.fromCharCode(65+i)+'. '+a;$('options').append(el)
   });
-  safe($('status'),'O chefão está carregando o golpe…');
+  safe($('status'),'O chefão está carregando...');
   safe($('log'),'');
   safe($('transition'),'');
   last=performance.now();

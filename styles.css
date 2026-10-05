@@ -1537,3 +1537,6 @@ aside{background:rgba(15,25,44,.74);border-right:1px solid #779cb733}
 
 .brand-emblem{width:120px;height:120px}
 @media(max-width:600px){.brand-emblem{width:90px;height:90px}}
+
+/* Brilho no contorno alpha do emblema, sem alterar suas dimensões. */
+.brand-emblem{filter:drop-shadow(0 0 2px #ffe2a0) drop-shadow(0 0 6px #ffc16b) drop-shadow(0 0 13px #f09325cc) drop-shadow(0 0 23px #f0932577)}
