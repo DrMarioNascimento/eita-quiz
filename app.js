@@ -15,7 +15,7 @@ const squadSymbols=[['🐯','Tigres'],['🦁','Leões'],['🐆','Leopardos'],['�
 function prepare(){
   if(locked)return;
   selected=$('mode').value;
-  const n=Math.max(1,entrants.length,Math.min(60,Number($('count').value)||20)),size=Math.max(2,Math.min(15,Number($('size').value)||5));
+  const n=window.eitaOnline?.active?entrants.length:Math.max(1,entrants.length,Math.min(60,Number($('count').value)||20)),size=Math.max(2,Math.min(15,Number($('size').value)||5));
   students=entrants.map(e=>e.name);
   let simulated=1;
   while(students.length<n){
@@ -213,7 +213,11 @@ $('bossVideo').onerror=()=>{
   commitImpact();
   stopBossVideo()
 };
-function start(){
+async function start(){
+  if(window.eitaOnline?.active){
+    if(!entrants.length){safe($('status'),'Aguarde os alunos entrarem na sala.');return;}
+    if(!locked)prepare();
+  }
   if(running||attackPending||bossLife<=0||teamLife<=0)return;
   cancelAnimationFrame(handle);
   intermission=false;
@@ -238,6 +242,10 @@ function start(){
   safe($('transition'),'');
   last=performance.now();
   controls();
+  if(window.eitaOnline?.active){
+    try{await window.eitaOnline.begin(quiz[index],squads,selected);}catch(error){running=false;locked=false;safe($('status'),'Não foi possível iniciar online. Tente novamente.');controls();return;}
+    last=performance.now();
+  }
   tick();
 }
 function tick(){
@@ -266,7 +274,7 @@ function tick(){
     return
   }handle=requestAnimationFrame(tick)
 }
-function resolve(){
+async function resolve(){
   if(!running)return;
   running=false;
   cancelAnimationFrame(handle);
@@ -275,9 +283,11 @@ function resolve(){
   $('chargeEnergy').style.height='100%';
   $('charge').style.clipPath='inset(0 0 0)';
   let hits=0,total=0;
+  let onlineAnswers=null;
+  if(window.eitaOnline?.active){try{onlineAnswers=await window.eitaOnline.finish();}catch(error){running=true;safe($('status'),'Falha ao buscar respostas. Clique em Encerrar tempo para tentar novamente.');controls();return;}}
   const p=Number($('chance').value)/100;
   squads.forEach(s=>{
-    if(selected==='own'&&s.life<=0)return;s.hits=s.members.reduce(v=>v+(Math.random()<p?1:0),0);s.total+=s.hits;s.answers+=s.members.length;hits+=s.hits;total+=s.members.length
+    if(selected==='own'&&s.life<=0)return;s.hits=s.members.reduce((v,name)=>v+(onlineAnswers?Number(onlineAnswers.get(name)===quiz[index].correct):Number(Math.random()<p)),0);s.total+=s.hits;s.answers+=s.members.length;hits+=s.hits;total+=s.members.length
   });
   const rate=total?hits/total:0;
   let result;
@@ -323,6 +333,7 @@ function resolve(){
       handle=requestAnimationFrame(tick);
       safe($('transition'),`Próxima pergunta em ${Math.ceil(remaining)} s`)
     }else safe($('transition'),bossLife>0&&teamLife>0?'Clique em Próxima pergunta para continuar.':'');
+    window.eitaOnline?.result({bossLife,teamLife,message:result,correct:quiz[index].correct,explain:quiz[index].explain});
     controls()
   };
   if(rate>.5){
@@ -339,6 +350,7 @@ function resolve(){
   }
 }
 function reset(){
+  window.eitaOnline?.reset();
   rosterKey='';
   attackPending=false;
   pendingImpact=null;
@@ -423,6 +435,7 @@ $('size').onchange=prepare;
 $('start').onclick=start;
 $('pause').onclick=()=>{
   paused=!paused;
+  window.eitaOnline?.pause(paused,remaining);
   const v=$('bossVideo');
   if($('boss').classList.contains('video-active')){
     if(paused)v.pause();
@@ -550,3 +563,10 @@ function updateFullscreenButton(){
 $('fullscreenButton').addEventListener('click',toggleFullscreen);
 document.addEventListener('fullscreenchange',updateFullscreenButton);
 document.addEventListener('webkitfullscreenchange',updateFullscreenButton);
+
+window.eitaGame={
+  setRoster(roster){if(locked)return;entrants.splice(0,entrants.length,...roster.map(p=>({name:p.name,avatar:p.emoji})));avatarByName.clear();roster.forEach(p=>avatarByName.set(p.name,p.emoji));prepare();},
+  isLocked:()=>locked,
+  reset,
+  animals:animalAvatars
+};

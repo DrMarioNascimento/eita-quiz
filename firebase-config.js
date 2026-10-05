@@ -1,0 +1,1 @@
+export const firebaseConfig = {"projectId": "eita-quiz", "appId": "1:723875752287:web:9e2147998554bc80286eea", "storageBucket": "eita-quiz.firebasestorage.app", "apiKey": "AIzaSyDjSUXVYS4WOaoB7WaBdgqw8Pefnb9ePps", "authDomain": "eita-quiz.firebaseapp.com", "messagingSenderId": "723875752287", "measurementId": "G-4RKM0LHQKT", "projectNumber": "723875752287", "version": "2"};
