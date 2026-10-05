@@ -7,6 +7,22 @@ let quiz=[{
 },{
   q:'Qual estrutura conecta músculos aos ossos?',a:['Ligamento','Cartilagem','Tendão','Alvéolo'],correct:2,time:15,explain:'Os tendões transmitem a força dos músculos aos ossos.'
 }];
+let questionBank=window.CARDIO_BANK||null;
+let battleQuestionsUsed=new Set();
+function shuffleList(items){
+ const result=[...items];
+ for(let i=result.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[result[i],result[j]]=[result[j],result[i]];}
+ return result;
+}
+function prepareBattleQuestions(){
+ if(!questionBank)return;
+ const requested=Number($('questionCount').value)||5;
+ const count=Math.max(1,Math.min(questionBank.length,Math.floor(requested)));
+ $('questionCount').value=count;$('questionCount').max=questionBank.length;
+ quiz=shuffleList(questionBank).slice(0,count).map(item=>({...item,a:[...item.a]}));
+ battleQuestionsUsed=new Set(quiz.map(item=>item.id||item.q));
+ safe($('bankSummary'),questionBank.length+' perguntas no banco · '+count+' sorteadas por batalha');
+}
 let squads=[],students=[],bossLife=100,teamLife=100,index=-1,running=false,paused=false,locked=false,remaining=0,last=0,handle=null,intermission=false,visualTimer=null,suddenDeath=false,deathTimers=[],attackPending=false,pendingImpact=null,selected='individual';
 const safe=(el,text)=>el.textContent=text;
 const entrants=[],avatarByName=new Map();
@@ -165,7 +181,7 @@ function unlockAttackFrame(){
   $('boss').style.height=''
 }
 function controls(){
-  ['mode','count','edit','entry','advanceMode'].forEach(id=>$(id).disabled=locked);
+  ['mode','count','edit','entry','advanceMode','questionCount'].forEach(id=>$(id).disabled=locked);
   $('size').disabled=locked||selected==='individual';
   $('draw').disabled=locked||selected==='individual';
   $('draw').textContent='Sortear esquadrões';
@@ -226,8 +242,14 @@ async function start(){
   index++;
   if(index>=quiz.length){
     index=0;
-    suddenDeath=true
-  }const q=quiz[index];
+    suddenDeath=true;
+  }
+  if(suddenDeath&&questionBank){
+      const unseen=questionBank.filter(item=>!battleQuestionsUsed.has(item.id||item.q));
+      const extra=shuffleList(unseen.length?unseen:questionBank)[0];
+      quiz[index]={...extra,a:[...extra.a]};battleQuestionsUsed.add(extra.id||extra.q);
+  }
+  const q=quiz[index];
   remaining=q.time;
   running=true;
   paused=false;
@@ -321,7 +343,7 @@ async function resolve(){
       shatter($('teamBattery'),'#62ffc9')
     }else if(index===quiz.length-1&&!suddenDeath)result+=' A próxima rodada será de morte súbita.';
     safe($('status'),result);
-    safe($('log'),quiz[index].explain);
+    safe($('log'),quiz[index].explain+(quiz[index].sourcePage?' · Cardio.pdf, página '+quiz[index].sourcePage:''));
     visualTimer=setTimeout(()=>{
       $('boss').style.setProperty('--charge',0);$('chargeEnergy').style.height='0%';$('charge').style.clipPath='inset(100% 0 0)';$('boss').classList.remove('hit');$('teamBattery').classList.remove('attack');$('boss').classList.remove('firing');$('arena').classList.remove('firing','counter')
     },1000);
@@ -350,6 +372,7 @@ async function resolve(){
   }
 }
 function reset(){
+  prepareBattleQuestions();
   window.eitaOnline?.reset();
   rosterKey='';
   attackPending=false;
@@ -446,10 +469,11 @@ $('finish').onclick=resolve;
 $('reset').onclick=reset;
 $('chance').oninput=()=>safe($('chanceLabel'),$('chance').value+'%');
 $('edit').onclick=()=>{
-  $('quizText').value=quiz.map(q=>[q.q,...q.a,q.correct+1,q.time,q.explain].join('\n')).join('\n---\n');
+  $('quizText').value=(questionBank||quiz).map(q=>[q.q,...q.a,q.correct+1,q.time,q.explain].join('\n')).join('\n---\n');
   safe($('error'),'');
   $('editor').showModal()
 };
+$('questionCount').onchange=()=>{if(!locked)reset();};
 $('cancel').onclick=()=>$('editor').close();
 $('save').onclick=()=>{
   try{
@@ -458,6 +482,7 @@ $('save').onclick=()=>{
         q:lines[0],a:lines.slice(1,5),correct,time,explain:lines.slice(7).join(' ')
       }
     });
+    questionBank=items;
     quiz=items;
     $('editor').close();
     reset()
