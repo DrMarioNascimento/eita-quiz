@@ -42,7 +42,7 @@ byId('createRoom').onclick=async()=>{
   api.active=true;round=0;window.eitaGame.reset();
   byId('roomDetails').hidden=false;byId('roomCode').textContent='Código: '+room.id;
   const link=new URL('https://eita-quiz.web.app/aluno.html');link.searchParams.set('sala',room.id);byId('roomLink').href=link.href;openRoomQr();
-  ['count'].forEach(id=>byId(id).disabled=true);
+  
   document.querySelector('header small').textContent='Sala online · respostas reais';
   notice('Compartilhe o link ou o código. Prepare a turma antes de iniciar.');
   unsub=onSnapshot(collection(room,'members'),snapshot=>{
@@ -56,7 +56,7 @@ byId('createRoom').onclick=async()=>{
 };
 byId('copyRoom').onclick=async()=>{try{await navigator.clipboard.writeText(byId('roomLink').href);notice('Link copiado!');}catch(e){notice('Copie o endereço do link dos alunos.');}};
 byId('closeRoom').onclick=async()=>{
- try{await updateDoc(room,{status:'closed'});unsub?.();room=null;api.active=false;roster=[];window.eitaGame.setRoster([]);window.eitaGame.reset();byId('roomDetails').hidden=true;byId('createRoom').disabled=false;['count'].forEach(id=>byId(id).disabled=false);notice('Sala encerrada.');}catch(e){report(e);}
+ try{await updateDoc(room,{status:'closed'});unsub?.();room=null;api.active=false;roster=[];window.eitaGame.setRoster([]);window.eitaGame.reset();byId('roomDetails').hidden=true;byId('createRoom').disabled=false;notice('Sala encerrada.');}catch(e){report(e);}
 };
 
 byId('showRoomQr').onclick=openRoomQr;

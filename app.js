@@ -30,13 +30,9 @@ const squadSymbols=[['🐯','Tigres'],['🦁','Leões'],['🐆','Leopardos'],['�
 function prepare(){
   if(locked)return;
   selected=$('mode').value;
-  const n=window.eitaOnline?.active?entrants.length:Math.max(1,entrants.length,Math.min(60,Number($('count').value)||20)),size=Math.max(2,Math.min(15,Number($('size').value)||5));
+  const n=entrants.length,size=Math.max(2,Math.min(15,Number($('size').value)||5));
   students=entrants.map(e=>e.name);
-  let simulated=1;
-  while(students.length<n){
-    const name='Aluno '+simulated++;
-    if(!students.includes(name))students.push(name)
-  }for(let i=n-1;i>0;i--){
+  for(let i=n-1;i>0;i--){
     const j=Math.floor(Math.random()*(i+1));
     [students[i],students[j]]=[students[j],students[i]]
   }const k=selected==='individual'?1:Math.ceil(n/size);
@@ -181,7 +177,7 @@ function unlockAttackFrame(){
 }
 function controls(){
   $('edit').disabled=locked||!window.eitaTeacherAuthorized;
-  ['mode','count','advanceMode','questionCount'].forEach(id=>$(id).disabled=locked);
+  ['mode','advanceMode','questionCount'].forEach(id=>$(id).disabled=locked);
   $('size').disabled=locked||selected==='individual';
   $('draw').disabled=locked||selected==='individual';
   $('draw').textContent='Sortear esquadrões';
@@ -230,6 +226,7 @@ $('bossVideo').onerror=()=>{
   stopBossVideo()
 };
 async function start(){
+  if(!window.eitaOnline?.active){safe($('status'),'Abra uma sala com Google e aguarde os alunos entrarem.');return;}
   if(window.eitaOnline?.active){
     if(!entrants.length){safe($('status'),'Aguarde os alunos entrarem na sala.');return;}
     if(!locked)prepare();
@@ -307,9 +304,8 @@ async function resolve(){
   let hits=0,total=0;
   let onlineAnswers=null;
   if(window.eitaOnline?.active){try{onlineAnswers=await window.eitaOnline.finish();}catch(error){running=true;safe($('status'),'Falha ao buscar respostas. Clique em Encerrar tempo para tentar novamente.');controls();return;}}
-  const p=.20;
   squads.forEach(s=>{
-    if(selected==='own'&&s.life<=0)return;s.hits=s.members.reduce((v,name)=>v+(onlineAnswers?Number(onlineAnswers.get(name)===quiz[index].correct):Number(Math.random()<p)),0);s.total+=s.hits;s.answers+=s.members.length;hits+=s.hits;total+=s.members.length
+    if(selected==='own'&&s.life<=0)return;s.hits=s.members.reduce((v,name)=>v+(Number(onlineAnswers?.get(name)===quiz[index].correct)),0);s.total+=s.hits;s.answers+=s.members.length;hits+=s.hits;total+=s.members.length
   });
   const rate=total?hits/total:0;
   let result;
@@ -415,7 +411,6 @@ function reset(){
 }
 $('draw').onclick=prepare;
 $('mode').onchange=prepare;
-$('count').onchange=prepare;
 $('size').onchange=prepare;
 $('start').onclick=start;
 $('pause').onclick=()=>{
