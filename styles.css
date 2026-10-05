@@ -1522,3 +1522,15 @@ aside{background:rgba(15,25,44,.74);border-right:1px solid #779cb733}
 
 .brand h1{color:#f09325;background:linear-gradient(#ffc16b,#f09325);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 2px 1px #ad651a55,2px 5px 8px #0006}
 .author-credit{text-align:right;margin-top:22px;padding:12px 0 2px;color:#d5e1f0;font-size:14px;text-shadow:0 2px 3px #0008}
+
+/* Cabeçalho com emblema alpha e exclamação com preenchimento próprio. */
+.brand-emblem{display:block;width:72px;height:72px;object-fit:contain;filter:drop-shadow(0 0 3px #ffc16b80) drop-shadow(0 0 8px #f0932533);flex:none}
+.brand h1{background:none;-webkit-text-fill-color:initial;color:#ffc16b;text-shadow:none;filter:drop-shadow(0 2px 0 #a65c1b) drop-shadow(1px 4px 4px #0005);display:flex;align-items:baseline;overflow:visible;padding-right:12px}
+.brand-word{display:inline-block;padding-right:3px;background:linear-gradient(#ffc16b,#f09325);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.brand-exclamation{display:inline-block;color:#ffc16b;-webkit-text-fill-color:#ffc16b;background:none;padding:0 8px 0 1px}
+@media(max-width:600px){.brand-emblem{width:56px;height:56px}.brand{gap:12px}}
+/* Diagonais explícitas: as pontas superiores ficam sempre à esquerda das bases. */
+.arena-floor{position:absolute;left:0;top:48%;width:100%;height:52%;z-index:0;pointer-events:none;overflow:hidden}
+.arena-floor line{fill:none;stroke:#50ccdf66;stroke-width:1;vector-effect:non-scaling-stroke}
+.arena-floor .floor-crosslines line{stroke:#48c6d944}
+.arena:before{left:0;right:0;top:48%;bottom:auto;height:2px;transform:none;background:#66deed99;box-shadow:0 -2px 4px #a6faffcc,0 -4px 16px #38e4ffaa,0 -9px 35px #24cbef66;opacity:.9}
