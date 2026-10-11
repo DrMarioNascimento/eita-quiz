@@ -1,19 +1,19 @@
 window.EITA_ANIMALS=[
- {id:'tigre',label:'Tigre',squad:'Tigres',emoji:'🐯',src:'assets/animals/tigre.jpg'},
+ {id:'tigre',label:'Tigre',squad:'Tigres',emoji:'🐯',src:'assets/animals/tigre-novo.png',transparent:true},
  {id:'leao',label:'Leão',squad:'Leões',emoji:'🦁',src:'assets/animals/leao.jpg'},
- {id:'leopardo',label:'Leopardo',squad:'Leopardos',emoji:'🐆',src:'assets/animals/leopardo.jpg'},
- {id:'cobra',label:'Cobra',squad:'Cobras',emoji:'🐍',src:'assets/animals/cobra.jpg'},
- {id:'serpente',label:'Serpente',src:'assets/animals/serpente.jpg'},
- {id:'lobo',label:'Lobo',squad:'Lobos',emoji:'🐺',src:'assets/animals/lobo.jpg'},
+ {id:'leopardo',label:'Leopardo',squad:'Leopardos',emoji:'🐆',src:'assets/animals/leopardo-novo.png',transparent:true},
+ {id:'cobra',label:'Cobra',squad:'Cobras',emoji:'🐍',src:'assets/animals/cobra-nova.png',transparent:true},
+ {id:'serpente',label:'Serpente',src:'assets/animals/serpente-nova.png',transparent:true},
+ {id:'lobo',label:'Lobo',squad:'Lobos',emoji:'🐺',src:'assets/animals/lobo-novo.png',transparent:true},
  {id:'aguia',label:'Águia',squad:'Águias',emoji:'🦅',src:'assets/animals/aguia.jpg'},
  {id:'urso',label:'Urso',squad:'Ursos',emoji:'🐻',src:'assets/animals/urso.jpg'},
- {id:'tubarao',label:'Tubarão',squad:'Tubarões',emoji:'🦈',src:'assets/animals/tubarao.jpg'},
- {id:'crocodilo',label:'Crocodilo',squad:'Crocodilos',emoji:'🐊',src:'assets/animals/crocodilo.jpg'},
- {id:'rinoceronte',label:'Rinoceronte',squad:'Rinocerontes',emoji:'🦏',src:'assets/animals/rinoceronte.jpg'},
+ {id:'tubarao',label:'Tubarão',squad:'Tubarões',emoji:'🦈',src:'assets/animals/tubarao-novo.png',transparent:true},
+ {id:'crocodilo',label:'Crocodilo',squad:'Crocodilos',emoji:'🐊',src:'assets/animals/crocodilo-novo.png',transparent:true},
+ {id:'rinoceronte',label:'Rinoceronte',squad:'Rinocerontes',emoji:'🦏',src:'assets/animals/rinoceronte-novo.png',transparent:true},
  {id:'raposa',label:'Raposa',emoji:'🦊',src:'assets/animals/raposa.jpg'},
  {id:'panda',label:'Panda',emoji:'🐼',src:'assets/animals/panda.jpg'},
  {id:'cachorro',label:'Cachorro',emoji:'🐶',src:'assets/animals/cachorro.jpg'},
- {id:'gato',label:'Gato',emoji:'🐱',src:'assets/animals/gato.jpg'},
+ {id:'gato',label:'Gato',emoji:'🐱',src:'assets/animals/gato-novo.png',transparent:true},
  {id:'coelho',label:'Coelho',emoji:'🐰',src:'assets/animals/coelho.jpg'},
  {id:'tartaruga',label:'Tartaruga',emoji:'🐢',src:'assets/animals/tartaruga1.png'}
 ];
@@ -70,7 +70,8 @@ window.eitaAnimalIcon=function(token){
  img.alt=animal?animal.label:'';
  img.draggable=false;
  if(animal){
-  window.eitaAnimalCutout(animal.src).then(function(src){img.src=src;});
+  if(animal.transparent)img.src=animal.src;
+  else window.eitaAnimalCutout(animal.src).then(function(src){img.src=src;});
  }
  return img;
 };
