@@ -635,8 +635,7 @@ button.primary {
   height: 100%;
   object-fit: contain;
   border-radius: 0;
-  /* The disc is behind the transparent animal, never a clipping mask. */
-  background: radial-gradient(circle closest-side, #fff 99%, transparent 100%);
+  background: transparent;
   pointer-events: none;
 }
 .student-name {
