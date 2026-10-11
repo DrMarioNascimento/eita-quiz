@@ -1,7 +1,7 @@
 import {db,identify,doc,setDoc,getDoc,onSnapshot,serverTimestamp} from './cloud.js';
-const el=id=>document.getElementById(id);let emoji='🐯',uid,room,state,answeredRound=-1,joinedName;
-const animals=['🐯','🦁','🐆','🐍','🐺','🦅','🐻','🦈','🐊','🦏','🦊','🐼','🐶','🐱','🐰','🐢'];
-animals.forEach(animal=>{const b=document.createElement('button');b.textContent=animal;b.setAttribute('aria-label',animal);b.setAttribute('aria-pressed',String(animal===emoji));b.onclick=()=>{emoji=animal;el('emojis').querySelectorAll('button').forEach(button=>button.setAttribute('aria-pressed',String(button===b)));};el('emojis').append(b);});
+const el=id=>document.getElementById(id);let emoji='tigre',uid,room,state,answeredRound=-1,joinedName;
+const animals=window.EITA_ANIMALS;
+animals.forEach(animal=>{const b=document.createElement('button');b.type='button';b.append(window.eitaAnimalIcon(animal.id));b.setAttribute('aria-label',animal.label);b.setAttribute('aria-pressed',String(animal.id===emoji));b.onclick=()=>{emoji=animal.id;el('emojis').querySelectorAll('button').forEach(button=>button.setAttribute('aria-pressed',String(button===b)));};el('emojis').append(b);});
 el('code').value=new URLSearchParams(location.search).get('sala')||'';
 function message(text){el('studentNotice').textContent=text;}
 el('joinOnline').onclick=async()=>{
@@ -12,7 +12,7 @@ el('joinOnline').onclick=async()=>{
   const existing=await getDoc(doc(room,'members',uid));
   if(!existing.exists()){if(snapshot.data().status!=='waiting')throw new Error('A sala já começou ou foi encerrada.');await setDoc(doc(room,'members',uid),{name,emoji,joinedAt:serverTimestamp()});}
   joinedName=existing.exists()?existing.data().name:name;
-  el('joinPanel').hidden=true;el('playPanel').hidden=false;el('identity').textContent=emoji+' '+joinedName;
+  el('joinPanel').hidden=true;el('playPanel').hidden=false;const identity=el('identity');identity.replaceChildren(window.eitaAnimalIcon(emoji),document.createTextNode(' '+joinedName));
   message('Você entrou na sala '+code+'.');
   onSnapshot(room,snapshot=>{if(!snapshot.exists()){message('Sala indisponível.');return;}state=snapshot.data();render();},()=>message('Conexão interrompida. Confira sua internet.'));
  }catch(error){message(error.message);el('joinOnline').disabled=false;}
@@ -20,7 +20,7 @@ el('joinOnline').onclick=async()=>{
 function render(){
  el('studentAnswers').replaceChildren();el('studentResult').textContent='';
  const group=state.groups?.find(g=>g.members.some(n=>n===joinedName+' · '+uid.slice(0,4)));
- el('group').textContent=state.mode!=='individual'&&group?group.name:'';
+ const groupEl=el('group');groupEl.replaceChildren();if(state.mode!=='individual'&&group){const parts=group.name.split(' ');const icon=window.eitaAnimalIcon(parts[0]);if(icon.getAttribute('src'))groupEl.append(icon,document.createTextNode(' '+parts.slice(1).join(' ')));else groupEl.textContent=group.name;}
  if(state.status==='waiting'){el('studentQuestion').textContent='Você está na turma! Aguarde o professor.';return;}
  if(state.status==='closed'){el('studentQuestion').textContent='Sala encerrada';return;}
  if(state.status==='question'){

@@ -26,7 +26,7 @@ function prepareBattleQuestions(){
 let squads=[],students=[],bossLife=100,teamLife=100,index=-1,running=false,paused=false,locked=false,remaining=0,last=0,handle=null,intermission=false,visualTimer=null,suddenDeath=false,deathTimers=[],attackPending=false,pendingImpact=null,selected='individual';
 const safe=(el,text)=>el.textContent=text;
 const entrants=[],avatarByName=new Map();
-const squadSymbols=[['🐯','Tigres'],['🦁','Leões'],['🐆','Leopardos'],['🐍','Cobras'],['🐺','Lobos'],['🦅','Águias'],['🐻','Ursos'],['🦈','Tubarões'],['🐊','Crocodilos'],['🦏','Rinocerontes']];
+const squadSymbols=(window.EITA_ANIMALS||[]).filter(animal=>animal.squad).map(animal=>[animal.id,animal.squad]);
 function prepare(){
   if(locked)return;
   selected=$('mode').value;
@@ -50,13 +50,15 @@ function prepare(){
   requestAnimationFrame(()=>fitSceneToViewport());
   controls();
 }
-const animalAvatars=['🐶','🐱','🦊','🐼','🐨','🐯','🦁','🐸','🐵','🐰','🐻','🐺','🦉','🦋','🐢','🐬','🐙','🦒','🦓','🐧','🦜','🦝','🦔','🦦'];
+const animalAvatars=(window.EITA_ANIMALS||[]).map(animal=>animal.id);
 function chip(name){
   const e=document.createElement('span');
   e.className='student';
   const avatar=document.createElement('span');
   avatar.className='animal-avatar';
-  avatar.textContent=avatarByName.get(name)||animalAvatars[(Math.max(1,Number(name.split(' ').pop())||1)-1)%animalAvatars.length];
+  const token=avatarByName.get(name)||animalAvatars[(Math.max(1,Number(name.split(' ').pop())||1)-1)%animalAvatars.length];
+  const icon=window.eitaAnimalIcon(token);
+  if(icon.getAttribute('src'))avatar.append(icon);
   avatar.setAttribute('aria-hidden','true');
   const label=document.createElement('span');
   label.className='student-name';
@@ -119,7 +121,8 @@ function createSquadCard(s){
   el.innerHTML='<div class="liquid"></div><div class="content"><strong></strong><div class="students"></div><small></small></div>';
   const emblem=document.createElement('span');
   emblem.className='squad-emblem';
-  emblem.textContent=s.name.split(' ')[0];
+  const icon=window.eitaAnimalIcon(s.name.split(' ')[0]);
+  if(icon.getAttribute('src'))emblem.append(icon);
   el.querySelector('.content').prepend(emblem);
   s.members.forEach(name=>{
     const member=document.createElement('span');member.className='squad-member';member.textContent=name.replace(/ · [A-Za-z0-9]{4}$/, '');el.querySelector('.students').append(member)

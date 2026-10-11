@@ -624,8 +624,19 @@ button.primary {
   text-align: center;
 }
 .animal-avatar {
-  font-size: 36px;
-  line-height: 1.2;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.animal-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  background: #fff;
+  pointer-events: none;
 }
 .student-name {
   font-size: 12px;
@@ -634,17 +645,20 @@ button.primary {
   min-height: 72px;
 }
 .groups .animal-avatar {
-  font-size: 29px;
+  width: 44px;
+  height: 44px;
 }
 .groups .student-name {
   font-size: 11px;
 }
 @media(max-width:480px) {
   .animal-avatar {
-    font-size: 28px;
+    width: 44px;
+    height: 44px;
   }
   .groups .animal-avatar {
-    font-size: 25px;
+    width: 36px;
+    height: 36px;
   }
   .student-name {
     font-size: 10px;
@@ -1124,11 +1138,13 @@ button.primary {
   display: none;
 }
 .squad-emblem {
-  display: block;
-  text-align: center;
-  font-size: 64px;
-  line-height: 1.2;
+  display: flex;
+  justify-content: center;
   margin: 3px 0 9px;
+}
+.squad-emblem .animal-icon {
+  width: 92px;
+  height: 92px;
 }
 .groups .content strong {
   text-align: center;
@@ -1194,8 +1210,9 @@ button.primary {
   visibility: hidden;
 }
 @media(max-width:480px) {
-  .squad-emblem {
-    font-size: 48px;
+  .squad-emblem .animal-icon {
+    width: 68px;
+    height: 68px;
   }
   .groups .content strong {
     font-size: 12px;
