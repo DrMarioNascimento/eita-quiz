@@ -635,8 +635,7 @@ button.primary {
   height: 100%;
   object-fit: contain;
   border-radius: 0;
-  /* The disc is behind the transparent animal, never a clipping mask. */
-  background: radial-gradient(circle closest-side, #fff 99%, transparent 100%);
+  background: transparent;
   pointer-events: none;
 }
 .student-name {
@@ -680,6 +679,9 @@ button.primary {
   border: 2px solid #69f2ce;
   background: #175b4c;
   box-shadow: 0 0 12px #38dfaf55;
+}
+.emoji-picker button {
+  background: radial-gradient(ellipse at 50% 45%, #ffffff 0%, #c5e0e5 25%, #438090 60%, #0b4052 100%);
 }
 .battery-shell {
   isolation: isolate;
