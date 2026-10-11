@@ -43,3 +43,22 @@ Uso educacional restrito. Repositório privado não é licença aberta. Ver [LIC
 
 **Autor e titular declarado:** Mário César Nascimento, PhD.  
 Copyright © 2026. Todos os direitos reservados.
+# Publicação no Firebase
+
+Alterações integradas à branch `main` são publicadas automaticamente pelo workflow
+`Publish Firebase Hosting`. Também é possível executar esse workflow manualmente
+na aba Actions. Aguarde a execução terminar com sucesso antes de considerar o
+site atualizado.
+
+O pacote é preparado por `node scripts/prepare-hosting.cjs` na pasta `dist/`:
+somente os arquivos do aplicativo e `assets/` entram na publicação. Não publique
+a raiz do repositório, que contém Git e arquivos de desenvolvimento.
+
+Para publicar manualmente a versão aprovada:
+`npx --yes firebase-tools@latest deploy --only hosting --project eita-quiz`.
+O comando prepara o pacote automaticamente. Esta publicação altera apenas Hosting,
+sem publicar regras ou alterar dados do Firestore.
+
+O acesso do workflow fica no segredo `FIREBASE_SERVICE_ACCOUNT_EITA_QUIZ` do
+repositório. Nunca inclua credenciais em arquivos versionados ou em `assets/`.
+
