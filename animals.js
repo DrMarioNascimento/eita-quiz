@@ -11,7 +11,7 @@ window.EITA_ANIMALS=[
  {id:'crocodilo',label:'Crocodilo',squad:'Crocodilos',emoji:'🐊',src:'assets/animals/crocodilo-novo.png',transparent:true},
  {id:'rinoceronte',label:'Rinoceronte',squad:'Rinocerontes',emoji:'🦏',src:'assets/animals/rinoceronte-novo.png',transparent:true},
  {id:'raposa',label:'Raposa',emoji:'🦊',src:'assets/animals/raposa.jpg'},
- {id:'panda',label:'Panda',emoji:'🐼',src:'assets/animals/panda.jpg'},
+ {id:'panda',label:'Panda',emoji:'🐼',src:'assets/animals/panda-novo.png',transparent:true},
  {id:'cachorro',label:'Cachorro',emoji:'🐶',src:'assets/animals/cachorro.jpg'},
  {id:'gato',label:'Gato',emoji:'🐱',src:'assets/animals/gato-novo.png',transparent:true},
  {id:'coelho',label:'Coelho',emoji:'🐰',src:'assets/animals/coelho.jpg'},
