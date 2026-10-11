@@ -1,6 +1,6 @@
 window.EITA_ANIMALS=[
  {id:'tigre',label:'Tigre',squad:'Tigres',emoji:'🐯',src:'assets/animals/tigre-novo.png',transparent:true},
- {id:'leao',label:'Leão',squad:'Leões',emoji:'🦁',src:'assets/animals/leao.jpg'},
+ {id:'leao',label:'Leão',squad:'Leões',emoji:'🦁',src:'assets/animals/leao-novo.png',transparent:true},
  {id:'leopardo',label:'Leopardo',squad:'Leopardos',emoji:'🐆',src:'assets/animals/leopardo-novo.png',transparent:true},
  {id:'cobra',label:'Cobra',squad:'Cobras',emoji:'🐍',src:'assets/animals/cobra-nova.png',transparent:true},
  {id:'serpente',label:'Serpente',src:'assets/animals/serpente-nova.png',transparent:true},
