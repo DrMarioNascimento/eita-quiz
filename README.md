@@ -61,4 +61,3 @@ sem publicar regras ou alterar dados do Firestore.
 
 O acesso do workflow fica no segredo `FIREBASE_SERVICE_ACCOUNT_EITA_QUIZ` do
 repositório. Nunca inclua credenciais em arquivos versionados ou em `assets/`.
-
