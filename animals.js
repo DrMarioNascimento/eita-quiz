@@ -15,7 +15,7 @@ window.EITA_ANIMALS=[
  {id:'cachorro',label:'Cachorro',emoji:'🐶',src:'assets/animals/cachorro.jpg'},
  {id:'gato',label:'Gato',emoji:'🐱',src:'assets/animals/gato.jpg'},
  {id:'coelho',label:'Coelho',emoji:'🐰',src:'assets/animals/coelho.jpg'},
- {id:'tartaruga',label:'Tartaruga',emoji:'🐢',src:'assets/animals/tartaruga.jpg'}
+ {id:'tartaruga',label:'Tartaruga',emoji:'🐢',src:'assets/animals/tartaruga1.png'}
 ];
 window.eitaAnimal=function(token){
  if(!token)return null;
