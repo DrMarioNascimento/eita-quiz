@@ -2,7 +2,7 @@
 
 Quiz de sala para Fisiologia, no formato de batalha contra um chefão. A turma responde no celular; o telão mostra energia da turma e vida do chefão. Mais de 50% de acertos interrompe o golpe. Até 50%, o chefão ataca.
 
-**Estado em 7 de outubro de 2026.** Repositório privado. Demo no ar em [eita-quiz.web.app](https://eita-quiz.web.app/). Banco atual: 45 perguntas de Cardiovascular, sorteio por batalha.
+**Estado documental em 12 de outubro de 2026.** Repositório privado. Demo no ar em [eita-quiz.web.app](https://eita-quiz.web.app/). Banco atual: 45 perguntas de Cardiovascular, sorteio por batalha.
 
 ## O que a sala faz
 
@@ -29,7 +29,14 @@ Firebase está ligado a este app. Não misturar com as salas de Dragon, Atividad
 
 - Bancos das outras unidades (só Cardiovascular está no ar).
 - Relatório da partida para o professor (quem errou o quê), sem guardar dado além da sessão.
-- README estava vazio até esta revisão; a licença não existia.
+- Documentação e condições de uso disponíveis neste README e em [LICENSE.md](LICENSE.md).
+
+## Dragon Games
+
+Eita! também integra o [catálogo Dragon Games](https://drmarionascimento.github.io/Dragon/).
+A associação ao catálogo não mistura o aplicativo ou suas salas Firebase com os
+jogos de outros repositórios. Código e publicação continuam neste projeto.
+Autoria e titularidade permanecem as indicadas em [LICENSE.md](LICENSE.md).
 
 ## Projetos relacionados
 
