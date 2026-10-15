@@ -1,5 +1,16 @@
 # Eita! — Um Quiz em Aliança
 
+## Desenvolvimento e acesso
+
+Os jogos estão em diferentes etapas de desenvolvimento, teste e aperfeiçoamento e ainda não foram lançados ao público. Nesta fase, os testes são realizados internamente, sem participação externa.
+
+Enquanto os jogos estiverem em desenvolvimento, regras, interfaces e funcionalidades poderão mudar. Algumas páginas poderão apresentar demonstrações do projeto, mas isso não significa que os jogos estejam disponíveis para participação do público.
+
+Mário César Nascimento estuda **Game Design e desenvolvimento de jogos**. Estes projetos acompanham esse percurso de formação e experimentação. As autorias e condições de uso de cada projeto estão identificadas em [LICENSE.md](LICENSE.md).
+
+**Development status:** internal testing only; external participation is not open. Demonstration pages do not constitute a public game launch. Rules, interfaces and features may change.
+
+
 Quiz de sala para Fisiologia, no formato de batalha contra um chefão. A turma responde no celular; o telão mostra energia da turma e vida do chefão. Mais de 50% de acertos interrompe o golpe. Até 50%, o chefão ataca.
 
 **Estado documental em 12 de outubro de 2026.** Repositório privado. Demo no ar em [eita-quiz.web.app](https://eita-quiz.web.app/). Banco atual: 45 perguntas de Cardiovascular, sorteio por batalha.
@@ -33,7 +44,7 @@ Firebase está ligado a este app. Não misturar com as salas de Dragon, Atividad
 
 ## Dragon Games
 
-Eita! também integra o [catálogo Dragon Games](https://drmarionascimento.github.io/Dragon/).
+Eita! também integra o [catálogo Dragon Games](https://dragongames.dev.br/).
 A associação ao catálogo não mistura o aplicativo ou suas salas Firebase com os
 jogos de outros repositórios. Código e publicação continuam neste projeto.
 Autoria e titularidade permanecem as indicadas em [LICENSE.md](LICENSE.md).
