@@ -13,7 +13,7 @@ Mário César Nascimento estuda **Game Design e desenvolvimento de jogos**. Este
 
 Quiz de sala para Fisiologia, no formato de batalha contra um chefão. A turma responde no celular; o telão mostra energia da turma e vida do chefão. Mais de 50% de acertos interrompe o golpe. Até 50%, o chefão ataca.
 
-**Estado documental em 12 de outubro de 2026.** Repositório privado. Demo no ar em [eita-quiz.web.app](https://eita-quiz.web.app/). Banco atual: 45 perguntas de Cardiovascular, sorteio por batalha.
+**Estado documental em 12 de outubro de 2026.** Repositório privado. Demo no ar em [eita-quiz.web.app](https://eita.dragongames.dev.br/). Banco atual: 45 perguntas de Cardiovascular, sorteio por batalha.
 
 ## O que a sala faz
 
