@@ -10,11 +10,7 @@ O repositório ser privado, ou uma demo estar no ar, não cede, transfere nem ab
 
 ## Uso permitido
 
-É permitido acessar e executar a versão publicada para:
-
-- aula e atividade do autor;
-- uso por estudantes nessas atividades;
-- demonstração não comercial.
+O jogo está em desenvolvimento e testes internos, sem participação externa. Nesta fase, a execução para desenvolvimento e avaliação limita-se ao autor e a colaboradores internos expressamente autorizados. A disponibilidade de uma demonstração não constitui lançamento nem abertura para participação pública.
 
 Cópias técnicas temporárias para o navegador rodar não autorizam redistribuição.
 
@@ -40,3 +36,9 @@ Material didático, no estado em que se encontra. Não substitui mediação doce
 **Revisão documental:** 7 de outubro de 2026
 
 Todos os direitos não expressamente concedidos permanecem reservados.
+
+## Atualização de acesso — 14 de outubro de 2026
+
+A seção de uso permitido foi atualizada para refletir os testes internos. Autoria e demais restrições permanecem preservadas.
+
+Portal do autor: https://www.drmarionascimento.com.br/ · Catálogo: https://dragongames.dev.br/
