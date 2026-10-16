@@ -5,7 +5,7 @@ const notice=text=>byId('roomNotice').textContent=text;
 function report(error){
  console.error(error);
  const messages={'auth/popup-blocked':'O navegador bloqueou o Google. Permita pop-ups para este site e tente novamente.','auth/popup-closed-by-user':'Login cancelado. Clique em Abrir sala com Google para tentar de novo.','auth/unauthorized-domain':'Abra pelo endereço https://eita-quiz.web.app/ para entrar com Google.','auth/operation-not-allowed':'Ative o Google no Authentication do projeto Eita Quiz.'};
- notice(messages[error.code]||'Não foi possível conectar. Confira a internet e tente novamente.');
+ notice(({'eita/nao-autorizado':'Esta conta Google não está autorizada a abrir salas. Só os mestres da lista abrem salas; os alunos entram pelo código.','permission-denied':'A lista de mestres não pôde ser lida. Confira as regras do Firestore (config/mestres).'})[error.code]||messages[error.code]||'Não foi possível conectar. Confira a internet e tente novamente.');
 }
 function openRoomQr(){
  byId('qrRoomCode').textContent=room.id;
