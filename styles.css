@@ -1563,7 +1563,7 @@ aside{background:rgba(15,25,44,.74);border-right:1px solid #779cb733}
 
 /* ===== Chefes por partida: fundo, projétil do golpe e impacto (catálogo em chefes.js) ===== */
 main.fundo-chefe{background-size:cover;background-position:center center;background-repeat:no-repeat}
-main.fundo-chefe .arena-floor{opacity:.35}
+main.fundo-chefe .arena-floor,main.fundo-chefe .arena:before{display:none}
 .boss-projectile{position:absolute;z-index:14;left:0;top:0;display:none;pointer-events:none;--golpe-cor:#ffb347;--golpe-t:0;transform:translate(-50%,-50%) rotate(var(--golpe-angulo,0rad))}
 .boss-projectile.active{display:block}
 .boss-projectile.tipo-flecha{width:clamp(110px,11vw,190px);height:clamp(10px,1vw,16px);border-radius:50%;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--golpe-cor) 55%,transparent) 35%,var(--golpe-cor) 75%,#fff 94%,#fff);box-shadow:0 0 14px 4px var(--golpe-cor),0 0 40px 10px color-mix(in srgb,var(--golpe-cor) 60%,transparent);transform:translate(-80%,-50%) rotate(var(--golpe-angulo,0rad))}
