@@ -1,5 +1,9 @@
 # Eita! — Um Quiz em Aliança
 
+## Situação atual — 19 de outubro de 2026
+
+Endereço oficial: [eita.dragongames.dev.br](https://eita.dragongames.dev.br/). O repositório está público, mas a execução do jogo continua limitada aos testes internos autorizados. A publicação usa Firebase Hosting, com preparação em `scripts/prepare-hosting.cjs`. Chefões e tempos dos efeitos ficam em `chefes.js`; os ajustes recentes de Artemis são exclusivos dela.
+
 ## Desenvolvimento e acesso
 
 Os jogos estão em diferentes etapas de desenvolvimento, teste e aperfeiçoamento e ainda não foram lançados ao público. Nesta fase, os testes são realizados internamente, sem participação externa.
@@ -13,7 +17,7 @@ Mário César Nascimento estuda **Game Design e desenvolvimento de jogos**. Este
 
 Quiz de sala para Fisiologia, no formato de batalha contra um chefão. A turma responde no celular; o telão mostra energia da turma e vida do chefão. Mais de 50% de acertos interrompe o golpe. Até 50%, o chefão ataca.
 
-**Estado documental em 12 de outubro de 2026.** Repositório privado. Demo no ar em [eita-quiz.web.app](https://eita.dragongames.dev.br/). Banco atual: 45 perguntas de Cardiovascular, sorteio por batalha.
+**Estado documental em 19 de outubro de 2026.** Repositório público; demonstração em [eita.dragongames.dev.br](https://eita.dragongames.dev.br/), com participação restrita aos testes internos. Banco atual: 45 perguntas de Cardiovascular, sorteio por batalha.
 
 ## O que a sala faz
 
@@ -57,11 +61,11 @@ Autoria e titularidade permanecem as indicadas em [LICENSE.md](LICENSE.md).
 
 ## Licença e uso
 
-Uso educacional restrito. Repositório privado não é licença aberta. Ver [LICENSE.md](LICENSE.md).
+Uso educacional restrito. Repositório público não é licença aberta. Ver [LICENSE.md](LICENSE.md).
 
 **Autor e titular declarado:** Mário César Nascimento, PhD.  
 Copyright © 2026. Todos os direitos reservados.
-# Publicação no Firebase
+## Publicação no Firebase
 
 Alterações integradas à branch `main` são publicadas automaticamente pelo workflow
 `Publish Firebase Hosting`. Também é possível executar esse workflow manualmente

@@ -6,7 +6,7 @@ Copyright © 2026 Mário César Nascimento. Todos os direitos reservados.
 
 O projeto **Eita! — Um Quiz em Aliança**, incluindo código, interface, banco de perguntas, arte do chefão, regras de batalha, textos e demais componentes originais, é criação de **Mário César Nascimento**.
 
-O repositório ser privado, ou uma demo estar no ar, não cede, transfere nem abandona direitos.
+A visibilidade pública do repositório ou de uma demonstração não cede, transfere nem abandona direitos.
 
 ## Uso permitido
 
@@ -33,7 +33,7 @@ Material didático, no estado em que se encontra. Não substitui mediação doce
 **Projeto:** Eita! — Um Quiz em Aliança  
 **País:** Brasil  
 **Ano:** 2026  
-**Revisão documental:** 7 de outubro de 2026
+**Revisão documental:** 19 de outubro de 2026
 
 Todos os direitos não expressamente concedidos permanecem reservados.
 
@@ -42,3 +42,9 @@ Todos os direitos não expressamente concedidos permanecem reservados.
 A seção de uso permitido foi atualizada para refletir os testes internos. Autoria e demais restrições permanecem preservadas.
 
 Portal do autor: https://www.drmarionascimento.com.br/ · Catálogo: https://dragongames.dev.br/
+
+## Revisão documental — 19 de outubro de 2026
+
+O código está em repositório público e a aplicação usa o domínio eita.dragongames.dev.br. Essa visibilidade não modifica a limitação de execução aos testes internos autorizados. Os componentes originais dos chefões e seus efeitos integram o escopo já definido; materiais de terceiros conservam seus titulares e condições próprias.
+
+Esta revisão atualiza a identificação e o escopo documental. Preserva os titulares, as permissões e as restrições existentes. Não substitui nem restringe as licenças próprias de componentes de terceiros.
