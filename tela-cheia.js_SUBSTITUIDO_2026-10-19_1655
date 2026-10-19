@@ -1,0 +1,56 @@
+/* Tela cheia de fato (Eita!).
+   Em tela cheia: some o menu e o cabeçalho; a arena ocupa a tela toda.
+   Ao mexer o mouse (ou tocar), aparece só a barra com os controles da partida.
+   Parou de mexer: a barra e o cursor somem de novo.
+   Ao sair da tela cheia (botão da barra ou Esc), tudo volta ao lugar.
+   Os botões são movidos (não copiados), então continuam com a mesma lógica do jogo. */
+(()=>{
+ const $=id=>document.getElementById(id);
+ const IDS=['start','pause','finish','reset'];
+ const HIDE_MS=2500;
+ let dock=null,slots=[],timer=0,on=false;
+
+ const isFs=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
+
+ function buildDock(){
+  dock=document.createElement('div');
+  dock.id='fsDock';dock.className='fs-dock';dock.setAttribute('role','toolbar');dock.setAttribute('aria-label','Controles da partida');
+  const exit=document.createElement('button');
+  exit.type='button';exit.className='fs-exit';exit.textContent='Sair da tela cheia';
+  exit.addEventListener('click',()=>{(document.exitFullscreen||document.webkitExitFullscreen).call(document);});
+  dock.append(exit);
+  dock.addEventListener('mouseenter',()=>{clearTimeout(timer);});
+  dock.addEventListener('mouseleave',wake);
+  document.body.append(dock);
+ }
+
+ function enter(){
+  if(on)return;on=true;
+  if(!dock)buildDock();
+  slots=IDS.map(id=>{const el=$(id);if(!el)return null;const mark=document.createComment('fs:'+id);el.before(mark);dock.insertBefore(el,dock.lastChild);return {el,mark};}).filter(Boolean);
+  document.documentElement.classList.add('eita-fs');
+  wake();
+ }
+
+ function leave(){
+  if(!on)return;on=false;
+  clearTimeout(timer);
+  slots.forEach(({el,mark})=>{mark.replaceWith(el);});slots=[];
+  document.documentElement.classList.remove('eita-fs','eita-fs-active');
+ }
+
+ function wake(){
+  if(!on)return;
+  document.documentElement.classList.add('eita-fs-active');
+  clearTimeout(timer);
+  timer=setTimeout(()=>{
+   if(dock&&(dock.matches(':hover')||dock.contains(document.activeElement)&&document.activeElement!==document.body&&document.activeElement.matches(':focus-visible')))return wake();
+   document.documentElement.classList.remove('eita-fs-active');
+  },HIDE_MS);
+ }
+
+ function sync(){isFs()?enter():leave();}
+ document.addEventListener('fullscreenchange',sync);
+ document.addEventListener('webkitfullscreenchange',sync);
+ ['mousemove','pointerdown','touchstart','keydown'].forEach(ev=>document.addEventListener(ev,wake,{passive:true}));
+})();

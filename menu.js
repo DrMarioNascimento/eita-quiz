@@ -19,6 +19,7 @@
   const n=+$('questionCount').value||0;
   set('sub-config',n+(n===1?' pergunta':' perguntas')+' · '+($('advanceMode').value==='manual'?'manual':'automático'));
 
+  const pause=$('pause');pause.dataset.icon=/continuar/i.test(pause.textContent)?'play':'pause';
   const playing=!$('pause').disabled;
   set('sub-controle',playing?'Partida em andamento':$('start').textContent.trim());
   badge('sub-controleBadge',playing?'em jogo':'',playing?'live':'');

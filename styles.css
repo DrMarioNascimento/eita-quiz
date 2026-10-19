@@ -1616,3 +1616,31 @@ img.step-icon{width:40px;height:40px;object-fit:contain;stroke:none;filter:drop-
 #bankSummary{display:block;margin-top:10px;color:#c9dbec}
 @media(max-width:850px){.menu-group{grid-column:1/-1;margin:6px 2px 0}.menu-step{margin:0}}
 @media(prefers-reduced-motion:reduce){.step-chevron{transition:none}}
+/* ===== Tela cheia de fato: só a arena; ao mexer o mouse reaparece o cartão Controle da partida no mesmo lugar (2026-10-19) ===== */
+html.eita-fs header{display:none!important}
+html.eita-fs main{grid-template-columns:1fr!important;min-height:100vh}
+html.eita-fs aside{position:fixed;left:0;top:var(--fs-aside-top,0);z-index:900;width:310px;box-sizing:border-box;display:block!important;background:transparent!important;border:0!important;pointer-events:none}
+html.eita-fs aside>*{visibility:hidden}
+html.eita-fs aside>#menu-controle{transform:translateY(var(--fs-shift,0px));opacity:0;transition:opacity .25s,visibility .25s;box-shadow:0 10px 30px #000a;background:rgba(14,24,40,.92)}
+html.eita-fs-active aside>#menu-controle{visibility:visible;opacity:1;pointer-events:auto}
+html.eita-fs:not(.eita-fs-active),html.eita-fs:not(.eita-fs-active) *{cursor:none!important}
+.fs-exit{display:none}
+html.eita-fs .fs-exit{display:block;font-size:14px;color:#9fb6cc;background:transparent;border-color:#6f94b855}
+@media(prefers-reduced-motion:reduce){html.eita-fs aside>#menu-controle{transition:none}}
+
+/* ===== Controle da partida: cápsula de botões no estilo do Biofeedback Respiratório, cores do Eita! (2026-10-19) ===== */
+.control-capsule{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px;padding:12px;background:linear-gradient(#08111b,#192a37);border:1px solid #344957;border-radius:20px;box-shadow:inset 0 3px 8px #0009,0 1px 0 #fff2}
+.capsule-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:100%;min-height:70px;margin:0!important;padding:8px 4px;font-size:12px!important;line-height:1.15;font-weight:600;text-align:center;color:#e6f2ff;border:1px solid #5b7184;border-radius:13px;background:linear-gradient(165deg,#4a6276,#263c4f 48%,#172b3c);box-shadow:inset 0 2px 1px #ffffff38,inset 0 -2px 2px #0007,0 5px 0 #070f18,0 8px 10px #0008;text-shadow:0 1px 2px #000;transition:transform .14s,filter .14s,box-shadow .14s}
+.capsule-btn:hover:enabled{filter:brightness(1.16);transform:translateY(-1px)}
+.capsule-btn:active:enabled{transform:translateY(4px);box-shadow:inset 0 2px 5px #0005,0 1px 0 #040c13}
+.capsule-btn:disabled{opacity:.38;cursor:default}
+.capsule-btn:before{content:'';display:block;flex:none;font-size:22px;line-height:1}
+#start.capsule-btn{grid-column:1/-1;flex-direction:row;gap:12px;min-height:58px;font-size:17px!important;font-weight:800;white-space:nowrap;color:#2b1602;text-shadow:0 1px 0 #ffe2ad;border-color:#ffcf86;background:linear-gradient(155deg,#ffe0a3,#f0a03d 48%,#b4651a);box-shadow:inset 0 2px 1px #ffffff70,inset 0 -2px 2px #0005,0 5px 0 #5a2c06,0 8px 12px #0008}
+#start.capsule-btn:before{content:'\25B6\FE0E';font-size:22px}
+#pause.capsule-btn:before{width:16px;height:20px;box-sizing:border-box;border-left:5px solid currentColor;border-right:5px solid currentColor}
+#pause.capsule-btn[data-icon=play]:before{width:auto;height:auto;border:0;content:'\25B6\FE0E';color:#9ff0c9}
+#finish.capsule-btn{color:#ffd9a3}
+#finish.capsule-btn:before{width:17px;height:17px;border-radius:3px;background:currentColor}
+#reset.capsule-btn{color:#ffc2b6}
+#reset.capsule-btn:before{content:'\21BB';font-size:24px;font-weight:700}
+@media(prefers-reduced-motion:reduce){.capsule-btn{transition:none}}
