@@ -11,7 +11,7 @@ window.EITA_CHEFES=[
   {
     id:'artemis',nome:'Artemis',video:'assets/chefes/artemis.webm',fundo:'assets/chefes/artemis-fundo.jpg',
     som:{src:'assets/audio/artemis.mp3',ganho:.65},
-    golpe:{tipo:'flecha',inicio:3.55,viagem:.34,origem:[.97,.30],cor:'#ffc83d'}
+    golpe:{tipo:'flecha',inicio:4.05,viagem:.34,origem:[.97,.30],cor:'#ffc83d'}
   },
   {
     id:'cao-ninja',nome:'Cão-Ninja',video:'assets/chefes/cao-ninja.webm',fundo:'assets/chefes/cao-ninja-fundo.png',
