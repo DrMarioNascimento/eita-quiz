@@ -72,6 +72,7 @@ function battery(el,life){
   el.classList.toggle('dead',life<=0)
 }
 function shatter(el,color){
+  if(el===$('boss')||el===$('teamBattery'))tocarFinal();
   deathTimers.push(setTimeout(()=>shatterNow(el,color),800))
 }
 function shatterNow(el,color){
@@ -196,6 +197,7 @@ function stopBossVideo(){
   v.pause();
   v.currentTime=0;
   $('boss').classList.remove('video-active');
+  abafarMusica(false);
   unlockAttackFrame()
 }
 function commitImpact(){
@@ -210,46 +212,151 @@ function playBossVideo(){
   fitVideoToStill();
   const v=$('bossVideo');
   v.currentTime=0;
+  impactoMostrado=false;
   $('boss').classList.add('video-active');
+  abafarMusica(true);
   followBossShot();
   const playing=v.play();
   if(playing)playing.catch(()=>{
     commitImpact();stopBossVideo()
   })
 }
-// Boca da arma: coordenadas normalizadas medidas nos quadros do novo vídeo.
-const muzzleTrack=[
- [1.5,.884,.290],[2,.845,.232],[2.5,.866,.230],[3,.875,.233],
- [3.5,.870,.235],[4,.865,.236],[4.5,.866,.249],[5,.875,.300]
-];
-const BOSS_SHOT_START=2, BOSS_SHOT_END=3.85, BOSS_SHOT_TRAVEL=.22;
+// Chefes, fundos e trilhas: catálogo em chefes.js. Um chefe e uma música novos por partida.
+const CHEFES=(window.EITA_CHEFES&&window.EITA_CHEFES.length)?window.EITA_CHEFES:[{id:'sombra',nome:'Sombra',video:'assets/chefe-7s.webm',fundo:null,golpe:{tipo:'raio',inicio:2,fim:3.85,viagem:.22,cor:'#ff3d5e',trajeto:[[1.5,.884,.290],[5,.875,.300]]}}];
+const MUSICAS=window.EITA_MUSICAS||[];
+let chefeAtual=null,partidaIniciada=false,impactoMostrado=false;
+const ultimoSorteio={};
+function sortearSemRepetir(lista,chave){
+ if(!lista.length)return null;
+ const opcoes=lista.length>1?lista.filter(item=>item!==ultimoSorteio[chave]):lista;
+ const escolhido=opcoes[Math.floor(Math.random()*opcoes.length)];
+ ultimoSorteio[chave]=escolhido;
+ return escolhido;
+}
+function aplicarChefe(chefe){
+ chefeAtual=chefe;
+ const v=$('bossVideo'),main=document.querySelector('main');
+ bossVisibleBounds=null;
+ v.preload='auto';
+ v.setAttribute('aria-label','Animação de ataque de '+chefe.nome);
+ $('boss').dataset.chefe=chefe.id;
+ const atual=v.querySelector('source');
+ if(!atual||atual.getAttribute('src')!==chefe.video){
+  v.replaceChildren();
+  const source=document.createElement('source');source.src=chefe.video;source.type='video/webm';v.append(source);
+  v.load();
+ }
+ if(main){
+  if(chefe.fundo){main.style.backgroundImage='url("'+chefe.fundo+'")';main.classList.add('fundo-chefe');}
+  else{main.style.backgroundImage='';main.classList.remove('fundo-chefe');}
+ }
+}
+function novoChefe(){aplicarChefe(sortearSemRepetir(CHEFES,'chefe'));}
+
+// Trilha da partida: uma música em loop por batalha; Final.mp3 quando um dos lados é destruído.
+const trilha={musica:null,ganho:1,fade:null,abafada:false,final:null};
+const VOLUME_MUSICA=.8;
+function volumeAlvo(){return Math.min(1,VOLUME_MUSICA*trilha.ganho*(trilha.abafada?.4:1));}
+function fadeMusica(alvo,ms,depois){
+ const m=trilha.musica;if(!m)return;
+ clearInterval(trilha.fade);
+ const inicio=m.volume,passos=Math.max(1,Math.round(ms/40));let n=0;
+ trilha.fade=setInterval(()=>{n++;m.volume=Math.max(0,Math.min(1,inicio+(alvo-inicio)*n/passos));if(n>=passos){clearInterval(trilha.fade);trilha.fade=null;if(depois)depois();}},40);
+}
+function tocarMusicaDaPartida(){
+ pararAudios();
+ const faixa=sortearSemRepetir(MUSICAS,'musica');
+ if(!faixa)return;
+ const m=new Audio(faixa.src);m.loop=true;m.preload='auto';
+ trilha.musica=m;trilha.ganho=faixa.ganho||1;trilha.abafada=false;
+ m.volume=0;
+ const p=m.play();if(p&&p.catch)p.catch(()=>{});
+ fadeMusica(volumeAlvo(),900);
+}
+function pausarMusica(pausar){
+ const m=trilha.musica;if(!m||trilha.final)return;
+ if(pausar)m.pause();else{const p=m.play();if(p&&p.catch)p.catch(()=>{});}
+}
+function abafarMusica(sim){
+ if(!trilha.musica||trilha.final||trilha.abafada===sim)return;
+ trilha.abafada=sim;fadeMusica(volumeAlvo(),300);
+}
+function tocarFinal(){
+ if(trilha.final)return;
+ const m=trilha.musica;
+ if(m)fadeMusica(0,700,()=>m.pause());
+ const dados=window.EITA_AUDIO_FINAL;if(!dados)return;
+ const f=new Audio(dados.src);f.volume=Math.min(1,dados.ganho||1);trilha.final=f;
+ const p=f.play();if(p&&p.catch)p.catch(()=>{});
+}
+function pararAudios(){
+ clearInterval(trilha.fade);trilha.fade=null;
+ if(trilha.musica)trilha.musica.pause();
+ if(trilha.final)trilha.final.pause();
+ trilha.musica=null;trilha.final=null;trilha.abafada=false;
+}
+
+// Golpe do chefe: raio (Sombra) ou projétil que se desloca até a bateria e explode no impacto.
 let bossShotFrame=null;
 function muzzleAt(time){
- for(let i=1;i<muzzleTrack.length;i++)if(time<=muzzleTrack[i][0]){
-  const a=muzzleTrack[i-1],b=muzzleTrack[i],mix=Math.max(0,Math.min(1,(time-a[0])/(b[0]-a[0])));
+ const track=chefeAtual.golpe.trajeto;
+ for(let i=1;i<track.length;i++)if(time<=track[i][0]){
+  const a=track[i-1],b=track[i],mix=Math.max(0,Math.min(1,(time-a[0])/(b[0]-a[0])));
   return {x:a[1]+(b[1]-a[1])*mix,y:a[2]+(b[2]-a[2])*mix};
  }
- const point=muzzleTrack[muzzleTrack.length-1];return {x:point[1],y:point[2]};
+ const point=track[track.length-1];return {x:point[1],y:point[2]};
 }
 function cancelBossShot(){
  const v=$('bossVideo');
  if(bossShotFrame!==null){if(v.cancelVideoFrameCallback)v.cancelVideoFrameCallback(bossShotFrame);else cancelAnimationFrame(bossShotFrame);}
  bossShotFrame=null;$('bossShot').classList.remove('active');
+ $('bossProjectile').className='boss-projectile';
+}
+function mostrarImpacto(x,y){
+ if(impactoMostrado||!pendingImpact)return;
+ impactoMostrado=true;
+ const burst=document.createElement('div');
+ burst.className='golpe-impacto';burst.setAttribute('aria-hidden','true');
+ burst.style.left=x+'px';burst.style.top=y+'px';
+ burst.style.setProperty('--golpe-cor',chefeAtual.golpe.cor||'#ffb347');
+ $('arena').append(burst);
+ setTimeout(()=>burst.remove(),900);
+ const shell=$('teamBattery').parentElement;
+ shell.classList.remove('impacto');void shell.offsetWidth;shell.classList.add('impacto');
+ setTimeout(()=>shell.classList.remove('impacto'),520);
 }
 function updateBossShot(time){
- const shot=$('bossShot'),active=time>=BOSS_SHOT_START&&time<=BOSS_SHOT_END&&$('boss').classList.contains('video-active');
- shot.classList.toggle('active',active);
- if(!active)return;
- const scene=$('arena').getBoundingClientRect(),video=$('bossVideo').getBoundingClientRect(),battery=$('teamBattery').getBoundingClientRect(),muzzle=muzzleAt(time);
- const x=video.left-scene.left+video.width*muzzle.x,y=video.top-scene.top+video.height*(muzzle.y-.035)+2;
- const targetX=battery.left-scene.left+battery.width*.08,targetY=Math.max(battery.top-scene.top+20,Math.min(battery.bottom-scene.top-20,y));
- const dx=targetX-x,dy=targetY-y,distance=Math.hypot(dx,dy);
- shot.style.left=x+'px';shot.style.top=y+'px';shot.style.width=distance+'px';
- shot.style.transform='translateY(-50%) rotate('+Math.atan2(dy,dx)+'rad)';
- const arrival=Math.min(1,(time-BOSS_SHOT_START)/BOSS_SHOT_TRAVEL);
- shot.style.setProperty('--shot-arrival',arrival);
- shot.style.setProperty('--shot-fade',String(Math.min(1,(BOSS_SHOT_END-time)/.18)));
- if(time>=BOSS_SHOT_START+BOSS_SHOT_TRAVEL)commitImpact();
+ const g=chefeAtual.golpe,shot=$('bossShot'),ativo=$('boss').classList.contains('video-active');
+ const scene=$('arena').getBoundingClientRect(),video=$('bossVideo').getBoundingClientRect(),battery=$('teamBattery').getBoundingClientRect();
+ if(g.tipo==='raio'){
+  const active=time>=g.inicio&&time<=g.fim&&ativo;
+  shot.classList.toggle('active',active);
+  if(!active)return;
+  const muzzle=muzzleAt(time);
+  const x=video.left-scene.left+video.width*muzzle.x,y=video.top-scene.top+video.height*(muzzle.y-.035)+2;
+  const targetX=battery.left-scene.left+battery.width*.08,targetY=Math.max(battery.top-scene.top+20,Math.min(battery.bottom-scene.top-20,y));
+  const dx=targetX-x,dy=targetY-y,distance=Math.hypot(dx,dy);
+  shot.style.left=x+'px';shot.style.top=y+'px';shot.style.width=distance+'px';
+  shot.style.transform='translateY(-50%) rotate('+Math.atan2(dy,dx)+'rad)';
+  const arrival=Math.min(1,(time-g.inicio)/g.viagem);
+  shot.style.setProperty('--shot-arrival',arrival);
+  shot.style.setProperty('--shot-fade',String(Math.min(1,(g.fim-time)/.18)));
+  if(time>=g.inicio+g.viagem){mostrarImpacto(targetX,targetY);commitImpact();}
+  return;
+ }
+ const proj=$('bossProjectile');
+ if(!ativo||time<g.inicio||!pendingImpact){proj.className='boss-projectile';return;}
+ const x0=video.left-scene.left+video.width*g.origem[0],y0=video.top-scene.top+video.height*g.origem[1];
+ const x1=battery.left-scene.left+battery.width*.06,y1=Math.max(battery.top-scene.top+40,Math.min(battery.bottom-scene.top-40,y0));
+ const t=Math.min(1,(time-g.inicio)/g.viagem);
+ if(t>=1){proj.className='boss-projectile';mostrarImpacto(x1,y1);commitImpact();return;}
+ const ease=t*t*(1.6-.6*t);
+ const x=x0+(x1-x0)*ease,y=y0+(y1-y0)*ease-(g.tipo==='flecha'?0:Math.sin(Math.PI*t)*18);
+ proj.className='boss-projectile active tipo-'+g.tipo;
+ proj.style.left=x+'px';proj.style.top=y+'px';
+ proj.style.setProperty('--golpe-cor',g.cor||'#ffb347');
+ proj.style.setProperty('--golpe-t',t.toFixed(3));
+ proj.style.setProperty('--golpe-angulo',Math.atan2(y1-y0,x1-x0)+'rad');
 }
 function followBossShot(){
  cancelBossShot();const v=$('bossVideo');
@@ -276,6 +383,7 @@ async function start(){
     if(!locked)prepare();
   }
   if(running||attackPending||bossLife<=0||teamLife<=0)return;
+  if(index<0&&!suddenDeath){partidaIniciada=true;tocarMusicaDaPartida();}
   cancelAnimationFrame(handle);
   intermission=false;
   stopBossVideo();
@@ -412,6 +520,8 @@ async function resolve(){
   }
 }
 function reset(){
+  pararAudios();
+  if(partidaIniciada||!chefeAtual){partidaIniciada=false;novoChefe();}
   prepareBattleQuestions();
   window.eitaOnline?.reset();
   rosterKey='';
@@ -460,6 +570,7 @@ $('start').onclick=start;
 $('pause').onclick=()=>{
   paused=!paused;
   window.eitaOnline?.pause(paused,remaining);
+  pausarMusica(paused);
   const v=$('bossVideo');
   if($('boss').classList.contains('video-active')){
     if(paused)v.pause();

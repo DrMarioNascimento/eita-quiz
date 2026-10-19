@@ -4,7 +4,7 @@ const root = path.resolve(__dirname, '..');
 const output = path.join(root, 'dist');
 const files = [
   'index.html', 'aluno.html', '404.html', 'styles.css', 'animals.js',
-  'app.js', 'cardio-bank.js', 'cloud.js', 'firebase-config.js',
+  'app.js', 'cardio-bank.js', 'chefes.js', 'cloud.js', 'firebase-config.js',
   'online.js', 'qr.js', 'student.js', 'typography.js'
 ];
 // Only the application and its assets are eligible for publication.

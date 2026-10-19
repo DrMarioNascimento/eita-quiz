@@ -1560,3 +1560,28 @@ aside{background:rgba(15,25,44,.74);border-right:1px solid #779cb733}
 
 /* Brilho no contorno alpha do emblema, sem alterar suas dimensões. */
 .brand-emblem{filter:drop-shadow(0 0 2px #ffe2a0) drop-shadow(0 0 6px #ffc16b) drop-shadow(0 0 13px #f09325cc) drop-shadow(0 0 23px #f0932577)}
+
+/* ===== Chefes por partida: fundo, projétil do golpe e impacto (catálogo em chefes.js) ===== */
+main.fundo-chefe{background-size:cover;background-position:center center;background-repeat:no-repeat}
+main.fundo-chefe .arena-floor{opacity:.35}
+.boss-projectile{position:absolute;z-index:14;left:0;top:0;display:none;pointer-events:none;--golpe-cor:#ffb347;--golpe-t:0;transform:translate(-50%,-50%) rotate(var(--golpe-angulo,0rad))}
+.boss-projectile.active{display:block}
+.boss-projectile.tipo-flecha{width:clamp(110px,11vw,190px);height:clamp(10px,1vw,16px);border-radius:50%;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--golpe-cor) 55%,transparent) 35%,var(--golpe-cor) 75%,#fff 94%,#fff);box-shadow:0 0 14px 4px var(--golpe-cor),0 0 40px 10px color-mix(in srgb,var(--golpe-cor) 60%,transparent);transform:translate(-80%,-50%) rotate(var(--golpe-angulo,0rad))}
+.boss-projectile.tipo-flecha:after{content:'';position:absolute;right:-6px;top:50%;width:26px;height:26px;border-radius:50%;transform:translateY(-50%);background:radial-gradient(circle,#fff 0 30%,var(--golpe-cor) 60%,transparent 72%);box-shadow:0 0 22px 8px var(--golpe-cor)}
+.boss-projectile.tipo-corte{width:clamp(70px,6.5vw,120px);height:clamp(150px,14vw,250px);border-radius:50%;border-right:clamp(10px,1vw,16px) solid #fff;box-shadow:inset -10px 0 18px -4px var(--golpe-cor),12px 0 22px -6px var(--golpe-cor);filter:drop-shadow(0 0 10px var(--golpe-cor)) drop-shadow(0 0 26px var(--golpe-cor));transform:translate(-50%,-50%) rotate(var(--golpe-angulo,0rad)) scale(calc(.75 + var(--golpe-t) * .55));opacity:calc(1 - var(--golpe-t) * .15)}
+.boss-projectile.tipo-corte:before{content:'';position:absolute;inset:14% 18% 14% -26%;border-radius:50%;border-right:6px solid var(--golpe-cor);opacity:.55;filter:blur(2px)}
+.boss-projectile.tipo-pow{width:clamp(90px,8vw,150px);height:clamp(90px,8vw,150px);transform:translate(-50%,-50%) rotate(calc(var(--golpe-t) * 260deg)) scale(calc(.6 + var(--golpe-t) * .7));filter:drop-shadow(0 0 14px var(--golpe-cor))}
+.boss-projectile.tipo-pow:before,.boss-projectile.tipo-pow:after{content:'';position:absolute;inset:0;clip-path:polygon(50% 0,59% 30%,85% 12%,72% 40%,100% 45%,74% 58%,92% 86%,62% 72%,50% 100%,40% 72%,10% 88%,27% 58%,0 46%,28% 40%,14% 12%,41% 30%)}
+.boss-projectile.tipo-pow:before{background:#1a0d02;transform:scale(1.14)}
+.boss-projectile.tipo-pow:after{background:radial-gradient(circle,#fff 0 16%,#ffe84d 30%,var(--golpe-cor) 58%,#e0261b 80%)}
+.golpe-impacto{position:absolute;z-index:15;width:clamp(160px,15vw,280px);height:clamp(160px,15vw,280px);pointer-events:none;transform:translate(-50%,-50%);--golpe-cor:#ffb347}
+.golpe-impacto,.golpe-impacto:before,.golpe-impacto:after{border-radius:50%}
+.golpe-impacto{background:radial-gradient(circle,#fff 0 12%,var(--golpe-cor) 34%,color-mix(in srgb,var(--golpe-cor) 40%,transparent) 52%,transparent 70%);animation:golpe-flash .75s ease-out forwards}
+.golpe-impacto:before{content:'';position:absolute;inset:0;border:5px solid #fff;box-shadow:0 0 18px 6px var(--golpe-cor),inset 0 0 18px 6px var(--golpe-cor);animation:golpe-onda .75s ease-out forwards}
+.golpe-impacto:after{content:'';position:absolute;inset:-20%;border-radius:0;background:repeating-conic-gradient(from 8deg,#fff 0 4deg,transparent 4deg 30deg);-webkit-mask:radial-gradient(circle,transparent 0 28%,#000 30% 48%,transparent 62%);mask:radial-gradient(circle,transparent 0 28%,#000 30% 48%,transparent 62%);animation:golpe-raios .6s ease-out forwards}
+@keyframes golpe-flash{0%{transform:translate(-50%,-50%) scale(.25);opacity:1}35%{opacity:1}100%{transform:translate(-50%,-50%) scale(1.35);opacity:0}}
+@keyframes golpe-onda{0%{transform:scale(.2);opacity:1}100%{transform:scale(1.6);opacity:0}}
+@keyframes golpe-raios{0%{transform:scale(.4) rotate(0);opacity:1}100%{transform:scale(1.5) rotate(25deg);opacity:0}}
+.battery-shell.impacto{animation:golpe-tremor .5s cubic-bezier(.36,.07,.19,.97)}
+@keyframes golpe-tremor{0%,100%{transform:translate(0,0);filter:none}10%{transform:translate(12px,-3px);filter:brightness(1.8)}25%{transform:translate(-10px,3px);filter:brightness(1.4)}40%{transform:translate(8px,-2px)}55%{transform:translate(-6px,2px)}70%{transform:translate(4px,0)}85%{transform:translate(-2px,0)}}
+@media (prefers-reduced-motion:reduce){.battery-shell.impacto{animation:none}}
