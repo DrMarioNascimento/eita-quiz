@@ -41,7 +41,9 @@ byId('createRoom').onclick=async()=>{
   if(!room)throw new Error('Não foi possível gerar código');
   api.active=true;round=0;window.eitaGame.reset();
   byId('roomDetails').hidden=false;byId('roomCode').textContent='Código: '+room.id;
-  const link=new URL('aluno.html',location.protocol==='https:'?location.href:'https://eita-quiz.web.app/'); // mesmo endereço do professor (eita.drmarionascimento.com.br ou eita-quiz.web.app)link.searchParams.set('sala',room.id);byId('roomLink').href=link.href;openRoomQr();
+  // mesmo endereço do professor (eita.drmarionascimento.com.br ou eita-quiz.web.app)
+  const link=new URL('aluno.html',location.protocol==='https:'?location.href:'https://eita-quiz.web.app/');
+  link.searchParams.set('sala',room.id);byId('roomLink').href=link.href;openRoomQr();
   
   document.querySelector('header small').textContent='Sala online · respostas reais';
   notice('Compartilhe o link ou o código. Prepare a turma antes de iniciar.');
