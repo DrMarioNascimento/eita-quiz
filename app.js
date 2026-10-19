@@ -188,7 +188,7 @@ function controls(){
   $('start').disabled=running||intermission||attackPending||$('boss').classList.contains('video-active')||bossLife<=0||teamLife<=0;
   $('pause').disabled=!(running||intermission||attackPending);
   $('finish').disabled=!running;
-  $('start').textContent=index<0?'Iniciar pergunta':'Próxima pergunta';
+  $('start').textContent=index<0?'Iniciar Quiz':'Próxima pergunta';
   $('pause').textContent=paused?'Continuar':'Pausar';
 }
 function stopBossVideo(){

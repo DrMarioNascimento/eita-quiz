@@ -1,5 +1,6 @@
 /* Tela cheia de fato (Eita!).
-   Em tela cheia: somem o menu e o cabeçalho; a arena ocupa a tela toda.
+   Em tela cheia (botão do jogo ou F11): fica só a barra superior (Eita!) e a área
+   central (pergunta, chefe e alunos); o menu e o resto somem.
    Ao mexer o mouse (ou tocar), reaparece só o cartão "Controle da partida",
    à esquerda, na mesma posição em que fica no menu.
    Parou de mexer: o cartão e o cursor somem de novo.
@@ -10,7 +11,10 @@
  const root=document.documentElement;
  let timer=0,on=false,exitBtn=null,wasOpen=false;
 
- const isFs=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
+ const apiFs=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
+ /* F11 não aciona a API de tela cheia: reconhece pela janela ocupando a tela inteira. */
+ const f11=()=>Math.abs(innerHeight-screen.height)<=2&&Math.abs(innerWidth-screen.width)<=2;
+ const isFs=()=>apiFs()||f11();
  const card=()=>$('menu-controle');
 
  function ensureExit(){
@@ -18,14 +22,17 @@
   const body=card()?.querySelector('.step-body');if(!body)return;
   exitBtn=document.createElement('button');
   exitBtn.type='button';exitBtn.className='fs-exit';exitBtn.textContent='Sair da tela cheia';
-  exitBtn.addEventListener('click',()=>{(document.exitFullscreen||document.webkitExitFullscreen).call(document);});
+  exitBtn.addEventListener('click',()=>{
+   if(apiFs())(document.exitFullscreen||document.webkitExitFullscreen).call(document);
+   else exitBtn.textContent='Pressione F11 para sair';
+  });
   body.append(exitBtn);
  }
 
  function enter(){
   if(on)return;on=true;
   const header=document.querySelector('header');
-  root.style.setProperty('--fs-aside-top',(header?header.offsetHeight:0)+'px');
+  root.style.setProperty('--fs-aside-top',(header?header.getBoundingClientRect().bottom:0)+'px');
   ensureExit();
   const c=card();if(c){wasOpen=c.open;c.open=true;}
   root.classList.add('eita-fs');
@@ -39,6 +46,7 @@
   const c=card();if(c&&!wasOpen)c.open=false;
   root.classList.remove('eita-fs','eita-fs-active');
   c?.style.removeProperty('--fs-shift');
+  if(exitBtn)exitBtn.textContent='Sair da tela cheia';
  }
 
  /* Mesma posição do menu; se o cartão não couber na tela, sobe só o necessário. */
@@ -62,7 +70,9 @@
  function sync(){isFs()?enter():leave();}
  document.addEventListener('fullscreenchange',sync);
  document.addEventListener('webkitfullscreenchange',sync);
- addEventListener('resize',()=>{if(on)fit();});
+ addEventListener('resize',()=>{sync();if(on)fit();});
  document.addEventListener('click',()=>{if(on)setTimeout(fit,0);});
+ /* Em tela cheia o cartão fica sempre aberto: clicar no título não o fecha. */
+ document.addEventListener('click',e=>{if(on&&e.target.closest('#menu-controle>summary'))e.preventDefault();},true);
  ['mousemove','pointerdown','touchstart','keydown'].forEach(ev=>document.addEventListener(ev,wake,{passive:true}));
 })();

@@ -1616,16 +1616,17 @@ img.step-icon{width:40px;height:40px;object-fit:contain;stroke:none;filter:drop-
 #bankSummary{display:block;margin-top:10px;color:#c9dbec}
 @media(max-width:850px){.menu-group{grid-column:1/-1;margin:6px 2px 0}.menu-step{margin:0}}
 @media(prefers-reduced-motion:reduce){.step-chevron{transition:none}}
-/* ===== Tela cheia de fato: só a arena; ao mexer o mouse reaparece o cartão Controle da partida no mesmo lugar (2026-10-19) ===== */
-html.eita-fs header{display:none!important}
-html.eita-fs main{grid-template-columns:1fr!important;min-height:100vh}
+/* ===== Tela cheia de fato: fica só a barra superior (Eita!) e a área central (pergunta, chefe e alunos).
+   Ao mexer o mouse aparece só o cartão Controle da partida, no mesmo lugar do menu (2026-10-19) ===== */
+html.eita-fs main{grid-template-columns:1fr!important;min-height:calc(100vh - var(--fs-aside-top,0px))}
+html.eita-fs section>.result-card,html.eita-fs section>.author-credit{display:none!important}
 html.eita-fs aside{position:fixed;left:0;top:var(--fs-aside-top,0);z-index:900;width:310px;box-sizing:border-box;display:block!important;background:transparent!important;border:0!important;pointer-events:none}
 html.eita-fs aside>*{visibility:hidden}
-html.eita-fs aside>#menu-controle{transform:translateY(var(--fs-shift,0px));opacity:0;transition:opacity .25s,visibility .25s;box-shadow:0 10px 30px #000a;background:rgba(14,24,40,.92)}
+html.eita-fs aside>#menu-controle{transform:translateY(var(--fs-shift,0px));opacity:0;transition:opacity .25s,visibility .25s;box-shadow:0 10px 30px #000a;background:rgba(14,24,40,.94)}
 html.eita-fs-active aside>#menu-controle{visibility:visible;opacity:1;pointer-events:auto}
 html.eita-fs:not(.eita-fs-active),html.eita-fs:not(.eita-fs-active) *{cursor:none!important}
 .fs-exit{display:none}
-html.eita-fs .fs-exit{display:block;font-size:14px;color:#9fb6cc;background:transparent;border-color:#6f94b855}
+html.eita-fs .fs-exit{display:block;margin-top:12px;font-size:14px;color:#9fb6cc;background:transparent;border-color:#6f94b855}
 @media(prefers-reduced-motion:reduce){html.eita-fs aside>#menu-controle{transition:none}}
 
 /* ===== Controle da partida: cápsula de botões no estilo do Biofeedback Respiratório, cores do Eita! (2026-10-19) ===== */
@@ -1644,3 +1645,13 @@ html.eita-fs .fs-exit{display:block;font-size:14px;color:#9fb6cc;background:tran
 #reset.capsule-btn{color:#ffc2b6}
 #reset.capsule-btn:before{content:'\21BB';font-size:24px;font-weight:700}
 @media(prefers-reduced-motion:reduce){.capsule-btn{transition:none}}
+
+/* ===== Etapas 1–4: número à esquerda e ícone centralizado na 1ª linha; nome na 2ª linha (2026-10-19) ===== */
+.step-prep>summary,.step-play>summary{position:relative;display:grid;grid-template-columns:1fr auto 1fr;grid-template-areas:"num icon end" "text text text";align-items:center;row-gap:8px;padding:14px 14px 12px}
+.step-prep>summary .step-num,.step-play>summary .step-num{grid-area:num;justify-self:start}
+.step-prep>summary .step-icon,.step-play>summary .step-icon{grid-area:icon;width:56px;height:56px}
+.step-prep>summary .step-text,.step-play>summary .step-text{grid-area:text;text-align:center}
+.step-prep>summary .step-text h2,.step-play>summary .step-text h2{font-size:16px}
+.step-prep>summary .step-badge,.step-play>summary .step-badge{grid-area:end;justify-self:end;margin-right:24px}
+.step-prep>summary .step-chevron,.step-play>summary .step-chevron{position:absolute;top:22px;right:16px;margin:0}
+.step-prep[open]>summary .step-chevron,.step-play[open]>summary .step-chevron{top:26px}
