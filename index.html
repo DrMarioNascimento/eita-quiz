@@ -12,11 +12,22 @@
   const v=document.getElementById('introVid');
   if(!ov||!v) return;
   function hide(){ov.style.opacity='0';setTimeout(()=>ov.remove(),600);}
-  v.addEventListener('ended',hide);
+  v.addEventListener('ended',()=>{sessionStorage.setItem('eitaIntroSeen','1');hide();});
   v.addEventListener('error',hide);
   if(sessionStorage.getItem('eitaIntroSeen')){hide();return;}
-  v.addEventListener('ended',()=>sessionStorage.setItem('eitaIntroSeen','1'));
-  ov.addEventListener('click',hide);
+  // try autoplay; if blocked, show a play button
+  v.muted=false;
+  const p=v.play();
+  if(p&&p.catch){
+    p.catch(()=>{
+      const btn=document.createElement('button');
+      btn.textContent='▶ Iniciar';
+      btn.style.cssText='position:absolute;inset:0;margin:auto;width:180px;height:60px;font-size:22px;background:#ff8c00;color:#000;border:none;border-radius:30px;cursor:pointer;z-index:2;';
+      ov.appendChild(btn);
+      btn.onclick=()=>{btn.remove();v.play();};
+    });
+  }
+  // do NOT hide on click or key — only on ended
 })();
 </script>
 <header><div class="brand"><img class="brand-emblem" src="assets/alianca.png" alt="Aliança dos animais"><h1 aria-label="Eita!"><span class="brand-word" aria-hidden="true">Eita</span><span class="brand-exclamation" aria-hidden="true">!</span></h1><span class="brand-tagline">Um Quiz em Aliança</span></div><div class="header-actions"><small>Abra uma sala para começar</small><button id="fullscreenButton" class="fullscreen-button" type="button" aria-label="Tela cheia" aria-pressed="false" title="Tela cheia"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button><span id="fullscreenNotice" role="status"></span></div></header>
