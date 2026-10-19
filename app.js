@@ -197,6 +197,7 @@ function stopBossVideo(){
   v.pause();
   v.currentTime=0;
   $('boss').classList.remove('video-active');
+  pararSomDoChefe();
   abafarMusica(false);
   unlockAttackFrame()
 }
@@ -216,6 +217,8 @@ function playBossVideo(){
   $('boss').classList.add('video-active');
   abafarMusica(true);
   followBossShot();
+  v.muted=!!chefeAtual.som;
+  tocarSomDoChefe();
   const playing=v.play();
   if(playing)playing.catch(()=>{
     commitImpact();stopBossVideo()
@@ -225,13 +228,22 @@ function playBossVideo(){
 const CHEFES=(window.EITA_CHEFES&&window.EITA_CHEFES.length)?window.EITA_CHEFES:[{id:'sombra',nome:'Sombra',video:'assets/chefe-7s.webm',fundo:null,golpe:{tipo:'raio',inicio:2,fim:3.85,viagem:.22,cor:'#ff3d5e',trajeto:[[1.5,.884,.290],[5,.875,.300]]}}];
 const MUSICAS=window.EITA_MUSICAS||[];
 let chefeAtual=null,partidaIniciada=false,impactoMostrado=false;
-const ultimoSorteio={};
+// Sorteio em "saco": passa por todos os itens antes de repetir, e lembra a ordem mesmo se a página for recarregada.
+const memoriaSorteio={};
+function lerSorteio(chave){try{return JSON.parse(localStorage.getItem('eita-sorteio-'+chave)||'null')}catch(e){return null}}
+function gravarSorteio(chave,dados){memoriaSorteio[chave]=dados;try{localStorage.setItem('eita-sorteio-'+chave,JSON.stringify(dados))}catch(e){}}
 function sortearSemRepetir(lista,chave){
  if(!lista.length)return null;
- const opcoes=lista.length>1?lista.filter(item=>item!==ultimoSorteio[chave]):lista;
- const escolhido=opcoes[Math.floor(Math.random()*opcoes.length)];
- ultimoSorteio[chave]=escolhido;
- return escolhido;
+ const ids=lista.map(item=>item.id||item.src);
+ const salvo=memoriaSorteio[chave]||lerSorteio(chave)||{};
+ let saco=(Array.isArray(salvo.saco)?salvo.saco:[]).filter(id=>ids.includes(id));
+ if(!saco.length){
+  saco=shuffleList(ids);
+  if(saco.length>1&&saco[0]===salvo.ultimo)saco.push(saco.shift());
+ }
+ const id=saco.shift();
+ gravarSorteio(chave,{saco,ultimo:id});
+ return lista[ids.indexOf(id)];
 }
 function aplicarChefe(chefe){
  chefeAtual=chefe;
@@ -255,7 +267,7 @@ function novoChefe(){aplicarChefe(sortearSemRepetir(CHEFES,'chefe'));}
 
 // Trilha da partida: uma música em loop por batalha; Final.mp3 quando um dos lados é destruído.
 const trilha={musica:null,ganho:1,fade:null,abafada:false,final:null};
-const VOLUME_MUSICA=.8;
+const VOLUME_MUSICA=.35;
 function volumeAlvo(){return Math.min(1,VOLUME_MUSICA*trilha.ganho*(trilha.abafada?.4:1));}
 function fadeMusica(alvo,ms,depois){
  const m=trilha.musica;if(!m)return;
@@ -288,6 +300,15 @@ function tocarFinal(){
  const dados=window.EITA_AUDIO_FINAL;if(!dados)return;
  const f=new Audio(dados.src);f.volume=Math.min(1,dados.ganho||1);trilha.final=f;
  const p=f.play();if(p&&p.catch)p.catch(()=>{});
+}
+function tocarSomDoChefe(){
+ pararSomDoChefe();
+ const som=chefeAtual&&chefeAtual.som;if(!som)return;
+ const a=new Audio(som.src);a.volume=Math.min(1,som.ganho||1);trilha.somChefe=a;
+ const p=a.play();if(p&&p.catch)p.catch(()=>{});
+}
+function pararSomDoChefe(){
+ if(trilha.somChefe){trilha.somChefe.pause();trilha.somChefe=null;}
 }
 function pararAudios(){
  clearInterval(trilha.fade);trilha.fade=null;
@@ -573,8 +594,8 @@ $('pause').onclick=()=>{
   pausarMusica(paused);
   const v=$('bossVideo');
   if($('boss').classList.contains('video-active')){
-    if(paused)v.pause();
-    else v.play().catch(()=>stopBossVideo())
+    if(paused){v.pause();if(trilha.somChefe)trilha.somChefe.pause();}
+    else{v.play().catch(()=>stopBossVideo());if(trilha.somChefe){const p=trilha.somChefe.play();if(p&&p.catch)p.catch(()=>{});}}
   }controls()
 };
 $('finish').onclick=resolve;

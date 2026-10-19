@@ -1,5 +1,6 @@
 // Catálogo de chefes, fundos e trilhas do Eita!
-// Cada partida sorteia um chefe (com o seu papel de parede) e uma música, sem repetir a anterior.
+// Cada partida sorteia um chefe (com o seu papel de parede) e uma música, passando por todos antes de repetir.
+// som (opcional): áudio próprio que toca junto com o vídeo do ataque (o som do vídeo fica mudo).
 // Golpe: tempos em segundos do vídeo; origem/trajeto em coordenadas normalizadas do quadro (0–1).
 window.EITA_CHEFES=[
   {
@@ -9,7 +10,8 @@ window.EITA_CHEFES=[
   },
   {
     id:'artemis',nome:'Artemis',video:'assets/chefes/artemis.webm',fundo:'assets/chefes/artemis-fundo.jpg',
-    golpe:{tipo:'flecha',inicio:2.3,viagem:.34,origem:[.97,.27],cor:'#ffc83d'}
+    som:{src:'assets/audio/artemis.mp3',ganho:.65},
+    golpe:{tipo:'flecha',inicio:4.55,viagem:.34,origem:[.97,.30],cor:'#ffc83d'}
   },
   {
     id:'cao-ninja',nome:'Cão-Ninja',video:'assets/chefes/cao-ninja.webm',fundo:'assets/chefes/cao-ninja-fundo.png',
@@ -31,8 +33,6 @@ window.EITA_MUSICAS=[
   {src:'assets/audio/funny2.mp3',ganho:.67},
   {src:'assets/audio/funny3.mp3',ganho:.23},
   {src:'assets/audio/funny4.mp3',ganho:.74},
-  {src:'assets/audio/funny5.mp3',ganho:.25},
-  {src:'assets/audio/funny6.mp3',ganho:.21},
-  {src:'assets/audio/funny7.mp3',ganho:.21}
+  {src:'assets/audio/funny5.mp3',ganho:.21}
 ];
 window.EITA_AUDIO_FINAL={src:'assets/audio/final.mp3',ganho:.86};
