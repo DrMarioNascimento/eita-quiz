@@ -367,7 +367,7 @@ function updateBossShot(time){
  }
  const proj=$('bossProjectile');
  if(!ativo||time<g.inicio||!pendingImpact){proj.className='boss-projectile';return;}
- const x0=video.left-scene.left+video.width*g.origem[0],y0=video.top-scene.top+video.height*g.origem[1]-(chefeAtual.id==='artemis'?8:0);
+ const x0=video.left-scene.left+video.width*g.origem[0],y0=video.top-scene.top+video.height*g.origem[1]-(chefeAtual.id==='artemis'?14:0);
  const x1=battery.left-scene.left+battery.width*.06,y1=Math.max(battery.top-scene.top+40,Math.min(battery.bottom-scene.top-40,y0));
  const t=Math.min(1,(time-g.inicio)/g.viagem);
  if(t>=1){proj.className='boss-projectile';mostrarImpacto(x1,y1);commitImpact();return;}
