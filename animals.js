@@ -5,17 +5,17 @@ window.EITA_ANIMALS=[
  {id:'cobra',label:'Cobra',squad:'Cobras',emoji:'🐍',src:'assets/animals/cobra-nova.png',transparent:true},
  {id:'serpente',label:'Serpente',src:'assets/animals/serpente-nova.png',transparent:true},
  {id:'lobo',label:'Lobo',squad:'Lobos',emoji:'🐺',src:'assets/animals/lobo-novo.png',transparent:true},
- {id:'aguia',label:'Águia',squad:'Águias',emoji:'🦅',src:'assets/animals/aguia.jpg'},
- {id:'urso',label:'Urso',squad:'Ursos',emoji:'🐻',src:'assets/animals/urso.jpg'},
+ {id:'aguia',label:'Águia',squad:'Águias',emoji:'🦅',src:'assets/animals/aguia-novo.png',transparent:true},
+ {id:'urso',label:'Urso',squad:'Ursos',emoji:'🐻',src:'assets/animals/urso-novo.png',transparent:true},
  {id:'tubarao',label:'Tubarão',squad:'Tubarões',emoji:'🦈',src:'assets/animals/tubarao-novo.png',transparent:true},
  {id:'crocodilo',label:'Crocodilo',squad:'Crocodilos',emoji:'🐊',src:'assets/animals/crocodilo-novo.png',transparent:true},
  {id:'rinoceronte',label:'Rinoceronte',squad:'Rinocerontes',emoji:'🦏',src:'assets/animals/rinoceronte-novo.png',transparent:true},
- {id:'raposa',label:'Raposa',emoji:'🦊',src:'assets/animals/raposa.jpg'},
+ {id:'raposa',label:'Raposa',emoji:'🦊',src:'assets/animals/raposa-novo.png',transparent:true},
  {id:'panda',label:'Panda',emoji:'🐼',src:'assets/animals/panda-novo.png',transparent:true},
- {id:'cachorro',label:'Cachorro',emoji:'🐶',src:'assets/animals/cachorro.jpg'},
+ {id:'cachorro',label:'Cachorro',emoji:'🐶',src:'assets/animals/cachorro-novo.png',transparent:true},
  {id:'gato',label:'Gato',emoji:'🐱',src:'assets/animals/gato-novo.png',transparent:true},
- {id:'coelho',label:'Coelho',emoji:'🐰',src:'assets/animals/coelho.jpg'},
- {id:'tartaruga',label:'Tartaruga',emoji:'🐢',src:'assets/animals/tartaruga1.png'}
+ {id:'coelho',label:'Coelho',emoji:'🐰',src:'assets/animals/coelho-novo.png',transparent:true},
+ {id:'tartaruga',label:'Tartaruga',emoji:'🐢',src:'assets/animals/tartaruga1.png',transparent:true}
 ];
 window.eitaAnimal=function(token){
  if(!token)return null;
@@ -71,7 +71,8 @@ window.eitaAnimalIcon=function(token){
  img.draggable=false;
  if(animal){
   if(animal.transparent)img.src=animal.src;
-  else window.eitaAnimalCutout(animal.src).then(function(src){img.src=src;});
+  // 20/10/2026: já nasce com a imagem original (quem confere src ao montar o cartão não descarta a figura); o recorte substitui depois.
+  else{img.src=animal.src;window.eitaAnimalCutout(animal.src).then(function(src){img.src=src;});}
  }
  return img;
 };

@@ -1631,6 +1631,13 @@ img.step-icon{width:40px;height:40px;object-fit:contain;stroke:none;filter:drop-
 .download-modelo:hover{background:color-mix(in srgb,var(--step-color,#5fc8ff) 26%,transparent)}
 .regras h3{margin:14px 0 4px;font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--step-color,#9fd8ff)}
 .regras h3:first-child{margin-top:10px}
+/* Títulos das Regras em cores (as mesmas dos blocos do menu) — 2026-10-20 */
+.regras h3{display:flex;align-items:center;gap:7px}
+.regras h3::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor;flex:none;box-shadow:0 0 6px currentColor}
+.regras h3:nth-of-type(1){color:#3fd0b0}
+.regras h3:nth-of-type(2){color:#ffc16b}
+.regras h3:nth-of-type(3){color:#b294ff}
+.regras h3:nth-of-type(4){color:#5fb0ff}
 .regras ul{margin:0;padding-left:18px;display:grid;gap:4px}
 .regras li{font-size:13px;line-height:1.45;color:#c9dbec}
 .regras li b,.step-help .step-body p b{color:#e6f2ff}
