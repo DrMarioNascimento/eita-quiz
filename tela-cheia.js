@@ -1,8 +1,9 @@
 /* Tela cheia de fato (Eita!).
    Em tela cheia (botão do jogo ou F11): fica só a barra superior (Eita!) e a área
    central (pergunta, chefe e alunos); o menu e o resto somem.
-   Ao mexer o mouse (ou tocar), reaparece só o cartão "Controle da partida",
-   à esquerda, na mesma posição em que fica no menu.
+   Ao mexer o mouse (ou tocar), reaparece só o console "Controle da partida",
+   no espaço livre da barra superior (entre a marca e os botões da direita),
+   para nunca cobrir a pergunta, o chefão ou o grupo.
    Parou de mexer: o cartão e o cursor somem de novo.
    Ao sair da tela cheia (botão no cartão ou Esc), o menu completo volta. */
 (()=>{
@@ -46,17 +47,31 @@
   if(!on)return;on=false;
   clearTimeout(timer);
   const c=card();if(c&&!wasOpen)c.open=false;
-  root.classList.remove('eita-fs','eita-fs-active');
-  c?.style.removeProperty('--fs-shift');
+  root.classList.remove('eita-fs','eita-fs-active','eita-fs-estreita');
+  root.style.removeProperty('--fs-aside-x');
   if(exitBtn){exitBtn.textContent='Sair da tela cheia';exitBtn.title=exitBtn.textContent;exitBtn.setAttribute('aria-label',exitBtn.textContent);}
  }
 
- /* Mesma posição do menu; se o cartão não couber na tela, sobe só o necessário. */
+ /* Centraliza o console no espaço livre da barra superior. */
  function fit(){
   const c=card();if(!c||!on)return;
-  c.style.removeProperty('--fs-shift');
-  const over=c.getBoundingClientRect().bottom-(window.innerHeight-12);
-  if(over>0)c.style.setProperty('--fs-shift',(-over)+'px');
+  const header=document.querySelector('header');
+  if(header)root.style.setProperty('--fs-aside-top',header.getBoundingClientRect().bottom+'px');
+  const brand=document.querySelector('header .brand'),acts=document.querySelector('header .header-actions');
+  if(brand&&acts){
+   const l=brand.getBoundingClientRect().right;
+   /* borda esquerda do primeiro item visível à direita (ignora itens ocultos ou vazios) */
+   const vis=[...acts.children].map(e=>e.getBoundingClientRect()).filter(b=>b.width>0&&b.height>0);
+   const r=vis.length?Math.min(...vis.map(b=>b.left)):acts.getBoundingClientRect().left;
+   /* tela estreita: se o console não couber no vão, esconde o slogan e o aviso da direita */
+   const cw=c.getBoundingClientRect().width||300;
+   root.classList.toggle('eita-fs-estreita',r-l<cw+24);
+   if(root.classList.contains('eita-fs-estreita')){
+    const h1=brand.querySelector('h1')?.getBoundingClientRect().right??l;
+    const btn=document.getElementById('fullscreenButton')?.getBoundingClientRect().left??r;
+    root.style.setProperty('--fs-aside-x',((h1+btn)/2)+'px');
+   } else root.style.setProperty('--fs-aside-x',((l+r)/2)+'px');
+  }
  }
 
  function wake(){

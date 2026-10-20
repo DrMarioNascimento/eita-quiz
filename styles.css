@@ -1792,6 +1792,13 @@ html.eita-fs #menu-controle>summary{display:none}
 html.eita-fs #menu-controle>.step-body{padding:0}
 html.eita-fs .control-capsule{grid-template-columns:repeat(5,minmax(0,1fr));margin:0;max-width:280px}
 html.eita-fs .control-capsule .fs-exit{display:flex;color:#dcfaff}
+/* Tela cheia (2026-10-20): o console de controle fica no centro da barra superior,
+   que está livre, e nunca cobre a pergunta, o chefão ou o grupo. */
+html.eita-fs aside{top:calc(var(--fs-aside-top,0px)/2);left:var(--fs-aside-x,50%);width:max-content;transform:translate(-50%,-50%)}
+html.eita-fs aside>:not(#menu-controle){display:none}
+html.eita-fs aside>#menu-controle{transform:none;width:max-content;min-width:0;margin:0;padding:6px;border-radius:16px;background:rgba(14,24,40,.94)!important;box-shadow:0 6px 22px #000a}
+html.eita-fs aside>#menu-controle .control-capsule{width:280px}
+html.eita-fs-estreita header .brand-tagline,html.eita-fs-estreita header .header-actions>small{visibility:hidden}
 .control-capsule .fs-exit:before{content:'\2922';font-size:24px}
 
 /* Short visible labels keep the compact controls easy to identify. */
