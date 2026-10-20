@@ -10,6 +10,12 @@ let quiz=[{
 let questionBank=window.CARDIO_BANK||null;
 let bankLabel='Cardiovascular';
 let battleQuestionsUsed=new Set();
+// 20/10/2026: meta de acertos escolhida pelo professor (Configuração da sala).
+// Normal (50) mantém a regra antiga: mais da metade; as demais exigem X% ou mais.
+function goalValue(){return Number($('goal')?.value)||50;}
+function goalNeeded(total){const g=goalValue();return g===50?Math.floor(total/2)+1:Math.ceil(g*total/100-1e-9);}
+function goalMet(hits,total){return total>0&&hits>=goalNeeded(total);}
+function liveCount(){return squads.reduce((v,s)=>v+(selected==='own'&&s.life<=0?0:s.members.length),0);}
 function shuffleList(items){
  const result=[...items];
  for(let i=result.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[result[i],result[j]]=[result[j],result[i]];}
@@ -182,7 +188,7 @@ function unlockAttackFrame(){
 }
 function controls(){
   $('edit').disabled=locked||!window.eitaTeacherAuthorized;
-  ['mode','advanceMode','questionCount'].forEach(id=>$(id).disabled=locked);
+  ['mode','advanceMode','questionCount','goal'].forEach(id=>{if($(id))$(id).disabled=locked;});
   $('size').disabled=locked||selected==='individual';
   $('draw').disabled=locked||selected==='individual';
   $('draw').textContent='Sortear esquadrões';
@@ -430,7 +436,7 @@ async function start(){
   remaining=q.time;
   running=true;
   paused=false;
-  safe($('round'),suddenDeath?`Morte súbita · pergunta ${index+1}`:`Pergunta ${index+1} de ${quiz.length}`);
+  {const n=liveCount();safe($('round'),(suddenDeath?`Morte súbita · pergunta ${index+1}`:`Pergunta ${index+1} de ${quiz.length}`)+(n?` · meta: ${goalNeeded(n)} de ${n}`:''));}
   safe($('question'),q.q);
   $('options').replaceChildren();
   q.a.forEach((a,i)=>{
@@ -487,10 +493,10 @@ async function resolve(){
   squads.forEach(s=>{
     if(selected==='own'&&s.life<=0)return;s.hits=s.members.reduce((v,name)=>v+(Number(onlineAnswers?.get(name)===quiz[index].correct)),0);s.total+=s.hits;s.answers+=s.members.length;hits+=s.hits;total+=s.members.length
   });
-  const rate=total?hits/total:0;
+  const rate=total?hits/total:0,met=goalMet(hits,total);
   let result;
   const applyResult=()=>{
-    if(rate>.5){
+    if(met){
       const damage=suddenDeath?bossLife:100/quiz.length;
       bossLife=Math.max(0,bossLife-damage);
       if(bossLife<1e-8)bossLife=0;
@@ -509,7 +515,7 @@ async function resolve(){
       $('teamBattery').classList.add('attack')
     }render();
     $('options').children[quiz[index].correct].classList.add('correct');
-    safe($('timer'),`${hits}/${total} acertos · ${Math.round(rate*100)}%`);
+    safe($('timer'),`${hits}/${total} acertos · ${Math.round(rate*100)}% · meta ${goalNeeded(total)}`);
     if(bossLife<=0){
       result='Vitória! A turma derrotou o chefão.';
       stopBossVideo();
@@ -534,7 +540,7 @@ async function resolve(){
     window.eitaOnline?.result({bossLife,teamLife,message:result,correct:quiz[index].correct,explain:quiz[index].explain});
     controls()
   };
-  if(rate>.5){
+  if(met){
     applyResult()
   }else{
     attackPending=true;

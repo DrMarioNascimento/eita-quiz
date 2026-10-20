@@ -17,7 +17,8 @@
   set('sub-montagem',mode.value==='individual'?'Individual cooperativo':'Esquadrões de '+$('size').value+' · '+(mode.value==='own'?'vida por esquadrão':'vida compartilhada'));
 
   const n=+$('questionCount').value||0;
-  set('sub-config',n+(n===1?' pergunta':' perguntas')+' · '+($('advanceMode').value==='manual'?'manual':'automático'));
+  const g=$('goal')?.value||'50';
+  set('sub-config',n+(n===1?' pergunta':' perguntas')+' · meta '+(g==='50'?'>50%':g+'%')+' · '+($('advanceMode').value==='manual'?'manual':'automático'));
 
   const pause=$('pause');pause.dataset.icon=/continuar/i.test(pause.textContent)?'play':'pause';
   const playing=!$('pause').disabled;
