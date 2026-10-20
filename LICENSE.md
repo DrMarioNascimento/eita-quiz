@@ -1,50 +1,66 @@
-# Eita! — Licença de Uso Educacional Restrito
+# Eita! — Licença de Uso (Fase de Testes Abertos)
 
 Copyright © 2026 Mário César Nascimento. Todos os direitos reservados.
 
 ## Titularidade
 
-O projeto **Eita! — Um Quiz em Aliança**, incluindo código, interface, banco de perguntas, arte do chefão, regras de batalha, textos e demais componentes originais, é criação de **Mário César Nascimento**.
+O projeto **Eita! — Um Quiz em Aliança**, incluindo código, interface, regras de batalha, chefões e seus efeitos, banco de demonstração, textos, manual e demais componentes originais, é criação de **Mário César Nascimento**.
 
-A visibilidade pública do repositório ou de uma demonstração não cede, transfere nem abandona direitos.
+A visibilidade pública do repositório ou do site não cede, transfere nem abandona direitos. Repositório público não é licença aberta.
+
+## Fase de testes abertos
+
+Desde 20 de outubro de 2026, o Eita! está em **fase de testes abertos**: qualquer pessoa pode usá-lo pelos endereços oficiais, gratuitamente. Por ser uma fase de testes, telas, regras e funcionalidades podem mudar, ser suspensas ou encerradas a qualquer momento, sem aviso prévio.
+
+Sugestões e relatos de problemas: srzrn15m3@mozmail.com
 
 ## Uso permitido
 
-O jogo está em desenvolvimento e testes internos, sem participação externa. Nesta fase, a execução para desenvolvimento e avaliação limita-se ao autor e a colaboradores internos expressamente autorizados. A disponibilidade de uma demonstração não constitui lançamento nem abertura para participação pública.
+É permitido, sem necessidade de autorização prévia:
 
-Cópias técnicas temporárias para o navegador rodar não autorizam redistribuição.
+- usar o Eita! pelos endereços oficiais (eita.drmarionascimento.com.br, eita.dragongames.dev.br e eita-quiz.web.app) em aulas, cursos, palestras, treinamentos, eventos e encontros, presenciais ou on-line, gratuitos ou pagos;
+- projetar a tela do jogo e convidar participantes a jogar pelo celular;
+- criar e usar suas próprias perguntas na planilha-modelo;
+- baixar, imprimir e compartilhar a planilha-modelo e o Manual de uso, sem alterações e mantendo a autoria;
+- registrar e divulgar imagens ou vídeos de partidas, com menção ao Eita! e ao autor.
 
 ## Sem autorização prévia, não é permitido
 
-- copiar, baixar ou redistribuir código, banco, arte ou textos;
-- modificar, adaptar ou criar obra derivada;
-- republicar ou hospedar em outro endereço;
-- vender, sublicenciar ou explorar comercialmente;
-- usar o banco ou a arte para treinar ou avaliar sistemas de inteligência artificial;
-- apresentar o projeto como criação de outra pessoa ou instituição.
+- copiar, baixar, modificar ou redistribuir o código, a arte, os chefões, as animações, os sons ou o banco de demonstração;
+- hospedar o jogo, ou versão modificada dele, em outro endereço;
+- criar obra derivada, versão adaptada ou produto concorrente a partir dos componentes do Eita!;
+- vender, sublicenciar ou cobrar pelo acesso ao jogo em si (cobrar pela sua aula, curso ou evento é permitido);
+- usar o código, a arte ou o banco para treinar ou avaliar sistemas de inteligência artificial;
+- remover os créditos ou apresentar o projeto como criação de outra pessoa ou instituição;
+- usar o jogo para fins ilícitos, ofensivos ou que exponham participantes.
+
+## Suas perguntas e seus participantes
+
+- As perguntas da planilha pertencem a quem as criou. O Eita! as lê no navegador de quem conduz a partida e não as envia nem guarda em servidor.
+- Quem conduz a partida é responsável pelo conteúdo das perguntas que usa, inclusive por direitos de terceiros sobre textos e imagens citados.
+- Durante uma sala, o servidor guarda só o necessário para o jogo funcionar: o nome digitado e o animal escolhido por cada participante e as respostas de cada rodada. Esses dados são apagados quando a sala é encerrada ou, se ela não for encerrada, quando expira (24 horas após ser aberta). O Eita! não gera relatórios, não guarda notas e não cria contas para participantes.
+- Recomenda-se que os participantes usem primeiro nome ou apelido.
+
+## Componentes de terceiros
+
+Componentes de terceiros conservam seus titulares e licenças próprias, que esta licença não substitui nem restringe. Entre eles:
+
+- Fonte da marca: Nunito (The Nunito Project Authors), sob SIL Open Font License 1.1 — ver `assets/fonts/OFL-Nunito.txt`;
+- Leitor de planilhas: SheetJS Community Edition, sob Apache License 2.0;
+- Serviços Firebase (Google), sob os termos próprios do Google.
 
 ## Ausência de garantia
 
-Material didático, no estado em que se encontra. Não substitui mediação docente nem orientação profissional em saúde.
+O Eita! é oferecido no estado em que se encontra, sem garantia de funcionamento contínuo, disponibilidade ou adequação a um fim específico. Material didático e lúdico: não substitui a mediação de quem conduz a atividade nem orientação profissional em saúde.
 
 ## Identificação
 
-**Autor e titular declarado:** Mário César Nascimento, PhD  
+**Autor e titular:** Mário César Nascimento, PhD  
 **Projeto:** Eita! — Um Quiz em Aliança  
 **País:** Brasil  
 **Ano:** 2026  
-**Revisão documental:** 19 de outubro de 2026
-
-Todos os direitos não expressamente concedidos permanecem reservados.
-
-## Atualização de acesso — 14 de outubro de 2026
-
-A seção de uso permitido foi atualizada para refletir os testes internos. Autoria e demais restrições permanecem preservadas.
+**Versão desta licença:** 20 de outubro de 2026 — abertura dos testes públicos
 
 Portal do autor: https://www.drmarionascimento.com.br/ · Catálogo: https://dragongames.dev.br/
 
-## Revisão documental — 19 de outubro de 2026
-
-O código está em repositório público e a aplicação usa o domínio eita.dragongames.dev.br. Essa visibilidade não modifica a limitação de execução aos testes internos autorizados. Os componentes originais dos chefões e seus efeitos integram o escopo já definido; materiais de terceiros conservam seus titulares e condições próprias.
-
-Esta revisão atualiza a identificação e o escopo documental. Preserva os titulares, as permissões e as restrições existentes. Não substitui nem restringe as licenças próprias de componentes de terceiros.
+Todos os direitos não expressamente concedidos permanecem reservados. Para usos não previstos aqui, peça autorização pelo contato acima.
