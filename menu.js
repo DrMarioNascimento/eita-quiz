@@ -30,7 +30,7 @@
   wasPlaying=playing;
 
   set('sub-regras','Golpe, dano e morte súbita');
-  set('sub-manual','Guia completo em PDF · v1.1');
+  set('sub-manual','Guia completo em PDF · v1.2');
   set('sub-banco',($('bankSummary').textContent||'').split('·')[0].trim());
  }
  function start(){
