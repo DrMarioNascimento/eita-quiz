@@ -10,8 +10,10 @@
   const open=!$('roomDetails').hidden;
   const code=($('roomCode').textContent||'').replace(/^C[óo]digo:\s*/,'');
   const roster=$('roomRoster').textContent.trim();
-  set('sub-entrada',open?['Sala '+code,roster].filter(Boolean).join(' · '):'Sala online');
-  badge('sub-entradaBadge',open?'aberta':'',open?'ok':'');
+  const ensaio=!!window.eitaEnsaio?.ativo();
+  set('sub-entrada',ensaio?'Ensaio com participantes simulados':open?['Sala '+code,roster].filter(Boolean).join(' · '):'Sala online');
+  badge('sub-entradaBadge',ensaio?'ensaio':open?'aberta':'',ensaio?'live':open?'ok':'');
+  const r=$('rehearsal');if(r)r.hidden=open;
 
   const mode=$('mode');
   set('sub-montagem',mode.value==='individual'?'Individual cooperativo':'Esquadrões de '+$('size').value+' · '+(mode.value==='own'?'vida por esquadrão':'vida compartilhada'));

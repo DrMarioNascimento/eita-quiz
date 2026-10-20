@@ -1614,6 +1614,15 @@ img.step-icon{width:40px;height:40px;object-fit:contain;stroke:none;filter:drop-
 .step-help .step-body p{font-size:13px;line-height:1.5;color:#c9dbec}
 .step-note{color:#9fb6cc;font-style:italic}
 #bankSummary{display:block;margin-top:10px;color:#c9dbec}
+/* Ensaio sem participantes, no bloco Entrada (2026-10-20) */
+.rehearsal{margin-top:14px;padding-top:12px;border-top:1px dashed #6f94b855}
+.rehearsal[hidden]{display:none}
+.rehearsal-title{margin:0 0 2px;font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--step-color,#3fd0b0)}
+.rehearsal .step-note{font-size:12.5px;margin:0 0 6px}
+#startRehearsal,#stopRehearsal{display:block;width:100%;margin-top:8px}
+#startRehearsal[hidden],#stopRehearsal[hidden]{display:none}
+#rehearsalNotice:empty{display:none}
+#rehearsalNotice{font-size:12.5px;color:#c9dbec;margin:8px 0 0}
 /* Aviso junto do Iniciar: por que a partida ainda não pode começar (2026-10-20) */
 .start-hint{margin:8px 2px 0;padding:7px 10px;border-radius:8px;background:#ffc16b1f;border:1px solid #ffc16b55;color:#ffd79b;font-size:12.5px;line-height:1.35}
 .start-hint[hidden]{display:none}
