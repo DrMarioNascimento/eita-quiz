@@ -1708,4 +1708,12 @@ main>section{display:flex;flex-direction:column;gap:12px;min-width:0}
  .battle-label{font-size:10px;letter-spacing:0}
 }
 
+/* Preserve the source frame proportions and expose both battery terminals. */
+.team-side,.boss-side{grid-template-rows:auto auto var(--battle-height)}
+.boss-art,.team-art{width:100%;max-width:520px;height:auto;aspect-ratio:2068 / 760;align-self:start}
+.boss-art .meter-frame,.team-art .meter-frame{inset:0;top:0;width:100%;height:100%}
+.boss-art .art-slot,.team-art .art-slot{top:61.4815%;height:10.3704%}
+.battery-shell:before{top:-19px;height:24px;z-index:1}
+#teamBattery{z-index:2}
+
 
