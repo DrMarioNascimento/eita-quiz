@@ -1,11 +1,11 @@
-import {db,identifyTeacher,observeTeacher,doc,collection,updateDoc,getDocs,onSnapshot,runTransaction,serverTimestamp,Timestamp,query,where} from './cloud.js';
+import {db,identifyTeacher,observeTeacher,doc,collection,updateDoc,getDocs,onSnapshot,runTransaction,serverTimestamp,Timestamp,query,where,writeBatch} from './cloud.js';
 const byId=id=>document.getElementById(id);
 let room=null,uid=null,roster=[],round=0,unsub=null;
 const notice=text=>byId('roomNotice').textContent=text;
 function report(error){
  console.error(error);
  const messages={'auth/popup-blocked':'O navegador bloqueou o Google. Permita pop-ups para este site e tente novamente.','auth/popup-closed-by-user':'Login cancelado. Clique em Abrir sala com Google para tentar de novo.','auth/unauthorized-domain':'Abra pelo endereço https://eita-quiz.web.app/ para entrar com Google.','auth/operation-not-allowed':'Ative o Google no Authentication do projeto Eita Quiz.'};
- notice(({'eita/nao-autorizado':'Esta conta Google não está autorizada a abrir salas. Só os mestres da lista abrem salas; os alunos entram pelo código.','permission-denied':'A lista de mestres não pôde ser lida. Confira as regras do Firestore (config/mestres).'})[error.code]||messages[error.code]||'Não foi possível conectar. Confira a internet e tente novamente.');
+ notice(({'permission-denied':'O servidor recusou a operação. Confira se as regras do Firestore foram publicadas.'})[error.code]||messages[error.code]||'Não foi possível conectar. Confira a internet e tente novamente.');
 }
 function openRoomQr(){
  byId('qrRoomCode').textContent=room.id;
@@ -57,8 +57,26 @@ byId('createRoom').onclick=async()=>{
  }catch(e){report(e);byId('createRoom').disabled=false;}
 };
 byId('copyRoom').onclick=async()=>{try{await navigator.clipboard.writeText(byId('roomLink').href);notice('Link copiado!');}catch(e){notice('Copie o endereço do link dos alunos.');}};
+// 20/10/2026: encerrar apaga tudo da sessão no servidor (respostas, alunos e a sala).
+// Se a sala for abandonada sem encerrar, a política de TTL (campo expiresAt) apaga em até 24 h.
+async function wipeRoom(target){
+ for(const name of ['answers','members']){
+  const docs=(await getDocs(collection(target,name))).docs;
+  for(let i=0;i<docs.length;i+=400){const batch=writeBatch(db);docs.slice(i,i+400).forEach(d=>batch.delete(d.ref));await batch.commit();}
+ }
+ const batch=writeBatch(db);batch.delete(target);await batch.commit();
+}
 byId('closeRoom').onclick=async()=>{
- try{await updateDoc(room,{status:'closed'});unsub?.();room=null;api.active=false;roster=[];window.eitaGame.setRoster([]);window.eitaGame.reset();byId('roomDetails').hidden=true;byId('createRoom').disabled=false;notice('Sala encerrada.');}catch(e){report(e);}
+ const target=room;if(!target)return;
+ byId('closeRoom').disabled=true;notice('Encerrando e apagando os dados da sala…');
+ unsub?.();unsub=null;
+ try{await wipeRoom(target);notice('Sala encerrada. Nenhum dado da turma ficou guardado.');}
+ catch(e){
+  console.error(e);
+  try{await updateDoc(target,{status:'closed',question:null,result:null,groups:[],participants:[]});}catch(_){}
+  notice('Sala encerrada. Não foi possível apagar tudo agora; o servidor apaga sozinho em até 24 h.');
+ }
+ room=null;api.active=false;roster=[];window.eitaGame.setRoster([]);window.eitaGame.reset();byId('roomDetails').hidden=true;byId('createRoom').disabled=false;byId('closeRoom').disabled=false;
 };
 
 byId('showRoomQr').onclick=openRoomQr;

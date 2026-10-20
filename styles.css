@@ -1614,6 +1614,31 @@ img.step-icon{width:40px;height:40px;object-fit:contain;stroke:none;filter:drop-
 .step-help .step-body p{font-size:13px;line-height:1.5;color:#c9dbec}
 .step-note{color:#9fb6cc;font-style:italic}
 #bankSummary{display:block;margin-top:10px;color:#c9dbec}
+/* Banco de questões por planilha (2026-10-20) */
+.bank-themes-title{margin:12px 0 4px;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#9fb6cc}
+.bank-themes{display:grid;gap:4px;margin:6px 0 10px}
+.bank-theme{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;background:#ffffff0d;cursor:pointer;font-size:13px;color:#e6f2ff;margin:0}
+.bank-theme input{width:18px;height:18px;margin:0;accent-color:var(--step-color,#5fc8ff);flex:none}
+.bank-theme span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bank-theme small{flex:none;font-size:12px;color:#9fb6cc}
+#importSheet,#demoBank{display:block;width:100%;margin-top:8px}
+.download-modelo{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;padding:9px 12px;border-radius:10px;border:1px solid color-mix(in srgb,var(--step-color,#5fc8ff) 55%,transparent);background:color-mix(in srgb,var(--step-color,#5fc8ff) 14%,transparent);color:#e6f2ff;font-size:13px;font-weight:700;text-decoration:none}
+.download-modelo::before{content:"";width:14px;height:14px;flex:none;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v12m-5-5 5 5 5-5M5 21h14'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v12m-5-5 5 5 5-5M5 21h14'/%3E%3C/svg%3E") center/contain no-repeat}
+.modelo-par{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:10px}
+.modelo-par .download-modelo{margin-top:0}
+.download-modelo[hidden]{display:none}
+.google-modelo{--step-color:#34a853}
+.download-modelo:hover{background:color-mix(in srgb,var(--step-color,#5fc8ff) 26%,transparent)}
+.regras h3{margin:14px 0 4px;font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--step-color,#9fd8ff)}
+.regras h3:first-child{margin-top:10px}
+.regras ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.regras li{font-size:13px;line-height:1.45;color:#c9dbec}
+.regras li b,.step-help .step-body p b{color:#e6f2ff}
+.step-help .step-body p.sheet-report{white-space:pre-line;margin:10px 0 0;padding:0;font-size:12px}
+.sheet-report:not(:empty){padding:8px 10px!important;border-radius:8px;background:#ffffff0d}
+.sheet-report[data-kind=erro]{background:#c0000033!important;color:#ffd0d0!important}
+.sheet-report[data-kind=aviso]{background:#ffc00026!important;color:#ffe2a6!important}
+.sheet-report[data-kind=ok]{background:#3fbf6a26!important;color:#c9f5d6!important}
 @media(max-width:850px){.menu-group{grid-column:1/-1;margin:6px 2px 0}.menu-step{margin:0}}
 @media(prefers-reduced-motion:reduce){.step-chevron{transition:none}}
 /* ===== Tela cheia de fato: fica só a barra superior (Eita!) e a área central (pergunta, chefe e alunos).

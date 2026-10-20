@@ -8,6 +8,7 @@ let quiz=[{
   q:'Qual estrutura conecta músculos aos ossos?',a:['Ligamento','Cartilagem','Tendão','Alvéolo'],correct:2,time:15,explain:'Os tendões transmitem a força dos músculos aos ossos.'
 }];
 let questionBank=window.CARDIO_BANK||null;
+let bankLabel='Cardiovascular';
 let battleQuestionsUsed=new Set();
 function shuffleList(items){
  const result=[...items];
@@ -21,7 +22,7 @@ function prepareBattleQuestions(){
  $('questionCount').value=count;$('questionCount').max=questionBank.length;
  quiz=shuffleList(questionBank).slice(0,count).map(item=>({...item,a:[...item.a]}));
  battleQuestionsUsed=new Set(quiz.map(item=>item.id||item.q));
- safe($('bankSummary'),questionBank.length+' perguntas no banco · '+count+' sorteadas por batalha');
+ safe($('bankSummary'),questionBank.length+(questionBank.length===1?' pergunta':' perguntas')+(bankLabel?' de '+bankLabel:' no banco')+' · '+count+' sorteadas por batalha');
 }
 let squads=[],students=[],bossLife=100,teamLife=100,index=-1,running=false,paused=false,locked=false,remaining=0,last=0,handle=null,intermission=false,visualTimer=null,suddenDeath=false,deathTimers=[],attackPending=false,pendingImpact=null,selected='individual';
 const safe=(el,text)=>el.textContent=text;
@@ -518,7 +519,7 @@ async function resolve(){
       shatter($('teamBattery'),'#62ffc9')
     }else if(index===quiz.length-1&&!suddenDeath)result+=' A próxima rodada será de morte súbita.';
     safe($('status'),result);
-    safe($('log'),quiz[index].explain+(quiz[index].sourcePage?' · Cardio.pdf, página '+quiz[index].sourcePage:''));
+    safe($('log'),(quiz[index].explain||'')+(quiz[index].sourcePage?' · Cardio.pdf, página '+quiz[index].sourcePage:'')+(quiz[index].source?' · '+quiz[index].source:''));
     visualTimer=setTimeout(()=>{
       $('boss').style.setProperty('--charge',0);$('chargeEnergy').style.height='0%';$('charge').style.clipPath='inset(100% 0 0)';$('boss').classList.remove('hit');$('teamBattery').classList.remove('attack');$('boss').classList.remove('firing');$('arena').classList.remove('firing','counter')
     },1000);
@@ -622,7 +623,7 @@ $('save').onclick=()=>{
         q:lines[0],a:lines.slice(1,5),correct,time,explain:lines.slice(7).join(' ')
       }
     });
-    questionBank=items;
+    questionBank=items;bankLabel='';
     quiz=items;
     $('editor').close();
     reset()
@@ -773,6 +774,8 @@ document.addEventListener('webkitfullscreenchange',updateFullscreenButton);
 window.eitaGame={
   setRoster(roster){if(locked)return;entrants.splice(0,entrants.length,...roster.map(p=>({name:p.name,avatar:p.emoji})));avatarByName.clear();roster.forEach(p=>avatarByName.set(p.name,p.emoji));prepare();},
   isLocked:()=>locked,
+  // 20/10/2026: banco vindo da planilha (planilha.js), só na memória desta aba.
+  setBank(items,label){if(locked||!items.length)return false;questionBank=items;bankLabel=label||'';reset();return true;},
   reset,
   animals:animalAvatars
 };

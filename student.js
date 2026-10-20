@@ -10,11 +10,11 @@ el('joinOnline').onclick=async()=>{
  try{
   uid=await identify();room=doc(db,'rooms',code);const snapshot=await getDoc(room);if(!snapshot.exists())throw new Error('Sala não encontrada.');
   const existing=await getDoc(doc(room,'members',uid));
-  if(!existing.exists()){if(snapshot.data().status!=='waiting')throw new Error('A sala já começou ou foi encerrada.');await setDoc(doc(room,'members',uid),{name,emoji,joinedAt:serverTimestamp()});}
+  if(!existing.exists()){if(snapshot.data().status!=='waiting')throw new Error('A sala já começou ou foi encerrada.');await setDoc(doc(room,'members',uid),{name,emoji,joinedAt:serverTimestamp(),expiresAt:snapshot.data().expiresAt});}
   joinedName=existing.exists()?existing.data().name:name;
   el('joinPanel').hidden=true;el('playPanel').hidden=false;const identity=el('identity');identity.replaceChildren(window.eitaAnimalIcon(emoji),document.createTextNode(' '+joinedName));
   message('Você entrou na sala '+code+'.');
-  onSnapshot(room,snapshot=>{if(!snapshot.exists()){message('Sala indisponível.');return;}state=snapshot.data();render();},()=>message('Conexão interrompida. Confira sua internet.'));
+  onSnapshot(room,snapshot=>{if(!snapshot.exists()){state={status:'closed'};render();message('Sala encerrada. Obrigado por jogar!');return;}state=snapshot.data();render();},()=>message('Conexão interrompida. Confira sua internet.'));
  }catch(error){message(error.message);el('joinOnline').disabled=false;}
 };
 function render(){
@@ -32,7 +32,7 @@ function render(){
 }
 async function submit(choice){
  const round=state.round;el('studentAnswers').querySelectorAll('button').forEach(b=>b.disabled=true);
- try{await setDoc(doc(room,'answers',round+'_'+uid),{uid,round,choice,submittedAt:serverTimestamp()});answeredRound=round;el('studentResult').textContent='Resposta enviada!';}
+ try{await setDoc(doc(room,'answers',round+'_'+uid),{uid,round,choice,submittedAt:serverTimestamp(),expiresAt:state.expiresAt});answeredRound=round;el('studentResult').textContent='Resposta enviada!';}
  catch(error){message('Resposta não enviada: o tempo pode ter acabado.');render();}
 }
 setInterval(()=>{if(!state)return;el('studentTimer').textContent=state.status==='question'?(state.paused?'Pausado':Math.max(0,Math.ceil((state.deadline.toMillis()-Date.now())/1000))+' s'):'';if(state.status==='question'&&!state.paused&&state.deadline.toMillis()<Date.now())el('studentAnswers').querySelectorAll('button').forEach(b=>b.disabled=true);},250);
