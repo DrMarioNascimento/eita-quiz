@@ -1725,12 +1725,12 @@ main>section{display:flex;flex-direction:column;gap:12px;min-width:0}
 .control-capsule #finish.capsule-btn:before{width:15px;height:15px}
 .control-capsule .capsule-btn:focus-visible{outline:2px solid #ffe0a3;outline-offset:3px}
 .fullscreen-button{width:40px;height:40px;margin-top:0;padding:8px;border-radius:11px}
-#menu-controle>summary{display:flex;min-height:50px;gap:9px;padding:10px 12px}
-#menu-controle>summary .step-icon{width:28px;height:28px}
-#menu-controle>summary .step-text{text-align:left}
-#menu-controle>summary .step-text h2{font-size:14px}
-#menu-controle>summary .step-chevron{position:static;margin:0 2px 4px}
-#menu-controle>summary .step-badge{margin:0;font-size:10px;padding:2px 5px}
+:is(#menu-entrada,#menu-montagem,#menu-config,#menu-controle)>summary{display:flex;min-height:50px;gap:9px;padding:10px 12px}
+:is(#menu-entrada,#menu-montagem,#menu-config,#menu-controle)>summary .step-icon{width:28px;height:28px}
+:is(#menu-entrada,#menu-montagem,#menu-config,#menu-controle)>summary .step-text{text-align:left}
+:is(#menu-entrada,#menu-montagem,#menu-config,#menu-controle)>summary .step-text h2{font-size:14px}
+:is(#menu-entrada,#menu-montagem,#menu-config,#menu-controle)>summary .step-chevron{position:static;margin:0 2px 4px}
+:is(#menu-entrada,#menu-montagem,#menu-config,#menu-controle)>summary .step-badge{margin:0;font-size:10px;padding:2px 5px}
 html.eita-fs #menu-controle{border:0;background:transparent!important;box-shadow:none}
 html.eita-fs #menu-controle>summary{display:none}
 html.eita-fs #menu-controle>.step-body{padding:0}
