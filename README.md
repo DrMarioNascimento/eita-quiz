@@ -7,7 +7,7 @@ Quiz cooperativo de batalha contra um chefão, para aulas, cursos, palestras, tr
 **Fase de testes abertos.** Qualquer pessoa pode usar o Eita! gratuitamente pelos endereços oficiais. Telas, regras e funcionalidades ainda podem mudar.
 
 - Jogar: [eita.drmarionascimento.com.br](https://eita.drmarionascimento.com.br/) · também em [eita.dragongames.dev.br](https://eita.dragongames.dev.br/) e [eita-quiz.web.app](https://eita-quiz.web.app/)
-- Manual de uso (PDF): [Eita-Manual-de-Uso-v1.2.pdf](https://eita.drmarionascimento.com.br/assets/manual/Eita-Manual-de-Uso-v1.2.pdf)
+- Manual de uso (PDF): [Eita-Manual-de-Uso-v1.3.pdf](https://eita.drmarionascimento.com.br/assets/manual/Eita-Manual-de-Uso-v1.3.pdf)
 - Planilha-modelo de perguntas: [eita-modelo-perguntas.xlsx](https://eita.drmarionascimento.com.br/assets/eita-modelo-perguntas.xlsx)
 - Sugestões e problemas: srzrn15m3@mozmail.com
 
@@ -22,7 +22,7 @@ Quiz cooperativo de batalha contra um chefão, para aulas, cursos, palestras, tr
 5. **Ensaio:** dá para experimentar sozinho, com participantes simulados, sem abrir sala.
 6. **Batalha:** se o grupo bate a meta de acertos, golpeia o chefão; se não, o chefão ataca. Metas: Fácil (40%), Normal (mais da metade), Desafio (60%) e Difícil (80%). Morte súbita se os dois lados continuarem de pé.
 7. **Modos:** individual cooperativo, esquadrões com vida compartilhada e esquadrões com vida por esquadrão.
-8. **Privacidade:** ao encerrar a sala, nomes, animais e respostas são apagados do servidor; uma sala esquecida expira 24 horas após ser aberta e é apagada automaticamente (política de TTL do Firestore no campo `expiresAt`).
+8. **Privacidade:** ao encerrar a sala, nomes, animais e respostas são apagados do servidor. Uma sala que ficou aberta é apagada na próxima vez que a mesma pessoa abrir o Eita! no mesmo navegador (se foi aberta há mais de 6 horas). O projeto está no plano gratuito do Firebase, que não permite exclusão automática por TTL; o campo `expiresAt` continua gravado para quando houver plano pago.
 
 Mário César Nascimento estuda **Game Design e desenvolvimento de jogos**. Este projeto acompanha esse percurso de formação e experimentação.
 

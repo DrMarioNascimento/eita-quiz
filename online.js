@@ -30,9 +30,35 @@ const api={active:false,
 window.eitaOnline=api;
 // 20/10/2026: liga a tela à sala (nova ou retomada depois de recarregar a página).
 const SALA='eita-sala-sessao';
+// 20/10/2026: sem plano pago não há exclusão automática no servidor (TTL). Por isso, este navegador lembra
+// as salas que abriu e ainda não apagou; se uma ficar aberta (aba fechada, internet caiu), ela é apagada
+// na próxima vez que a mesma pessoa abrir o Eita! aqui (se tiver sido encerrada ou aberta há mais de 6 h).
+// Guarda só o código da sala, nada dos participantes.
+const PENDENTES='eita-salas-pendentes';
+function pendentes(){try{return JSON.parse(localStorage.getItem(PENDENTES)||'[]').filter(c=>/^\d{6}$/.test(c));}catch(e){return [];}}
+function marcar(code){try{const l=pendentes();if(!l.includes(code))l.push(code);localStorage.setItem(PENDENTES,JSON.stringify(l.slice(-20)));}catch(e){}}
+function desmarcar(code){try{localStorage.setItem(PENDENTES,JSON.stringify(pendentes().filter(c=>c!==code)));}catch(e){}}
+async function faxina(){
+  const lista=pendentes().filter(c=>!room||c!==room.id);if(!lista.length)return;
+  let me=null;try{me=await currentTeacher();}catch(e){}
+  if(!me)return;
+  let apagadas=0;
+  for(const code of lista){
+   try{
+    const alvo=doc(db,'rooms',code),snap=await getDoc(alvo);
+    if(!snap.exists()||snap.data().owner!==me){desmarcar(code);continue;}
+    const d=snap.data(),idade=Date.now()-(d.createdAt?.toMillis?.()||0);
+    // só apaga sala encerrada ou aberta há mais de 6 h: uma sala em uso em outra aba fica intacta
+    if(d.status!=='closed'&&idade<6*3600e3)continue;
+    await wipeRoom(alvo);apagadas++;desmarcar(code);
+   }catch(e){console.error('Faxina da sala '+code,e);}
+  }
+  if(apagadas&&!room)notice(apagadas===1?'Os dados de uma sala que tinha ficado aberta foram apagados.':'Os dados de '+apagadas+' salas que tinham ficado abertas foram apagados.');
+}
 function attach(retomada){
   api.active=true;round=0;window.eitaGame.reset();
   try{sessionStorage.setItem(SALA,room.id);}catch(e){}
+  marcar(room.id);
   byId('createRoom').disabled=true;
   byId('roomDetails').hidden=false;byId('roomCode').textContent='Código: '+room.id;
   // mesmo endereço de quem conduz (eita.drmarionascimento.com.br ou eita-quiz.web.app)
@@ -72,11 +98,12 @@ byId('createRoom').onclick=async()=>{
   }
   if(!room)throw new Error('Não foi possível gerar código');
   attach(false);
+  faxina();
  }catch(e){report(e);byId('createRoom').disabled=false;}
 };
 byId('copyRoom').onclick=async()=>{try{await navigator.clipboard.writeText(byId('roomLink').href);notice('Link copiado!');}catch(e){notice('Copie o endereço do link dos participantes.');}};
 // 20/10/2026: encerrar apaga tudo da sessão no servidor (respostas, participantes e a sala).
-// Se a sala for abandonada sem encerrar, ela expira 24 h depois de aberta e a política de TTL (campo expiresAt) a apaga.
+// Se a sala for abandonada sem encerrar, a faxina acima a apaga quando a mesma pessoa voltar a abrir o Eita! neste navegador.
 async function wipeRoom(target){
  for(const name of ['answers','members']){
   const docs=(await getDocs(collection(target,name))).docs;
@@ -88,11 +115,11 @@ byId('closeRoom').onclick=async()=>{
  const target=room;if(!target)return;
  byId('closeRoom').disabled=true;notice('Encerrando e apagando os dados da sala…');
  unsub?.();unsub=null;try{sessionStorage.removeItem(SALA);}catch(e){}
- try{await wipeRoom(target);notice('Sala encerrada. Nenhum dado dos participantes ficou guardado.');}
+ try{await wipeRoom(target);desmarcar(target.id);notice('Sala encerrada. Nenhum dado dos participantes ficou guardado.');}
  catch(e){
   console.error(e);
   try{await updateDoc(target,{status:'closed',question:null,result:null,groups:[],participants:[]});}catch(_){}
-  notice('Sala encerrada. Não foi possível apagar tudo agora; o servidor apaga sozinho quando a sala expirar (24 h depois de aberta).');
+  notice('Sala encerrada, mas os dados não puderam ser apagados agora (confira a internet). Eles serão apagados na próxima vez que você abrir o Eita! neste navegador.');
  }
  room=null;api.active=false;roster=[];window.eitaGame.setRoster([]);window.eitaGame.reset();byId('roomDetails').hidden=true;byId('createRoom').disabled=false;byId('closeRoom').disabled=false;
 };
@@ -106,4 +133,4 @@ observeTeacher(authorized=>{
  byId('edit').disabled=!authorized||window.eitaGame.isLocked();
  if(!authorized)byId('editor').close();
 });
-resume();
+resume().then(faxina);

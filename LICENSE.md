@@ -38,7 +38,7 @@ Sugestões e relatos de problemas: srzrn15m3@mozmail.com
 
 - As perguntas da planilha pertencem a quem as criou. O Eita! as lê no navegador de quem conduz a partida e não as envia nem guarda em servidor.
 - Quem conduz a partida é responsável pelo conteúdo das perguntas que usa, inclusive por direitos de terceiros sobre textos e imagens citados.
-- Durante uma sala, o servidor guarda só o necessário para o jogo funcionar: o nome digitado e o animal escolhido por cada participante e as respostas de cada rodada. Esses dados são apagados quando a sala é encerrada ou, se ela não for encerrada, quando expira (24 horas após ser aberta). O Eita! não gera relatórios, não guarda notas e não cria contas para participantes.
+- Durante uma sala, o servidor guarda só o necessário para o jogo funcionar: o nome digitado e o animal escolhido por cada participante e as respostas de cada rodada. Esses dados são apagados quando quem conduz encerra a sala. Se a sala ficar aberta (por exemplo, a aba foi fechada sem encerrar), ela é apagada na próxima vez que a mesma pessoa abrir o Eita! no mesmo navegador. Por isso, recomenda-se sempre encerrar a sala ao terminar. O Eita! não gera relatórios, não guarda notas e não cria contas para participantes.
 - Recomenda-se que os participantes usem primeiro nome ou apelido.
 
 ## Componentes de terceiros
