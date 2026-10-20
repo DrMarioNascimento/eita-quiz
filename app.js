@@ -190,6 +190,12 @@ function controls(){
   $('finish').disabled=!running;
   $('start').textContent=index<0?'Iniciar Quiz':'Próxima pergunta';
   $('pause').textContent=paused?'Continuar':'Pausar';
+  ['start','pause','finish','reset'].forEach(id=>{const button=$(id);button.title=button.textContent;button.setAttribute('aria-label',button.textContent);});
+  $('pause').dataset.icon=paused?'play':'pause';
+  $('start').dataset.shortLabel=index<0?'Iniciar':'Próxima';
+  $('pause').dataset.shortLabel=paused?'Retomar':'Pausar';
+  $('finish').dataset.shortLabel='Encerrar';
+  $('reset').dataset.shortLabel='Reiniciar';
 }
 function stopBossVideo(){
   cancelBossShot();

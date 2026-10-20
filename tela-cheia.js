@@ -21,12 +21,14 @@
   if(exitBtn)return;
   const body=card()?.querySelector('.step-body');if(!body)return;
   exitBtn=document.createElement('button');
-  exitBtn.type='button';exitBtn.className='fs-exit';exitBtn.textContent='Sair da tela cheia';
+  exitBtn.type='button';exitBtn.className='fs-exit capsule-btn';exitBtn.textContent='Sair da tela cheia';
+  exitBtn.title='Sair da tela cheia';exitBtn.setAttribute('aria-label','Sair da tela cheia');
+  exitBtn.dataset.shortLabel='Sair';
   exitBtn.addEventListener('click',()=>{
    if(apiFs())(document.exitFullscreen||document.webkitExitFullscreen).call(document);
-   else exitBtn.textContent='Pressione F11 para sair';
+   else {exitBtn.textContent='Pressione F11 para sair';exitBtn.title=exitBtn.textContent;exitBtn.setAttribute('aria-label',exitBtn.textContent);}
   });
-  body.append(exitBtn);
+  (body.querySelector('.control-capsule')||body).append(exitBtn);
  }
 
  function enter(){
@@ -46,7 +48,7 @@
   const c=card();if(c&&!wasOpen)c.open=false;
   root.classList.remove('eita-fs','eita-fs-active');
   c?.style.removeProperty('--fs-shift');
-  if(exitBtn)exitBtn.textContent='Sair da tela cheia';
+  if(exitBtn){exitBtn.textContent='Sair da tela cheia';exitBtn.title=exitBtn.textContent;exitBtn.setAttribute('aria-label',exitBtn.textContent);}
  }
 
  /* Mesma posição do menu; se o cartão não couber na tela, sobe só o necessário. */
@@ -76,3 +78,4 @@
  document.addEventListener('click',e=>{if(on&&e.target.closest('#menu-controle>summary'))e.preventDefault();},true);
  ['mousemove','pointerdown','touchstart','keydown'].forEach(ev=>document.addEventListener(ev,wake,{passive:true}));
 })();
+
