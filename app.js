@@ -628,29 +628,27 @@ reset();
 
 // Recalcula medidas quando o navegador muda de monitor, largura ou zoom.
 function fitVideoToStill(){
-  const boss=$('boss'),team=$('teamBattery').getBoundingClientRect(),v=$('bossVideo');
-  if(!team.height)return;
-  // A medida alpha do primeiro quadro permanece fixa durante toda a animação.
-  const bounds=bossVisibleBounds||{top:.135,bottom:.955};
-  const innerHeight=Math.max(1,team.height-16);
-  const visibleHeight=innerHeight*.70;
-  const frameHeight=visibleHeight/(bounds.bottom-bounds.top);
-  const frameWidth=frameHeight*((v.videoWidth&&v.videoHeight)?v.videoWidth/v.videoHeight:1);
-  const centerOffset=(boss.getBoundingClientRect().width-frameWidth)*.5;
-  boss.style.setProperty('--character-frame-left',centerOffset+'px');
-  boss.style.setProperty('--character-frame-height',frameHeight+'px');
-  boss.style.setProperty('--character-frame-width',frameWidth+'px');
-  boss.style.setProperty('--character-frame-bottom',(8+(innerHeight-visibleHeight)*.5-innerHeight*.06-frameHeight*(1-bounds.bottom))+'px');
-  positionStudentShot();
+ const boss=$('boss'),v=$('bossVideo'),area=boss.getBoundingClientRect();
+ if(!area.height||!area.width)return;
+ const bounds=bossVisibleBounds||{top:.135,bottom:.955},span=Math.max(.1,bounds.bottom-bounds.top);
+ const ratio=v.videoWidth&&v.videoHeight?v.videoWidth/v.videoHeight:1;
+ // Transparent video margins do not count as body width; keep motion space.
+ const visibleWidth=Math.max(.5,(bounds.right??1)-(bounds.left??0));
+ const frameHeight=Math.max(1,Math.min((area.height-24)/span,(area.width-24)/(ratio*visibleWidth))),frameWidth=frameHeight*ratio;
+ const center=((bounds.left??0)+(bounds.right??1))/2;
+ boss.style.setProperty('--character-frame-left',(area.width/2-frameWidth*center)+'px');
+ boss.style.setProperty('--character-frame-height',frameHeight+'px');
+ boss.style.setProperty('--character-frame-width',frameWidth+'px');
+ boss.style.setProperty('--character-frame-bottom',(10-frameHeight*(1-bounds.bottom))+'px');
+ positionStudentShot();
 }
 function positionStudentShot(){
-  const arena=$('arena').getBoundingClientRect(),boss=$('boss').getBoundingClientRect(),team=$('teamBattery').getBoundingClientRect();
-  const chestX=boss.left-arena.left+boss.width*.5;
-  const chestY=boss.bottom-arena.top-8-(team.height-16)*.09-(team.height-16)*.70*.64;
-  const originX=team.left-arena.left+team.width*.15;
-  $('arena').style.setProperty('--student-shot-y',chestY+'px');
-  $('arena').style.setProperty('--student-shot-x',chestX+'px');
-  $('arena').style.setProperty('--student-shot-length',Math.max(20,originX-chestX)+'px');
+ const scene=$('arena').getBoundingClientRect(),video=$('bossVideo').getBoundingClientRect(),team=$('teamBattery').getBoundingClientRect();
+ const bounds=bossVisibleBounds||{top:.135,bottom:.955};
+ const chestX=video.left-scene.left+video.width*((bounds.left??0)+(bounds.right??1))/2,chestY=video.top-scene.top+video.height*(bounds.top+(bounds.bottom-bounds.top)*.38);
+ $('arena').style.setProperty('--student-shot-y',chestY+'px');
+ $('arena').style.setProperty('--student-shot-x',chestX+'px');
+ $('arena').style.setProperty('--student-shot-length',Math.max(20,team.left-scene.left+team.width*.15-chestX)+'px');
 }
 $('bossVideo').onloadedmetadata=()=>{fitVideoToStill();if(!attackPending)stopBossVideo()};
 function measureBossFirstFrame(){
@@ -662,37 +660,80 @@ function measureBossFirstFrame(){
     const context=canvas.getContext('2d',{willReadFrequently:true});
     context.drawImage(v,0,0,canvas.width,canvas.height);
     const pixels=context.getImageData(0,0,canvas.width,canvas.height).data;
-    let top=canvas.height,bottom=-1;
+    let top=canvas.height,bottom=-1,left=canvas.width,right=-1;
     for(let y=0;y<canvas.height;y++){
       let count=0;
-      for(let x=0;x<canvas.width;x++)if(pixels[(y*canvas.width+x)*4+3]>160)count++;
+      for(let x=0;x<canvas.width;x++)if(pixels[(y*canvas.width+x)*4+3]>160){count++;left=Math.min(left,x);right=Math.max(right,x);}
       if(count>=4){top=Math.min(top,y);bottom=y;}
     }
     if(bottom>top&&bottom-top<canvas.height*.98){
-      bossVisibleBounds={top:top/canvas.height,bottom:(bottom+1)/canvas.height};
+      bossVisibleBounds={top:top/canvas.height,bottom:(bottom+1)/canvas.height,left:left/canvas.width,right:(right+1)/canvas.width};
       fitVideoToStill();
     }
   }catch(error){console.warn('Não foi possível medir o primeiro quadro do chefe.',error);}
 }
 $('bossVideo').addEventListener('seeked',measureBossFirstFrame);
 $('bossVideo').onloadeddata=()=>{measureBossFirstFrame();if(!attackPending&&!$('boss').classList.contains('video-active')){$('bossVideo').pause();$('bossVideo').currentTime=0}};
+// Grid size follows the usable area and participant count.
+function fitRosterGrid(container,count,width,height,group=false){
+ if(!count)return;
+ let best={score:-1,columns:1,rows:count,width,height:height/count};
+ for(let columns=1;columns<=count;columns++){
+  const rows=Math.ceil(count/columns),w=(width-(columns-1)*8)/columns,h=(height-(rows-1)*8)/rows;
+  const score=group?Math.min(w/190,h/220):Math.min(w/110,h/125);
+  if(score>best.score)best={score,columns,rows,width:w,height:h};
+ }
+ container.style.setProperty('--roster-columns',best.columns);
+ container.style.setProperty('--roster-rows',best.rows);
+ container.style.setProperty('--avatar-size',Math.max(24,Math.min(best.width*.72,best.height*.72,best.height-(group?105:40)))+'px');
+ container.style.setProperty('--roster-font',Math.max(11,Math.min(22,best.width/9,best.height/7))+'px');
+}
 function fitSceneToViewport(force=false){
-  if(!force&&(attackPending||$('boss').classList.contains('video-active')))return;
-  const arena=$('arena'),boss=$('boss'),team=$('teamBattery');
-  arena.style.minHeight='';boss.style.height='';boss.style.minHeight='';team.style.minHeight='';
-  squadCards.forEach(card=>card.style.minHeight='');
-  const rect=team.getBoundingClientRect();
-  boss.style.setProperty('--team-battery-width',rect.width+'px');
-  boss.style.setProperty('--team-battery-height',rect.height+'px');
-  boss.style.height=rect.height+'px';
-  fitVideoToStill();
+ if(!force&&(attackPending||$('boss').classList.contains('video-active')))return;
+ const arena=$('arena'),boss=$('boss'),team=$('teamBattery'),header=document.querySelector('header');
+ document.documentElement.style.setProperty('--game-header-height',header.getBoundingClientRect().height+'px');
+ arena.style.minHeight='';boss.style.height='';boss.style.minHeight='';team.style.minHeight='';
+ const section=arena.parentElement,question=section.querySelector('.question'),credit=section.querySelector('.author-credit');
+ const style=getComputedStyle(section),as=getComputedStyle(arena);
+ const footer=credit&&getComputedStyle(credit).display!=='none'?credit.getBoundingClientRect().height+12:0;
+ const viewport=window.visualViewport?.height||innerHeight;
+ const usable=viewport-header.getBoundingClientRect().height-question.getBoundingClientRect().height-footer-parseFloat(style.paddingTop)-parseFloat(style.paddingBottom)-12;
+ const labels=arena.querySelector('.battle-label').getBoundingClientRect().height,meter=arena.querySelector('.art-meter').getBoundingClientRect().height;
+ const height=Math.max(240,usable-parseFloat(as.paddingTop)-parseFloat(as.paddingBottom)-labels-meter-18);
+ arena.style.setProperty('--battle-height',Math.floor(height)+'px');
+ const rect=team.getBoundingClientRect(),content=team.querySelector(':scope > .content');
+ boss.style.setProperty('--team-battery-width',rect.width+'px');
+ boss.style.setProperty('--team-battery-height',rect.height+'px');
+ const grouped=selected!=='individual';team.classList.toggle('has-squads',grouped);
+ const box=content.getBoundingClientRect();
+ if(!grouped)fitRosterGrid($('students'),students.length,box.width,box.height);
+ else {
+  fitRosterGrid($('groups'),squads.length,box.width,Math.max(100,box.height-$('students').getBoundingClientRect().height-8),true);
+  // Reserve real space for every member name before enlarging squad emblems.
+  squadCards.forEach(card=>{
+   card.style.setProperty('--avatar-size','24px');
+   const body=card.querySelector('.content'),r=body.getBoundingClientRect();
+   const textHeight=['strong','.students','small'].reduce((sum,selector)=>sum+body.querySelector(selector).getBoundingClientRect().height,0);
+   card.style.setProperty('--avatar-size',Math.max(24,Math.min(r.width*.65,r.height-textHeight-32))+'px');
+  });
+ }
+ fitVideoToStill();
 }
 if(typeof window!=='undefined'){
-  let resizeFrame;
-  window.addEventListener('resize',()=>{cancelAnimationFrame(resizeFrame);resizeFrame=requestAnimationFrame(()=>fitSceneToViewport(true))});
-  if(window.visualViewport)window.visualViewport.addEventListener('resize',()=>{cancelAnimationFrame(resizeFrame);resizeFrame=requestAnimationFrame(()=>fitSceneToViewport(true))});
-  if(typeof ResizeObserver!=='undefined')new ResizeObserver(()=>fitSceneToViewport()).observe($('teamBattery'));
-  requestAnimationFrame(()=>fitSceneToViewport());
+ let resizeFrame;
+ const scheduleFit=()=>{cancelAnimationFrame(resizeFrame);resizeFrame=requestAnimationFrame(()=>fitSceneToViewport(true));};
+ window.addEventListener('resize',scheduleFit);
+ window.visualViewport?.addEventListener('resize',scheduleFit);
+ if(typeof ResizeObserver!=='undefined'){
+  const observer=new ResizeObserver(scheduleFit);
+  observer.observe(document.querySelector('.question'));observer.observe(document.querySelector('header'));
+ }
+ new MutationObserver(scheduleFit).observe($('groups'),{childList:true});
+ new MutationObserver(scheduleFit).observe($('students'),{childList:true});
+ document.addEventListener('fullscreenchange',scheduleFit);
+ document.addEventListener('webkitfullscreenchange',scheduleFit);
+ document.fonts?.ready.then(scheduleFit);
+ scheduleFit();
 }
 
 // Mesmo mecanismo de tela cheia usado no Dilema do Bonde.
@@ -729,3 +770,4 @@ window.eitaGame={
   reset,
   animals:animalAvatars
 };
+

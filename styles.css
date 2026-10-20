@@ -1655,3 +1655,57 @@ html.eita-fs .fs-exit{display:block;margin-top:12px;font-size:14px;color:#9fb6cc
 .step-prep>summary .step-badge,.step-play>summary .step-badge{grid-area:end;justify-self:end;margin-right:24px}
 .step-prep>summary .step-chevron,.step-play>summary .step-chevron{position:absolute;top:22px;right:16px;margin:0}
 .step-prep[open]>summary .step-chevron,.step-play[open]>summary .step-chevron{top:26px}
+
+/* Screen-sized battle area; roster density never determines boss size. */
+main{grid-template-columns:310px minmax(0,1fr);min-height:calc(100dvh - var(--game-header-height,160px))}
+main>section{display:flex;flex-direction:column;gap:12px;min-width:0}
+.question{position:relative;flex:none;margin:0;padding:18px 22px}
+.question h2{min-height:0;margin:6px 0 12px}
+.question .options:empty{display:none;min-height:0}
+.question .result-card{margin:8px 0 0;padding:0;border:0;background:none;box-shadow:none}
+.question .status{min-height:0;font-size:15px;padding:0}
+.question .log:empty,.question #transition:empty{display:none}
+.question #transition{margin:5px 0}
+.question .timer{height:44px;min-height:44px;min-width:150px;margin-top:10px;font-size:21px}
+.arena{flex:none;padding:16px;gap:20px;--battle-height:410px}
+.team-side,.boss-side{grid-template-rows:auto 105px var(--battle-height);align-items:stretch;row-gap:8px}
+.boss-art,.team-art,.boss-art .meter-frame,.team-art .meter-frame{height:105px}
+.boss-art .art-slot,.team-art .art-slot{top:64.5px;height:11px}
+.boss{height:var(--battle-height);min-height:0;align-self:stretch}
+.battery-shell{height:var(--battle-height);width:100%;max-width:none;padding-top:0;align-self:stretch}
+#teamBattery{height:100%;min-height:0;padding:12px;margin:0}
+#teamBattery>.content{height:100%;min-height:0;gap:8px;justify-content:stretch;overflow:auto;scrollbar-width:thin}
+#students.students{display:grid;grid-template-columns:repeat(var(--roster-columns,1),minmax(0,1fr));grid-template-rows:repeat(var(--roster-rows,1),minmax(72px,1fr));gap:8px;flex:1;min-height:0}
+#students:empty{display:none}
+#students .student{min-height:72px;padding:6px;min-width:0;gap:5px}
+#students .animal-avatar{width:var(--avatar-size,70px);height:var(--avatar-size,70px);max-width:100%;flex-shrink:0}
+#students .student-name{font-size:var(--roster-font,13px);overflow-wrap:anywhere;line-height:1.2}
+#teamBattery.has-squads #students{display:block;flex:none;font-size:12px;text-align:center}
+#groups{flex:1;min-height:0;grid-template-columns:repeat(var(--roster-columns,1),minmax(0,1fr));grid-template-rows:repeat(var(--roster-rows,1),minmax(160px,1fr));gap:8px}
+#groups:empty{display:none}
+#groups>.battery{min-height:160px;padding:8px;overflow:auto}
+#groups .content{height:100%;display:flex;flex-direction:column;gap:4px;justify-content:flex-start}
+#groups .content>*{flex-shrink:0}
+#groups .squad-emblem{margin:0}
+#groups .squad-emblem .animal-icon{width:var(--avatar-size,70px);height:var(--avatar-size,70px);max-width:100%}
+#groups .content strong{min-height:0;margin:0;font-size:clamp(12px,var(--roster-font,14px),18px);line-height:1.2}
+#groups .content small{min-height:0;margin:0;font-size:11px}
+#groups .students{grid-template-columns:repeat(auto-fit,minmax(65px,1fr));margin:0;gap:3px;flex:none;min-height:0}
+#groups .squad-member{font-size:12px;overflow-wrap:anywhere;padding:3px;line-height:1.2}
+.author-credit{flex:none;margin:0;padding:4px 0 0;font-size:12px}
+@media(max-width:850px){
+ main{grid-template-columns:1fr}
+ .arena{padding:12px;gap:12px}
+ .team-side,.boss-side{grid-template-rows:auto 85px var(--battle-height)}
+ .boss-art,.team-art,.boss-art .meter-frame,.team-art .meter-frame{height:85px}
+ .boss-art .art-slot,.team-art .art-slot{top:52px;height:9px}
+}
+@media(max-width:480px){
+ main>section{padding:10px}
+ .question{padding:12px}
+ .arena{padding:10px 6px;gap:10px}
+ #teamBattery{padding:6px}
+ .battle-label{font-size:10px;letter-spacing:0}
+}
+
+

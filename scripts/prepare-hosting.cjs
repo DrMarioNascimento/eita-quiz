@@ -5,7 +5,7 @@ const output = path.join(root, 'dist');
 const files = [
   'index.html', 'aluno.html', '404.html', 'styles.css', 'animals.js',
   'app.js', 'cardio-bank.js', 'chefes.js', 'cloud.js', 'firebase-config.js',
-  'online.js', 'qr.js', 'student.js', 'typography.js'
+  'online.js', 'qr.js', 'student.js', 'typography.js', 'menu.js', 'tela-cheia.js'
 ];
 // Only the application and its assets are eligible for publication.
 fs.mkdirSync(output, { recursive: true });
@@ -27,3 +27,4 @@ function copyAssets(source, destination) {
 }
 copyAssets(path.join(root, 'assets'), path.join(output, 'assets'));
 console.log('Prepared Hosting package: application files and assets only.');
+
