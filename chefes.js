@@ -24,6 +24,10 @@ window.EITA_CHEFES=[
   {
     id:'onca',nome:'Onça',video:'assets/chefes/onca.webm',fundo:'assets/chefes/biblioteca-fundo.jpg',
     golpe:{tipo:'pow',inicio:5.35,viagem:.36,origem:[.95,.42],cor:'#ff8a1f'}
+  },
+  {
+    id:'esqueleto',nome:'Esqueleto',video:'assets/chefes/esqueleto.webm',fundo:'assets/chefes/esqueleto-fundo.jpg',
+    golpe:{tipo:'pow',inicio:5.15,viagem:.38,origem:[.96,.30],cor:'#ff5a1a'}
   }
 ];
 
