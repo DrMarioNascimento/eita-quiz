@@ -16,6 +16,11 @@
  const texto=v=>String(v??'').replace(/\s+/g,' ').trim();
 
  let banco=[],temas=[],marcados=new Set(),nomeBanco='',origem='demo';
+ // 20/10/2026: a planilha fica no armazenamento desta aba (sessionStorage): resiste a recarregar a página,
+ // é apagada pelo navegador ao fechar a aba e nunca sai do computador.
+ const CHAVE='eita-planilha-sessao';
+ function guardar(){try{if(origem==='planilha')sessionStorage.setItem(CHAVE,JSON.stringify({banco,nomeBanco,marcados:[...marcados]}));else sessionStorage.removeItem(CHAVE);}catch(e){}}
+ function recuperar(){try{const d=JSON.parse(sessionStorage.getItem(CHAVE)||'null');if(!d||!Array.isArray(d.banco)||!d.banco.length)return false;banco=d.banco;nomeBanco=d.nomeBanco||'';temas=agrupar(banco);const ok=new Set(temas.map(t=>t.key));marcados=new Set((d.marcados||[]).filter(k=>ok.has(k)));if(!marcados.size)marcados=ok;origem='planilha';return true;}catch(e){return false;}}
 
  function carregarXlsx(){
   if(window.XLSX)return Promise.resolve(window.XLSX);
@@ -97,7 +102,7 @@
     if(window.eitaGame?.isLocked()){cb.checked=!cb.checked;relatar('Termine ou reinicie a partida antes de trocar o tema.');return;}
     if(cb.checked)marcados.add(t.key);else marcados.delete(t.key);
     if(!marcados.size){marcados.add(t.key);cb.checked=true;relatar('Deixe pelo menos um tema marcado.');return;}
-    aplicar();
+    aplicar();guardar();
    };
    const nome=document.createElement('span');nome.textContent=t.nome;
    const n=document.createElement('small');n.textContent=t.n;
@@ -112,7 +117,7 @@
  function usarDemo(inicial){
   if(window.eitaGame?.isLocked()){relatar('Termine ou reinicie a partida antes de trocar o banco.');return;}
   const demo=(window.CARDIO_BANK||[]).map(it=>({...it,theme:DEMO}));
-  banco=demo;temas=agrupar(banco);marcados=new Set(temas.map(t=>t.key));nomeBanco='';origem='demo';
+  banco=demo;temas=agrupar(banco);marcados=new Set(temas.map(t=>t.key));nomeBanco='';origem='demo';guardar();
   desenharTemas();
   if(banco.length&&!inicial)aplicar();
  }
@@ -130,6 +135,7 @@
    banco=r.itens;temas=agrupar(banco);marcados=new Set(temas.map(t=>t.key));origem='planilha';
    desenharTemas();
    if(aplicar()===false){relatar('Termine ou reinicie a partida antes de importar.','erro');return;}
+   guardar();
    let msg=`Planilha carregada: ${banco.length} ${banco.length===1?'pergunta':'perguntas'} em ${temas.length} ${temas.length===1?'tema':'temas'}.`;
    if(r.inativas)msg+=` ${r.inativas} inativa(s) ignorada(s).`;
    if(r.avisos.length)msg+=`\nTexto acima do recomendado (pode ficar apertado na TV/celular): linha ${r.avisos.slice(0,10).join(', ')}${r.avisos.length>10?'…':''}.`;
@@ -142,10 +148,9 @@
   if(MODELO_GOOGLE){const url=MODELO_GOOGLE.replace(/\/(edit|view|copy).*$/,'')+'/copy';document.querySelectorAll('.google-modelo').forEach(l=>{l.href=url;l.hidden=false;});}
   $('importSheet').onclick=()=>{$('sheetFile').value='';$('sheetFile').click();};
   $('sheetFile').onchange=()=>{const f=$('sheetFile').files[0];if(f)importar(f);$('sheetFile').value='';};
-  $('demoBank').onclick=()=>{usarDemo();relatar('Voltou ao banco de demonstração. A planilha foi descartada.');};
-  // o banco só existe nesta aba: some ao sair
-  addEventListener('pagehide',()=>{banco=[];temas=[];});
-  usarDemo(true);
+  $('demoBank').onclick=()=>{usarDemo();relatar('Planilha descartada. Voltou ao banco de demonstração.');};
+  if(recuperar()){desenharTemas();aplicar();relatar(`Planilha mantida desta sessão: ${banco.length} ${banco.length===1?'pergunta':'perguntas'} em ${temas.length} ${temas.length===1?'tema':'temas'}.`,'ok');}
+  else usarDemo(true);
  }
  if(document.readyState==='loading')addEventListener('DOMContentLoaded',iniciar);else iniciar();
 })();

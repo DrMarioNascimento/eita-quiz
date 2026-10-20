@@ -1614,6 +1614,10 @@ img.step-icon{width:40px;height:40px;object-fit:contain;stroke:none;filter:drop-
 .step-help .step-body p{font-size:13px;line-height:1.5;color:#c9dbec}
 .step-note{color:#9fb6cc;font-style:italic}
 #bankSummary{display:block;margin-top:10px;color:#c9dbec}
+/* Aviso junto do Iniciar: por que a partida ainda não pode começar (2026-10-20) */
+.start-hint{margin:8px 2px 0;padding:7px 10px;border-radius:8px;background:#ffc16b1f;border:1px solid #ffc16b55;color:#ffd79b;font-size:12.5px;line-height:1.35}
+.start-hint[hidden]{display:none}
+html.eita-fs .start-hint{display:none}
 /* Banco de questões por planilha (2026-10-20) */
 .bank-themes-title{margin:12px 0 4px;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#9fb6cc}
 .bank-themes{display:grid;gap:4px;margin:6px 0 10px}

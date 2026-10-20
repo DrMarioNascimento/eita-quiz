@@ -1,4 +1,4 @@
-import {db,identifyTeacher,observeTeacher,doc,collection,updateDoc,getDocs,onSnapshot,runTransaction,serverTimestamp,Timestamp,query,where,writeBatch} from './cloud.js';
+import {db,identifyTeacher,currentTeacher,getDoc,observeTeacher,doc,collection,updateDoc,getDocs,onSnapshot,runTransaction,serverTimestamp,Timestamp,query,where,writeBatch} from './cloud.js';
 const byId=id=>document.getElementById(id);
 let room=null,uid=null,roster=[],round=0,unsub=null;
 const notice=text=>byId('roomNotice').textContent=text;
@@ -28,6 +28,38 @@ const api={active:false,
  reset(){if(room)updateDoc(room,{status:'waiting',paused:false,result:null,question:null,participants:[]}).catch(report);}
 };
 window.eitaOnline=api;
+// 20/10/2026: liga a tela à sala (nova ou retomada depois de recarregar a página).
+const SALA='eita-sala-sessao';
+function attach(retomada){
+  api.active=true;round=0;window.eitaGame.reset();
+  try{sessionStorage.setItem(SALA,room.id);}catch(e){}
+  byId('createRoom').disabled=true;
+  byId('roomDetails').hidden=false;byId('roomCode').textContent='Código: '+room.id;
+  // mesmo endereço de quem conduz (eita.drmarionascimento.com.br ou eita-quiz.web.app)
+  const link=new URL('aluno.html',location.protocol==='https:'?location.href:'https://eita-quiz.web.app/');
+  link.searchParams.set('sala',room.id);byId('roomLink').href=link.href;
+  if(!retomada)openRoomQr();
+  document.querySelector('header small').textContent='Sala online · respostas reais';
+  notice(retomada?'Sala '+room.id+' retomada. Quem já tinha entrado continua na sala; a partida recomeça do início.':'Compartilhe o link ou o código. Espere todos entrarem antes de iniciar.');
+  unsub=onSnapshot(collection(room,'members'),snapshot=>{
+   const members=snapshot.docs.map(d=>({uid:d.id,...d.data()}));
+   if(!window.eitaGame.isLocked()){
+    roster=members.map(p=>({...p,name:p.name+' · '+p.uid.slice(0,4)}));window.eitaGame.setRoster(roster);
+   }
+   byId('roomRoster').textContent=members.length+' participante(s) na sala';byId('qrRoster').textContent=byId('roomRoster').textContent;
+  },report);
+}
+async function resume(){
+  let code=null;try{code=sessionStorage.getItem(SALA);}catch(e){}
+  if(!code||room)return;
+  try{
+   const me=await currentTeacher();if(!me){sessionStorage.removeItem(SALA);return;}
+   const candidate=doc(db,'rooms',code),snap=await getDoc(candidate);
+   const d=snap.exists()?snap.data():null;
+   if(!d||d.owner!==me||d.status==='closed'||d.expiresAt.toMillis()<Date.now()){sessionStorage.removeItem(SALA);return;}
+   uid=me;room=candidate;attach(true);
+  }catch(e){console.error(e);}
+}
 byId('createRoom').onclick=async()=>{
  if(location.protocol!=='https:'&&location.hostname!=='localhost'){notice('Abra https://eita-quiz.web.app/ para criar a sala online.');return;}
  byId('createRoom').disabled=true;notice('Entrando com Google…');
@@ -39,26 +71,12 @@ byId('createRoom').onclick=async()=>{
    try{await runTransaction(db,async tx=>{const existing=await tx.get(candidate);if(existing.exists())throw new Error('collision');tx.set(candidate,{owner:uid,status:'waiting',round:0,question:null,result:null,paused:false,deadline:Timestamp.now(),createdAt:serverTimestamp(),expiresAt:Timestamp.fromMillis(Date.now()+86400000),participants:[],groups:[],mode:'individual'});});room=candidate;break;}catch(e){if(e.message!=='collision')throw e;}
   }
   if(!room)throw new Error('Não foi possível gerar código');
-  api.active=true;round=0;window.eitaGame.reset();
-  byId('roomDetails').hidden=false;byId('roomCode').textContent='Código: '+room.id;
-  // mesmo endereço do professor (eita.drmarionascimento.com.br ou eita-quiz.web.app)
-  const link=new URL('aluno.html',location.protocol==='https:'?location.href:'https://eita-quiz.web.app/');
-  link.searchParams.set('sala',room.id);byId('roomLink').href=link.href;openRoomQr();
-  
-  document.querySelector('header small').textContent='Sala online · respostas reais';
-  notice('Compartilhe o link ou o código. Prepare a turma antes de iniciar.');
-  unsub=onSnapshot(collection(room,'members'),snapshot=>{
-   const members=snapshot.docs.map(d=>({uid:d.id,...d.data()}));
-   if(!window.eitaGame.isLocked()){
-    roster=members.map(p=>({...p,name:p.name+' · '+p.uid.slice(0,4)}));window.eitaGame.setRoster(roster);
-   }
-   byId('roomRoster').textContent=members.length+' aluno(s) na sala';byId('qrRoster').textContent=byId('roomRoster').textContent;
-  },report);
+  attach(false);
  }catch(e){report(e);byId('createRoom').disabled=false;}
 };
-byId('copyRoom').onclick=async()=>{try{await navigator.clipboard.writeText(byId('roomLink').href);notice('Link copiado!');}catch(e){notice('Copie o endereço do link dos alunos.');}};
-// 20/10/2026: encerrar apaga tudo da sessão no servidor (respostas, alunos e a sala).
-// Se a sala for abandonada sem encerrar, a política de TTL (campo expiresAt) apaga em até 24 h.
+byId('copyRoom').onclick=async()=>{try{await navigator.clipboard.writeText(byId('roomLink').href);notice('Link copiado!');}catch(e){notice('Copie o endereço do link dos participantes.');}};
+// 20/10/2026: encerrar apaga tudo da sessão no servidor (respostas, participantes e a sala).
+// Se a sala for abandonada sem encerrar, ela expira 24 h depois de aberta e a política de TTL (campo expiresAt) a apaga.
 async function wipeRoom(target){
  for(const name of ['answers','members']){
   const docs=(await getDocs(collection(target,name))).docs;
@@ -69,12 +87,12 @@ async function wipeRoom(target){
 byId('closeRoom').onclick=async()=>{
  const target=room;if(!target)return;
  byId('closeRoom').disabled=true;notice('Encerrando e apagando os dados da sala…');
- unsub?.();unsub=null;
- try{await wipeRoom(target);notice('Sala encerrada. Nenhum dado da turma ficou guardado.');}
+ unsub?.();unsub=null;try{sessionStorage.removeItem(SALA);}catch(e){}
+ try{await wipeRoom(target);notice('Sala encerrada. Nenhum dado dos participantes ficou guardado.');}
  catch(e){
   console.error(e);
   try{await updateDoc(target,{status:'closed',question:null,result:null,groups:[],participants:[]});}catch(_){}
-  notice('Sala encerrada. Não foi possível apagar tudo agora; o servidor apaga sozinho em até 24 h.');
+  notice('Sala encerrada. Não foi possível apagar tudo agora; o servidor apaga sozinho quando a sala expirar (24 h depois de aberta).');
  }
  room=null;api.active=false;roster=[];window.eitaGame.setRoster([]);window.eitaGame.reset();byId('roomDetails').hidden=true;byId('createRoom').disabled=false;byId('closeRoom').disabled=false;
 };
@@ -88,3 +106,4 @@ observeTeacher(authorized=>{
  byId('edit').disabled=!authorized||window.eitaGame.isLocked();
  if(!authorized)byId('editor').close();
 });
+resume();

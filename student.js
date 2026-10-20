@@ -21,7 +21,7 @@ function render(){
  el('studentAnswers').replaceChildren();el('studentResult').textContent='';
  const group=state.groups?.find(g=>g.members.some(n=>n===joinedName+' · '+uid.slice(0,4)));
  const groupEl=el('group');groupEl.replaceChildren();if(state.mode!=='individual'&&group){const parts=group.name.split(' ');const icon=window.eitaAnimalIcon(parts[0]);if(icon.getAttribute('src'))groupEl.append(icon,document.createTextNode(' '+parts.slice(1).join(' ')));else groupEl.textContent=group.name;}
- if(state.status==='waiting'){el('studentQuestion').textContent='Você está na turma! Aguarde o professor.';return;}
+ if(state.status==='waiting'){el('studentQuestion').textContent='Você está no jogo! Aguarde o início da partida.';return;}
  if(state.status==='closed'){el('studentQuestion').textContent='Sala encerrada';return;}
  if(state.status==='question'){
   el('studentQuestion').textContent=state.question.text;

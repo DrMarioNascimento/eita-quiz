@@ -16,4 +16,7 @@ export function identifyTeacher(){
  return entrada.then(u=>u.uid);
 }
 
+// 20/10/2026: retomar a sala depois de recarregar — usa a conta Google já conectada, sem abrir pop-up.
+export async function currentTeacher(){await auth.authStateReady();const u=auth.currentUser;return u&&u.providerData.some(p=>p.providerId==='google.com')?u.uid:null;}
+
 export function observeTeacher(callback){return onAuthStateChanged(auth,user=>callback(!!user?.providerData.some(p=>p.providerId==='google.com')));}

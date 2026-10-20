@@ -193,6 +193,8 @@ function controls(){
   $('draw').disabled=locked||selected==='individual';
   $('draw').textContent='Sortear esquadrões';
   $('start').disabled=running||intermission||attackPending||$('boss').classList.contains('video-active')||bossLife<=0||teamLife<=0;
+  // 20/10/2026: diz por que a partida ainda não pode começar (sala e participantes)
+  {const h=$('startHint');if(h){const msg=index<0&&!running?(!window.eitaOnline?.active?'Para começar, abra a sala em Entrada.':!entrants.length?'Aguardando participantes entrarem na sala…':''):'';h.textContent=msg;h.hidden=!msg;}}
   $('pause').disabled=!(running||intermission||attackPending);
   $('finish').disabled=!running;
   $('start').textContent=index<0?'Iniciar Quiz':'Próxima pergunta';
@@ -411,9 +413,9 @@ $('bossVideo').onerror=()=>{
   stopBossVideo()
 };
 async function start(){
-  if(!window.eitaOnline?.active){safe($('status'),'Abra uma sala com Google e aguarde os alunos entrarem.');return;}
+  if(!window.eitaOnline?.active){safe($('status'),'Abra a sala em Entrada e aguarde os participantes entrarem.');return;}
   if(window.eitaOnline?.active){
-    if(!entrants.length){safe($('status'),'Aguarde os alunos entrarem na sala.');return;}
+    if(!entrants.length){safe($('status'),'Aguarde os participantes entrarem na sala.');return;}
     if(!locked)prepare();
   }
   if(running||attackPending||bossLife<=0||teamLife<=0)return;
@@ -500,7 +502,7 @@ async function resolve(){
       const damage=suddenDeath?bossLife:100/quiz.length;
       bossLife=Math.max(0,bossLife-damage);
       if(bossLife<1e-8)bossLife=0;
-      result=`Golpe interrompido! A turma causou ${damage.toFixed(1)} de dano.`;
+      result=`Golpe interrompido! O grupo causou ${damage.toFixed(1)} de dano.`;
       $('boss').classList.add('hit');
       positionStudentShot();$('arena').classList.add('counter')
     }else{
@@ -517,11 +519,11 @@ async function resolve(){
     $('options').children[quiz[index].correct].classList.add('correct');
     safe($('timer'),`${hits}/${total} acertos · ${Math.round(rate*100)}% · meta ${goalNeeded(total)}`);
     if(bossLife<=0){
-      result='Vitória! A turma derrotou o chefão.';
+      result='Vitória! O grupo derrotou o chefão.';
       stopBossVideo();
       shatter($('boss'),'#ffba56')
     }else if(teamLife<=0){
-      result='A turma ficou sem energia. Fim da batalha.';
+      result='O grupo ficou sem energia. Fim da batalha.';
       shatter($('teamBattery'),'#62ffc9')
     }else if(index===quiz.length-1&&!suddenDeath)result+=' A próxima rodada será de morte súbita.';
     safe($('status'),result);
@@ -589,7 +591,7 @@ function reset(){
   $('chargeEnergy').style.height='0%';
   $('charge').style.clipPath='inset(100% 0 0)';
   safe($('round'),'Prepare a partida');
-  safe($('question'),'A turma está pronta para enfrentar o chefão?');
+  safe($('question'),'O grupo está pronto para enfrentar o chefão?');
   $('options').replaceChildren();
   safe($('timer'),'Aguardando');
   safe($('status'),'Escolha o modo e inicie a primeira pergunta.');
