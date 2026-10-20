@@ -18,7 +18,8 @@ for (const file of files) {
 function copyAssets(source, destination) {
   fs.mkdirSync(destination, { recursive: true });
   for (const entry of fs.readdirSync(source, { withFileTypes: true })) {
-    if (entry.name.startsWith('.')) continue;
+    // backups (_SUBSTITUIDO_) ficam só no repositório, fora do site publicado
+    if (entry.name.startsWith('.') || entry.name.includes('_SUBSTITUIDO_')) continue;
     const src = path.join(source, entry.name);
     const dst = path.join(destination, entry.name);
     if (entry.isDirectory()) copyAssets(src, dst);

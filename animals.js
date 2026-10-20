@@ -1,21 +1,22 @@
+// 20/10/2026: animais em WebP 320 px (página do participante bem mais leve); os PNG originais continuam na pasta.
 window.EITA_ANIMALS=[
- {id:'tigre',label:'Tigre',squad:'Tigres',emoji:'🐯',src:'assets/animals/tigre-novo.png',transparent:true},
- {id:'leao',label:'Leão',squad:'Leões',emoji:'🦁',src:'assets/animals/leao-novo.png',transparent:true},
- {id:'leopardo',label:'Leopardo',squad:'Leopardos',emoji:'🐆',src:'assets/animals/leopardo-novo.png',transparent:true},
- {id:'cobra',label:'Cobra',squad:'Cobras',emoji:'🐍',src:'assets/animals/cobra-nova.png',transparent:true},
- {id:'serpente',label:'Serpente',src:'assets/animals/serpente-nova.png',transparent:true},
- {id:'lobo',label:'Lobo',squad:'Lobos',emoji:'🐺',src:'assets/animals/lobo-novo.png',transparent:true},
- {id:'aguia',label:'Águia',squad:'Águias',emoji:'🦅',src:'assets/animals/aguia-novo.png',transparent:true},
- {id:'urso',label:'Urso',squad:'Ursos',emoji:'🐻',src:'assets/animals/urso-novo.png',transparent:true},
- {id:'tubarao',label:'Tubarão',squad:'Tubarões',emoji:'🦈',src:'assets/animals/tubarao-novo.png',transparent:true},
- {id:'crocodilo',label:'Crocodilo',squad:'Crocodilos',emoji:'🐊',src:'assets/animals/crocodilo-novo.png',transparent:true},
- {id:'rinoceronte',label:'Rinoceronte',squad:'Rinocerontes',emoji:'🦏',src:'assets/animals/rinoceronte-novo.png',transparent:true},
- {id:'raposa',label:'Raposa',emoji:'🦊',src:'assets/animals/raposa-novo.png',transparent:true},
- {id:'panda',label:'Panda',emoji:'🐼',src:'assets/animals/panda-novo.png',transparent:true},
- {id:'cachorro',label:'Cachorro',emoji:'🐶',src:'assets/animals/cachorro-novo.png',transparent:true},
- {id:'gato',label:'Gato',emoji:'🐱',src:'assets/animals/gato-novo.png',transparent:true},
- {id:'coelho',label:'Coelho',emoji:'🐰',src:'assets/animals/coelho-novo.png',transparent:true},
- {id:'tartaruga',label:'Tartaruga',emoji:'🐢',src:'assets/animals/tartaruga1.png',transparent:true}
+ {id:'tigre',label:'Tigre',squad:'Tigres',emoji:'🐯',src:'assets/animals/tigre-novo.webp',transparent:true},
+ {id:'leao',label:'Leão',squad:'Leões',emoji:'🦁',src:'assets/animals/leao-novo.webp',transparent:true},
+ {id:'leopardo',label:'Leopardo',squad:'Leopardos',emoji:'🐆',src:'assets/animals/leopardo-novo.webp',transparent:true},
+ {id:'cobra',label:'Cobra',squad:'Cobras',emoji:'🐍',src:'assets/animals/cobra-nova.webp',transparent:true},
+ {id:'serpente',label:'Serpente',src:'assets/animals/serpente-nova.webp',transparent:true},
+ {id:'lobo',label:'Lobo',squad:'Lobos',emoji:'🐺',src:'assets/animals/lobo-novo.webp',transparent:true},
+ {id:'aguia',label:'Águia',squad:'Águias',emoji:'🦅',src:'assets/animals/aguia-novo.webp',transparent:true},
+ {id:'urso',label:'Urso',squad:'Ursos',emoji:'🐻',src:'assets/animals/urso-novo.webp',transparent:true},
+ {id:'tubarao',label:'Tubarão',squad:'Tubarões',emoji:'🦈',src:'assets/animals/tubarao-novo.webp',transparent:true},
+ {id:'crocodilo',label:'Crocodilo',squad:'Crocodilos',emoji:'🐊',src:'assets/animals/crocodilo-novo.webp',transparent:true},
+ {id:'rinoceronte',label:'Rinoceronte',squad:'Rinocerontes',emoji:'🦏',src:'assets/animals/rinoceronte-novo.webp',transparent:true},
+ {id:'raposa',label:'Raposa',emoji:'🦊',src:'assets/animals/raposa-novo.webp',transparent:true},
+ {id:'panda',label:'Panda',emoji:'🐼',src:'assets/animals/panda-novo.webp',transparent:true},
+ {id:'cachorro',label:'Cachorro',emoji:'🐶',src:'assets/animals/cachorro-novo.webp',transparent:true},
+ {id:'gato',label:'Gato',emoji:'🐱',src:'assets/animals/gato-novo.webp',transparent:true},
+ {id:'coelho',label:'Coelho',emoji:'🐰',src:'assets/animals/coelho-novo.webp',transparent:true},
+ {id:'tartaruga',label:'Tartaruga',emoji:'🐢',src:'assets/animals/tartaruga1.webp',transparent:true}
 ];
 window.eitaAnimal=function(token){
  if(!token)return null;

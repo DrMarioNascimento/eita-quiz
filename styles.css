@@ -1801,4 +1801,10 @@ html.eita-fs .control-capsule .fs-exit{display:flex;color:#dcfaff}
 .fullscreen-button:after{content:'Tela cheia';display:block;font-size:9px;line-height:1;white-space:nowrap}
 .fullscreen-button[aria-pressed=true]:after{content:'Sair'}
 
-
+/* Fonte da marca (2026-10-20): a mesma em PC, iPhone e no Manual.
+   Nunito Black Italic (licença SIL OFL, ver assets/fonts/OFL-Nunito.txt), embutida no site. */
+@font-face{font-family:'EitaMarca';src:url('assets/fonts/eita-marca-nunito-900-italic.woff2') format('woff2');font-weight:900;font-style:italic;font-display:swap}
+.brand h1{font-family:'EitaMarca','Arial Rounded MT Bold','Trebuchet MS',sans-serif;font-weight:900;letter-spacing:-1px}
+.student-page h1{font-family:'EitaMarca','Arial Rounded MT Bold','Trebuchet MS',sans-serif;font-weight:900;font-style:italic;letter-spacing:-1px;display:inline-block;transform:rotate(-4deg);filter:drop-shadow(0 2px 0 #a65c1b) drop-shadow(1px 4px 4px #0005)}
+.student-page h1 .brand-word{background:linear-gradient(#ffc16b,#f09325);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;padding-right:3px}
+.student-page h1 .brand-exclamation{color:#ffc16b;-webkit-text-fill-color:#ffc16b;padding:0 6px 0 1px}
