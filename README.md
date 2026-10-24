@@ -1,5 +1,13 @@
 # Eita! — Um Quiz em Aliança
 
+## Disponibilidade e novidades — 24 de outubro de 2026
+
+**Testes públicos abertos**, nos três endereços oficiais: [Eita!](https://eita.drmarionascimento.com.br/), [Dragon Games](https://eita.dragongames.dev.br/) e [Firebase](https://eita-quiz.web.app/). Quem conduz usa qualquer conta Google; os participantes entram por código de sala, sem cadastro próprio.
+
+O catálogo do autor e o da Dragon Games passam a refletir a abertura já registrada em 20 de outubro. Quiz em aliança, perguntas por planilha, chefões e ensaio local integram a experiência. A licença mantém a permissão específica de uso do jogo oficial em aulas, cursos e eventos gratuitos ou pagos; isso não libera cópia ou hospedagem do código.
+
+[Ver todos os recursos públicos](https://www.drmarionascimento.com.br/#acesso-publico). O acesso respeita [LICENSE.md](LICENSE.md).
+
 Quiz cooperativo de batalha contra um chefão, para aulas, cursos, palestras, treinamentos e encontros. A tela principal (TV ou projetor) mostra a pergunta, a vida do chefão e a energia do grupo; os participantes respondem pelo celular, sem instalar nada e sem criar conta.
 
 ## Situação atual — 20 de outubro de 2026

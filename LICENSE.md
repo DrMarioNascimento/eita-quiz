@@ -64,3 +64,13 @@ O Eita! é oferecido no estado em que se encontra, sem garantia de funcionamento
 Portal do autor: https://www.drmarionascimento.com.br/ · Catálogo: https://dragongames.dev.br/
 
 Todos os direitos não expressamente concedidos permanecem reservados. Para usos não previstos aqui, peça autorização pelo contato acima.
+
+## Escopo e disponibilidade — 24 de outubro de 2026
+
+Confirmados os testes abertos e os endereços oficiais já previstos nesta licença. Quem conduz usa Google; participantes entram por código. Chefões, regras, planilha-modelo, manual e componentes originais seguem o escopo existente. Mantidas, sem alteração, as permissões de uso do jogo oficial em aulas, cursos e eventos gratuitos ou pagos e de compartilhamento da planilha-modelo e do manual nas condições acima.
+
+Esta revisão documenta o escopo e a disponibilidade atuais; preserva os titulares, as permissões e as restrições existentes, inclusive os direitos e licenças próprios de terceiros. Acesso público não equivale a licença de código aberto.
+
+Inventário de acessos: https://www.drmarionascimento.com.br/#acesso-publico
+
+**English — scope and availability, October 24, 2026:** Open testing and official addresses are confirmed. Hosts use Google; participants join by code. Existing permissions for free or paid classes, courses and events, and for sharing the template/manual under the terms above, remain unchanged. Existing ownership, grants, restrictions and third-party terms are preserved; public access does not mean open source.
