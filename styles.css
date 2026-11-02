@@ -1910,3 +1910,13 @@ body[data-workspace=batalha] .battle-label{font-size:14px}
 html.eita-fs .workspace-switch{display:none}
 html.eita-fs body[data-workspace=batalha] main>aside{position:fixed;padding:0;border:0;background:transparent}
 @media(max-width:600px){.workspace-switch{order:3}.workspace-switch button{padding:8px 16px}body[data-workspace=batalha] .question{padding:14px}body[data-workspace=batalha] main>aside{padding:8px}.empty-roster{inset:15% 5% auto;padding:12px}}
+
+/* Na batalha, a marca e os medidores preservam espaço para a arena. */
+body[data-workspace=batalha] header{padding:12px 24px;flex-wrap:nowrap}
+body[data-workspace=batalha] header .brand{flex-wrap:nowrap;gap:12px;min-width:0}
+body[data-workspace=batalha] header .brand-emblem{width:56px;height:56px}
+body[data-workspace=batalha] header .brand h1{font-size:36px;margin:0}
+body[data-workspace=batalha] header .brand-tagline{font-size:16px}
+body[data-workspace=batalha] header .header-actions>.beta-pill,body[data-workspace=batalha] header .header-actions>small{display:none}
+body[data-workspace=batalha] .boss-art,body[data-workspace=batalha] .team-art{max-width:340px;justify-self:center}
+@media(max-width:700px){body[data-workspace=batalha] header{padding:10px 12px;flex-wrap:wrap}body[data-workspace=batalha] header .brand-tagline{display:none}body[data-workspace=batalha] .workspace-switch{order:0}body[data-workspace=batalha] .workspace-switch button{padding:8px 10px}}
