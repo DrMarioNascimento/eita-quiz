@@ -12,7 +12,7 @@
  function render(){
   const target=document.getElementById('connectionSummary');if(!target)return;
   const data=summary();
-  target.textContent=data.operations?`${data.confirmed} atualizações confirmadas · ${data.failed} falhas · média ${data.meanMs} ms · P95 ${data.p95Ms} ms · conteúdo estimado ${data.estimatedJsonBytes} bytes`:'Nenhuma atualização enviada nesta sessão.';
+  target.textContent=data.operations?`${data.confirmed} ${data.confirmed===1?'atualização confirmada':'atualizações confirmadas'} · ${data.failed} ${data.failed===1?'falha':'falhas'} · média ${data.meanMs} ms · P95 ${data.p95Ms} ms · conteúdo estimado ${data.estimatedJsonBytes} bytes`:'Nenhuma atualização enviada nesta sessão.';
  }
  const api={
   async measure(operation,payload,send){
