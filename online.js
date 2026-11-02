@@ -1,6 +1,13 @@
 import {db,identifyTeacher,currentTeacher,getDoc,observeTeacher,doc,collection,updateDoc,getDocs,onSnapshot,runTransaction,serverTimestamp,Timestamp,query,where,writeBatch} from './cloud.js';
+import {questionPayload,createRoomWriter} from './room-protocol.js';
 const byId=id=>document.getElementById(id);
-let room=null,uid=null,roster=[],round=0,unsub=null;
+let room=null,uid=null,roster=[],round=0,unsub=null,closing=false;
+const writer=createRoomWriter(updateDoc);
+function publish(patch){
+ const target=room;
+ if(!target||closing)return Promise.resolve();
+ return writer.send(target,patch,()=>target===room&&!closing);
+}
 const notice=text=>byId('roomNotice').textContent=text;
 function report(error){
  console.error(error);
@@ -15,17 +22,17 @@ function openRoomQr(){
 const api={active:false,
  async begin(q,squads,mode){
    round++;
-   const groups=squads.map(s=>({name:s.name,members:s.members}));
-   await updateDoc(room,{status:'question',round,question:{text:q.q,options:q.a},deadline:Timestamp.fromMillis(Date.now()+q.time*1000),paused:false,groups,mode,participants:roster.map(p=>p.uid)});
+   await publish(questionPayload(q,squads,mode,roster,round,Timestamp.fromMillis(Date.now()+q.time*1000)));
  },
  async finish(){
-   await updateDoc(room,{status:'resolving',paused:false});
+   await publish({status:'resolving',paused:false,question:null});
    const result=await getDocs(query(collection(room,'answers'),where('round','==',round)));
-   const answers=new Map();result.forEach(a=>{const p=roster.find(p=>p.uid===a.data().uid);if(p)answers.set(p.name,a.data().choice);});return answers;
+   const byUid=new Map(roster.map(person=>[person.uid,person.name]));
+   const answers=new Map();result.forEach(answer=>{const data=answer.data(),name=byUid.get(data.uid);if(name)answers.set(name,data.choice);});return answers;
  },
- result(result){if(room)updateDoc(room,{status:result.bossLife<=0||result.teamLife<=0?'ended':'result',result}).catch(report);},
- pause(paused,remaining){if(room)updateDoc(room,{paused,deadline:Timestamp.fromMillis(Date.now()+remaining*1000)}).catch(report);},
- reset(){if(room)updateDoc(room,{status:'waiting',paused:false,result:null,question:null,participants:[]}).catch(report);}
+ result(result){if(room)publish({status:result.bossLife<=0||result.teamLife<=0?'ended':'result',question:null,result}).catch(report);},
+ pause(paused,remaining){if(room)publish({paused,deadline:Timestamp.fromMillis(Date.now()+remaining*1000)}).catch(report);},
+ reset(){if(room)publish({status:'waiting',paused:false,result:null,question:null,participants:[]}).catch(report);}
 };
 window.eitaOnline=api;
 // 20/10/2026: liga a tela à sala (nova ou retomada depois de recarregar a página).
@@ -55,8 +62,8 @@ async function faxina(){
   }
   if(apagadas&&!room)notice(apagadas===1?'Os dados de uma sala que tinha ficado aberta foram apagados.':'Os dados de '+apagadas+' salas que tinham ficado abertas foram apagados.');
 }
-function attach(retomada){
-  api.active=true;round=0;window.eitaGame.reset();
+function attach(retomada,lastRound=0){
+  closing=false;api.active=true;round=lastRound;window.eitaGame.reset();
   try{sessionStorage.setItem(SALA,room.id);}catch(e){}
   marcar(room.id);
   byId('createRoom').disabled=true;
@@ -83,7 +90,7 @@ async function resume(){
    const candidate=doc(db,'rooms',code),snap=await getDoc(candidate);
    const d=snap.exists()?snap.data():null;
    if(!d||d.owner!==me||d.status==='closed'||d.expiresAt.toMillis()<Date.now()){sessionStorage.removeItem(SALA);return;}
-   uid=me;room=candidate;attach(true);
+   uid=me;room=candidate;attach(true,d.round);
   }catch(e){console.error(e);}
 }
 byId('createRoom').onclick=async()=>{
@@ -114,14 +121,15 @@ async function wipeRoom(target){
 byId('closeRoom').onclick=async()=>{
  const target=room;if(!target)return;
  byId('closeRoom').disabled=true;notice('Encerrando e apagando os dados da sala…');
+ closing=true;api.active=false;window.eitaGame.reset();
  unsub?.();unsub=null;try{sessionStorage.removeItem(SALA);}catch(e){}
- try{await wipeRoom(target);desmarcar(target.id);notice('Sala encerrada. Nenhum dado dos participantes ficou guardado.');}
+ try{await writer.flush();await wipeRoom(target);desmarcar(target.id);notice('Sala encerrada. Nenhum dado dos participantes ficou guardado.');}
  catch(e){
   console.error(e);
   try{await updateDoc(target,{status:'closed',question:null,result:null,groups:[],participants:[]});}catch(_){}
   notice('Sala encerrada, mas os dados não puderam ser apagados agora (confira a internet). Eles serão apagados na próxima vez que você abrir o Eita! neste navegador.');
  }
- room=null;api.active=false;roster=[];window.eitaGame.setRoster([]);window.eitaGame.reset();byId('roomDetails').hidden=true;byId('createRoom').disabled=false;byId('closeRoom').disabled=false;
+ room=null;api.active=false;roster=[];window.eitaGame.setRoster([]);document.querySelector('header small').textContent='Abra uma sala para começar';byId('roomDetails').hidden=true;byId('createRoom').disabled=false;byId('closeRoom').disabled=false;
 };
 
 byId('showRoomQr').onclick=openRoomQr;
