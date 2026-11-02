@@ -110,7 +110,7 @@ function shatterNow(el,color){
     if(el===$('boss')||el===$('teamBattery')){
       const message=document.createElement('div');
       message.className='battle-verdict '+(el===$('boss')?'victory':'defeat');
-      message.textContent=el===$('boss')?'You won!':'You guys lost';
+      message.textContent=el===$('boss')?'Vitória!':'Fim da batalha';
       message.setAttribute('role','status');
       message.style.left=(rect.left-scene.left)+'px';
       message.style.top=(rect.top-scene.top)+'px';
@@ -197,11 +197,12 @@ function controls(){
   {const h=$('startHint');if(h){const msg=index<0&&!running?(!window.eitaOnline?.active?'Para começar, abra a sala em Entrada.':!entrants.length?'Aguardando participantes entrarem na sala…':''):'';h.textContent=msg;h.hidden=!msg;}}
   $('pause').disabled=!(running||intermission||attackPending);
   $('finish').disabled=!running;
-  $('start').textContent=index<0?'Iniciar Quiz':'Próxima pergunta';
+  const ended=bossLife<=0||teamLife<=0;
+  $('start').textContent=ended?'Partida encerrada':index<0?'Iniciar Quiz':'Próxima pergunta';
   $('pause').textContent=paused?'Continuar':'Pausar';
   ['start','pause','finish','reset'].forEach(id=>{const button=$(id);button.title=button.textContent;button.setAttribute('aria-label',button.textContent);});
   $('pause').dataset.icon=paused?'play':'pause';
-  $('start').dataset.shortLabel=index<0?'Iniciar':'Próxima';
+  $('start').dataset.shortLabel=ended?'Fim':index<0?'Iniciar':'Próxima';
   $('pause').dataset.shortLabel=paused?'Retomar':'Pausar';
   $('finish').dataset.shortLabel='Encerrar';
   $('reset').dataset.shortLabel='Reiniciar';
@@ -264,7 +265,7 @@ function aplicarChefe(chefe){
  chefeAtual=chefe;
  const v=$('bossVideo'),main=document.querySelector('main');
  bossVisibleBounds=null;
- v.preload='auto';
+ v.preload='metadata';
  v.setAttribute('aria-label','Animação de ataque de '+chefe.nome);
  $('boss').dataset.chefe=chefe.id;
  const atual=v.querySelector('source');
@@ -419,7 +420,7 @@ async function start(){
     if(!locked)prepare();
   }
   if(running||attackPending||bossLife<=0||teamLife<=0)return;
-  if(index<0&&!suddenDeath){partidaIniciada=true;tocarMusicaDaPartida();}
+  if(index<0&&!suddenDeath){partidaIniciada=true;$('bossVideo').preload='auto';tocarMusicaDaPartida();}
   cancelAnimationFrame(handle);
   intermission=false;
   stopBossVideo();

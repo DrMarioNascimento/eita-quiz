@@ -104,3 +104,16 @@ Firestore → Regras, ou `firebase deploy --only firestore:rules`).
 
 O acesso do workflow fica no segredo `FIREBASE_SERVICE_ACCOUNT_EITA_QUIZ` do
 repositório. Nunca inclua credenciais em arquivos versionados ou em `assets/`.
+
+
+### Abertura e tráfego da partida
+
+- A abertura é opcional: **Assistir abertura** carrega o vídeo sob demanda; **Pular abertura** ou Escape leva à preparação. A escolha é lembrada durante a sessão quando o armazenamento está disponível; a indisponibilidade não bloqueia a entrada.
+- Os vídeos dos chefões antecipam apenas metadados na preparação; o carregamento completo é solicitado ao iniciar a batalha.
+- O cronômetro roda localmente. O Firestore recebe transições da partida e uma resposta por aluno por rodada, sem escritas por segundo.
+- A entrada do aluno reutiliza a primeira notificação da sala, evitando uma leitura avulsa duplicada. A escuta e o cronômetro são liberados ao encerrar a sala ou sair da página; o retorno pelo histórico reconecta a escuta.
+- Rodadas individuais omitem a lista redundante de grupos e nomes. As fases de apuração e resultado removem a pergunta do documento compartilhado. Gabarito e banco completo continuam no navegador docente até a divulgação do resultado atual.
+- As escritas docentes seguem uma fila, evitando inversão entre resultado, pausa, reinício e próxima pergunta. A retomada preserva o contador de rodadas para não colidir com respostas anteriores.
+- O aluno vê a alternativa escolhida durante o envio e uma confirmação após a gravação. O encerramento permite entrar em outra sala.
+
+Verificação local: `node --test tests/*` e `node scripts/prepare-hosting.cjs`. Os testes cobrem abertura sem download, indisponibilidade de armazenamento, envio e falha de respostas, ciclo de conexão, conteúdo das rodadas e ordenação das escritas. Não substituem teste com uma turma real ou medição de tráfego em produção.

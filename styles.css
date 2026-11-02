@@ -1815,3 +1815,13 @@ html.eita-fs-estreita header .brand-tagline,html.eita-fs-estreita header .header
 .student-page h1{font-family:'EitaMarca','Arial Rounded MT Bold','Trebuchet MS',sans-serif;font-weight:900;font-style:italic;letter-spacing:-1px;display:inline-block;transform:rotate(-4deg);filter:drop-shadow(0 2px 0 #a65c1b) drop-shadow(1px 4px 4px #0005)}
 .student-page h1 .brand-word{background:linear-gradient(#ffc16b,#f09325);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;padding-right:3px}
 .student-page h1 .brand-exclamation{color:#ffc16b;-webkit-text-fill-color:#ffc16b;padding:0 6px 0 1px}
+
+/* Abertura opcional: controles visíveis antes e durante o vídeo. */
+#introOverlay{position:fixed;inset:0;background:#05070c;z-index:99999;display:flex;align-items:center;justify-content:center}
+#introVid{width:100%;height:100%;object-fit:contain}
+.intro-actions{position:absolute;bottom:max(24px,env(safe-area-inset-bottom));left:16px;right:16px;display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.intro-actions button{min-height:48px;padding:12px 22px;max-width:100%;font-size:18px}
+#skipIntro{background:#162438;color:#fff;border:2px solid #e7edfa}
+.intro-actions button:focus-visible{outline:3px solid #fff;outline-offset:4px}
+.student-answers button.answer-selected:disabled{opacity:1;color:#fff;background:#174f4c;border:2px solid #98ffe2;box-shadow:0 0 0 2px #08162d}
+#studentResult{min-height:1.5em;font-weight:700}
