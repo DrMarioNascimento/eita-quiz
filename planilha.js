@@ -19,8 +19,8 @@
  // 20/10/2026: a planilha fica no armazenamento desta aba (sessionStorage): resiste a recarregar a página,
  // é apagada pelo navegador ao fechar a aba e nunca sai do computador.
  const CHAVE='eita-planilha-sessao';
- function guardar(){try{if(origem==='planilha')sessionStorage.setItem(CHAVE,JSON.stringify({banco,nomeBanco,marcados:[...marcados]}));else sessionStorage.removeItem(CHAVE);}catch(e){}}
- function recuperar(){try{const d=JSON.parse(sessionStorage.getItem(CHAVE)||'null');if(!d||!Array.isArray(d.banco)||!d.banco.length)return false;banco=d.banco;nomeBanco=d.nomeBanco||'';temas=agrupar(banco);const ok=new Set(temas.map(t=>t.key));marcados=new Set((d.marcados||[]).filter(k=>ok.has(k)));if(!marcados.size)marcados=ok;origem='planilha';return true;}catch(e){return false;}}
+ function guardar(){try{if(origem!=='demo')sessionStorage.setItem(CHAVE,JSON.stringify({banco,nomeBanco,marcados:[...marcados],origem}));else sessionStorage.removeItem(CHAVE);}catch(e){}}
+ function recuperar(){try{const d=JSON.parse(sessionStorage.getItem(CHAVE)||'null');if(!d||!Array.isArray(d.banco)||!d.banco.length)return false;banco=d.banco;nomeBanco=d.nomeBanco||'';temas=agrupar(banco);const ok=new Set(temas.map(t=>t.key));marcados=new Set((d.marcados||[]).filter(k=>ok.has(k)));if(!marcados.size)marcados=ok;origem=d.origem==='editor'?'editor':'planilha';return true;}catch(e){return false;}}
 
  function carregarXlsx(){
   if(window.XLSX)return Promise.resolve(window.XLSX);
@@ -143,13 +143,28 @@
   }catch(e){console.error(e);relatar(e.message||'Não foi possível ler este arquivo. Salve como .xlsx e tente de novo.','erro');}
  }
 
+ window.eitaSheet={
+  getBank:()=>banco.map(item=>({...item,a:[...item.a]})),
+  replaceBank(items){
+   if(window.eitaGame?.isLocked())return false;
+   const previous=new Set(marcados),known=new Set(temas.map(theme=>theme.key));
+   banco=items.map(item=>({...item,a:[...item.a]}));temas=agrupar(banco);
+   marcados=new Set(temas.filter(theme=>previous.has(theme.key)||!known.has(theme.key)).map(theme=>theme.key));
+   if(!marcados.size)marcados=new Set(temas.map(theme=>theme.key));
+   nomeBanco='Banco editado';origem='editor';desenharTemas();
+   const applied=aplicar();if(applied===false)return false;
+   guardar();relatar(`Banco atualizado: ${banco.length} perguntas. Alterações mantidas nesta aba; ao fechá-la, o banco é descartado.`,'ok');
+   return true;
+  }
+ };
+
  function iniciar(){
   if(!$('importSheet'))return;
   if(MODELO_GOOGLE){const url=MODELO_GOOGLE.replace(/\/(edit|view|copy).*$/,'')+'/copy';document.querySelectorAll('.google-modelo').forEach(l=>{l.href=url;l.hidden=false;});}
   $('importSheet').onclick=()=>{$('sheetFile').value='';$('sheetFile').click();};
   $('sheetFile').onchange=()=>{const f=$('sheetFile').files[0];if(f)importar(f);$('sheetFile').value='';};
   $('demoBank').onclick=()=>{usarDemo();relatar('Planilha descartada. Voltou ao banco de demonstração.');};
-  if(recuperar()){desenharTemas();aplicar();relatar(`Planilha mantida desta sessão: ${banco.length} ${banco.length===1?'pergunta':'perguntas'} em ${temas.length} ${temas.length===1?'tema':'temas'}.`,'ok');}
+  if(recuperar()){desenharTemas();aplicar();relatar(`Banco mantido desta sessão: ${banco.length} ${banco.length===1?'pergunta':'perguntas'} em ${temas.length} ${temas.length===1?'tema':'temas'}.`,'ok');}
   else usarDemo(true);
  }
  if(document.readyState==='loading')addEventListener('DOMContentLoaded',iniciar);else iniciar();

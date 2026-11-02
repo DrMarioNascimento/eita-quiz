@@ -31,7 +31,7 @@
   if(ligado||window.eitaOnline?.active){aviso('Encerre a sala antes de usar o ensaio.');return;}
   if(window.eitaGame?.isLocked())return;
   real=window.eitaOnline;window.eitaOnline=fake;ligado=true;
-  montarRoster(Math.max(2,Math.min(30,Number($('rehearsalSize').value)||12)));
+  montarRoster(Math.max(2,Math.min(60,Number($('rehearsalSize').value)||12)));
   window.eitaGame.reset();window.eitaGame.setRoster(roster);
   $('createRoom').disabled=true;$('startRehearsal').hidden=true;$('rehearsalSize').disabled=true;$('stopRehearsal').hidden=false;
   document.querySelector('header small').textContent='Modo ensaio · respostas simuladas';

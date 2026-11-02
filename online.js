@@ -2,7 +2,7 @@ import {db,identifyTeacher,currentTeacher,getDoc,observeTeacher,doc,collection,u
 import {questionPayload,createRoomWriter} from './room-protocol.js';
 const byId=id=>document.getElementById(id);
 let room=null,uid=null,roster=[],round=0,unsub=null,closing=false;
-const writer=createRoomWriter(updateDoc);
+const writer=createRoomWriter((target,patch)=>window.EitaConnectionMetrics?window.EitaConnectionMetrics.measure('estado da sala',patch,()=>updateDoc(target,patch)):updateDoc(target,patch));
 function publish(patch){
  const target=room;
  if(!target||closing)return Promise.resolve();
@@ -63,7 +63,7 @@ async function faxina(){
   if(apagadas&&!room)notice(apagadas===1?'Os dados de uma sala que tinha ficado aberta foram apagados.':'Os dados de '+apagadas+' salas que tinham ficado abertas foram apagados.');
 }
 function attach(retomada,lastRound=0){
-  closing=false;api.active=true;round=lastRound;window.eitaGame.reset();
+  closing=false;window.EitaConnectionMetrics?.reset();api.active=true;round=lastRound;window.eitaGame.reset();
   try{sessionStorage.setItem(SALA,room.id);}catch(e){}
   marcar(room.id);
   byId('createRoom').disabled=true;

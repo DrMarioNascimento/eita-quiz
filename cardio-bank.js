@@ -21,9 +21,9 @@ window.CARDIO_BANK = [
     "q": "Por que veias e vênulas são chamadas de vasos de capacitância?",
     "a": [
       "Armazenam grande parte do volume sanguíneo",
-      "Geram a maior pressão arterial",
-      "Possuem apenas endotélio",
-      "Realizam a maior parte das trocas gasosas"
+      "Oferecem a maior resistência ao fluxo em repouso",
+      "Recebem diretamente o volume ejetado na sístole",
+      "Concentram a maior superfície de trocas teciduais"
     ],
     "correct": 0,
     "explain": "O sistema venoso abriga grande parte da volemia e funciona como reservatório de sangue.",
@@ -50,10 +50,10 @@ window.CARDIO_BANK = [
     "topic": "Vasos",
     "q": "Qual é a principal função das válvulas venosas?",
     "a": [
-      "Produzir pressão sistólica",
+      "Sustentar a pressão arterial durante a diástole",
       "Impedir refluxo do sangue",
-      "Regular diretamente a frequência cardíaca",
-      "Aumentar a difusão de oxigênio"
+      "Regular o fluxo que chega aos leitos capilares",
+      "Amortecer o pulso gerado pela ejeção ventricular"
     ],
     "correct": 1,
     "explain": "As válvulas direcionam o sangue em um único sentido e auxiliam o retorno venoso.",
@@ -96,9 +96,9 @@ window.CARDIO_BANK = [
     "q": "Por que a velocidade média do sangue é baixa nos capilares?",
     "a": [
       "A área total de secção transversal é muito grande",
-      "O sangue deixa de se mover",
-      "Os capilares possuem válvulas",
-      "A pressão é maior que na aorta"
+      "A área total da rede capilar é menor que a da aorta",
+      "O fluxo total capilar é menor que o fluxo arterial sistêmico",
+      "A pressão aumenta continuamente ao longo dos capilares"
     ],
     "correct": 0,
     "explain": "A grande área total da rede capilar reduz a velocidade média e favorece as trocas.",
@@ -141,9 +141,9 @@ window.CARDIO_BANK = [
     "q": "Um efeito cronotrópico positivo corresponde ao aumento de qual variável?",
     "a": [
       "Frequência cardíaca",
-      "Resistência capilar",
-      "Volume plasmático",
-      "Complacência venosa"
+      "Força de contração ventricular",
+      "Velocidade de condução cardíaca",
+      "Velocidade de relaxamento ventricular"
     ],
     "correct": 0,
     "explain": "Cronotropismo se refere à frequência cardíaca; um efeito positivo a eleva.",
@@ -155,9 +155,9 @@ window.CARDIO_BANK = [
     "topic": "Débito cardíaco",
     "q": "O volume sistólico representa:",
     "a": [
-      "Sangue que circula em uma hora",
-      "Sangue armazenado nas veias",
-      "Sangue filtrado pelos rins",
+      "Volume bombeado pelo ventrículo em um minuto",
+      "Volume ventricular ao final da diástole",
+      "Volume que resta no ventrículo ao final da sístole",
       "Sangue ejetado a cada sístole"
     ],
     "correct": 3,
@@ -215,9 +215,9 @@ window.CARDIO_BANK = [
     "topic": "Débito cardíaco",
     "q": "Quais fatores contribuem para o aumento do volume sistólico durante o exercício?",
     "a": [
-      "Menor retorno venoso e menor contratilidade",
-      "Menor pré-carga e maior rigidez arterial",
-      "Menor FC e maior resistência renal",
+      "Menor pré-carga e menor contratilidade",
+      "Maior pós-carga e menor retorno venoso",
+      "Menor retorno venoso e menor ativação simpática",
       "Maior pré-carga e maior contratilidade"
     ],
     "correct": 3,
@@ -258,12 +258,12 @@ window.CARDIO_BANK = [
     "id": "cardio-018",
     "sourcePage": 18,
     "topic": "Pressão arterial",
-    "q": "Durante a ejeção ventricular, por que o volume arterial aumenta?",
+    "q": "Durante a ejeção ventricular, o volume arterial aumenta quando:",
     "a": [
       "Entra mais sangue do que escoa pelas arteríolas",
-      "Não existe escoamento periférico",
-      "As veias deixam de armazenar sangue",
-      "O sangue retorna pelas válvulas venosas"
+      "O escoamento arteriolar supera a entrada de sangue",
+      "A entrada de sangue se iguala ao escoamento arteriolar",
+      "A ejeção cessa enquanto o escoamento arteriolar continua"
     ],
     "correct": 0,
     "explain": "Durante a ejeção, a entrada no sistema arterial supera o escoamento periférico.",
@@ -275,9 +275,9 @@ window.CARDIO_BANK = [
     "topic": "Pressão arterial",
     "q": "Na diástole ventricular, a pressão arterial cai principalmente porque:",
     "a": [
-      "A ejeção ventricular aumenta",
-      "Todas as arteríolas se fecham",
-      "As válvulas venosas deixam de funcionar",
+      "A ejeção ventricular continua aumentando",
+      "A resistência periférica aumenta a cada diástole",
+      "A abertura das válvulas semilunares esvazia as artérias",
       "O sangue continua escoando sem ejeção ventricular"
     ],
     "correct": 3,
@@ -321,9 +321,9 @@ window.CARDIO_BANK = [
     "q": "A complacência vascular descreve a capacidade de um vaso:",
     "a": [
       "Aumentar seu volume em resposta à pressão",
-      "Produzir hemácias",
-      "Eliminar água pelos rins",
-      "Contrair independentemente de músculo"
+      "Resistir ao escoamento para uma diferença de pressão",
+      "Gerar maior variação de pressão para o mesmo aumento de volume",
+      "Conduzir maior fluxo para uma mesma diferença de pressão"
     ],
     "correct": 0,
     "explain": "Complacência é a capacidade de distensão do sistema vascular quando a pressão muda.",
@@ -350,10 +350,10 @@ window.CARDIO_BANK = [
     "topic": "Pressão arterial",
     "q": "Por que a PAM não é simplesmente a média aritmética entre PAS e PAD, em repouso?",
     "a": [
-      "A PAS não participa do cálculo",
+      "A sístole ocupa mais tempo do ciclo",
       "A diástole ocupa mais tempo do ciclo",
-      "A PAD é sempre zero",
-      "O débito cardíaco é constante"
+      "A pressão de pulso recebe peso maior que a PAD",
+      "A pressão permanece constante durante toda a sístole"
     ],
     "correct": 1,
     "explain": "A estimativa pondera a PAD porque a diástole dura mais que a sístole em repouso.",
@@ -381,9 +381,9 @@ window.CARDIO_BANK = [
     "q": "Mantidos os demais fatores, a redução da complacência arterial tende a:",
     "a": [
       "Aumentar a pressão de pulso",
-      "Eliminar a pressão de pulso",
-      "Reduzir a pressão de pulso a zero",
-      "Impedir a ejeção ventricular"
+      "Reduzir a pressão sistólica para o mesmo volume ejetado",
+      "Diminuir a variação de pressão para o mesmo volume ejetado",
+      "Aumentar o volume acomodado para a mesma variação de pressão"
     ],
     "correct": 0,
     "explain": "Artérias menos complacentes acomodam pior o volume ejetado, aumentando a pressão de pulso.",
@@ -395,9 +395,9 @@ window.CARDIO_BANK = [
     "topic": "Complacência",
     "q": "Qual mudança do envelhecimento contribui para a rigidez arterial descrita no material?",
     "a": [
-      "Maior proporção de elastina",
-      "Desaparecimento do colágeno",
-      "Formação de válvulas arteriais",
+      "Maior proporção de elastina e menor participação do colágeno",
+      "Maior distensão arterial para a mesma variação de pressão",
+      "Menor rigidez da parede para a mesma pressão arterial",
       "Redução de elastina e maior participação do colágeno"
     ],
     "correct": 3,
@@ -410,10 +410,10 @@ window.CARDIO_BANK = [
     "topic": "Retorno venoso",
     "q": "Como a bomba muscular ajuda o retorno venoso?",
     "a": [
-      "Produzindo novas veias",
+      "Dilatação venosa sem compressão dos vasos",
       "Comprimindo veias durante a contração muscular",
-      "Aumentando a difusão capilar",
-      "Bloqueando o fluxo para o coração"
+      "Elevação sustentada da pressão atrial direita",
+      "Redução do fluxo por fechamento das válvulas proximais"
     ],
     "correct": 1,
     "explain": "A contração comprime as veias; válvulas funcionais favorecem o deslocamento do sangue em direção ao coração.",
@@ -423,12 +423,12 @@ window.CARDIO_BANK = [
     "id": "cardio-029",
     "sourcePage": 21,
     "topic": "Retorno venoso",
-    "q": "A bomba respiratória auxilia o retorno venoso por meio de:",
+    "q": "Na inspiração espontânea, a bomba respiratória auxilia o retorno venoso por meio de:",
     "a": [
-      "Secreção de renina",
-      "Formação de hemácias",
+      "Aumento contínuo da pressão intratorácica na inspiração",
+      "Aumento da pressão atrial direita durante a inspiração",
       "Variações de pressão durante a ventilação",
-      "Fechamento de todas as veias"
+      "Redução do gradiente entre veias periféricas e átrio direito"
     ],
     "correct": 2,
     "explain": "A mecânica ventilatória modifica os gradientes de pressão que favorecem o retorno venoso.",
@@ -441,9 +441,9 @@ window.CARDIO_BANK = [
     "q": "Qual é um efeito da venoconstrição sobre o reservatório venoso?",
     "a": [
       "Mobilizar sangue e aumentar o retorno venoso",
-      "Aumentar o armazenamento e impedir o retorno",
-      "Transformar veias em capilares",
-      "Reduzir obrigatoriamente o débito a zero"
+      "Aumentar a capacitância e reter sangue nas veias",
+      "Diminuir a pressão média de enchimento sistêmico",
+      "Reduzir a mobilização de sangue do reservatório venoso"
     ],
     "correct": 0,
     "explain": "A venoconstrição reduz a capacidade do reservatório venoso e mobiliza sangue para o retorno.",
@@ -455,9 +455,9 @@ window.CARDIO_BANK = [
     "topic": "Retorno venoso",
     "q": "Nas varizes, válvulas defeituosas podem favorecer edema porque:",
     "a": [
-      "Reduzem a pressão venosa dos pés",
-      "Impedem qualquer filtração",
-      "Diminuem o volume intersticial",
+      "Aumentam a pressão oncótica do plasma",
+      "Diminuem a pressão hidrostática capilar dos pés",
+      "Elevam a drenagem linfática acima da filtração capilar",
       "Permitem refluxo e elevam a pressão venosa e capilar"
     ],
     "correct": 3,
@@ -470,10 +470,10 @@ window.CARDIO_BANK = [
     "topic": "Microcirculação",
     "q": "Os esfíncteres pré-capilares controlam principalmente:",
     "a": [
-      "O ritmo do nó sinusal",
+      "A complacência das grandes artérias",
       "O acesso do sangue aos capilares individuais",
-      "A síntese de aldosterona",
-      "A abertura da válvula aórtica"
+      "A retenção renal de sódio",
+      "A pressão de enchimento ventricular"
     ],
     "correct": 1,
     "explain": "São estruturas de músculo liso que regulam o acesso local aos capilares.",
@@ -485,10 +485,10 @@ window.CARDIO_BANK = [
     "topic": "Microcirculação",
     "q": "O recrutamento de capilares no músculo ativo aumenta:",
     "a": [
-      "A espessura da parede capilar",
-      "O refluxo venoso",
+      "A distância de difusão entre o sangue e as fibras",
+      "A fração de capilares sem perfusão",
       "A área disponível para trocas",
-      "A concentração de LDL"
+      "A resistência vascular por fechamento de canais"
     ],
     "correct": 2,
     "explain": "Abrir mais canais capilares amplia a área de troca e a perfusão do músculo ativo.",
@@ -515,9 +515,9 @@ window.CARDIO_BANK = [
     "topic": "Controle local",
     "q": "Qual sequência descreve a via vasodilatadora do NO?",
     "a": [
-      "NO → COX → colágeno",
-      "NO → renina → angiotensina II",
-      "NO → válvula venosa → refluxo",
+      "NO → adenilato ciclase → AMPc",
+      "NO → guanilato ciclase → AMPc",
+      "NO → fosfolipase C → IP₃",
       "NO → guanilato ciclase → GMPc"
     ],
     "correct": 3,
@@ -530,10 +530,10 @@ window.CARDIO_BANK = [
     "topic": "Controle local",
     "q": "A prostaciclina (PGI₂) favorece relaxamento vascular principalmente pela via:",
     "a": [
-      "Renina e angiotensina",
+      "Guanilato ciclase e GMPc",
       "Adenilato ciclase e AMPc",
-      "Hemoglobina e oxigênio",
-      "Elastina e colágeno"
+      "Fosfolipase C e IP₃",
+      "Canais de cálcio tipo L e contração"
     ],
     "correct": 1,
     "explain": "A PGI₂ ativa a via da adenilato ciclase e do AMPc, distinta da via do GMPc utilizada pelo NO.",
@@ -561,9 +561,9 @@ window.CARDIO_BANK = [
     "q": "Em qual região da parede arterial se forma a placa aterosclerótica descrita?",
     "a": [
       "Região subendotelial da íntima",
-      "Interior de uma válvula venosa",
-      "Membrana basal capilar apenas",
-      "Adventícia exclusivamente"
+      "Túnica média, entre camadas de músculo liso",
+      "Superfície externa da adventícia",
+      "Luz de vênulas pós-capilares"
     ],
     "correct": 0,
     "explain": "O material localiza a placa sob o endotélio, na íntima arterial.",
@@ -621,9 +621,9 @@ window.CARDIO_BANK = [
     "q": "Uma ação renal da vasopressina (ADH) é:",
     "a": [
       "Aumentar a reabsorção de água",
-      "Bloquear toda reabsorção de água",
-      "Produzir hemácias imediatamente",
-      "Eliminar o gradiente de pressão arterial"
+      "Reduzir a permeabilidade à água no ducto coletor",
+      "Reduzir a inserção apical de aquaporinas",
+      "Diluir a urina por menor reabsorção de água"
     ],
     "correct": 0,
     "explain": "O ADH aumenta a reabsorção renal de água; em concentrações elevadas também promove vasoconstrição.",
@@ -635,9 +635,9 @@ window.CARDIO_BANK = [
     "topic": "Controle hormonal",
     "q": "O ANP é secretado pelos átrios em resposta a:",
     "a": [
-      "Redução do CO₂ no ar",
-      "Contração dos capilares",
-      "Queda obrigatória da FC",
+      "Redução do volume sanguíneo central",
+      "Diminuição do retorno venoso",
+      "Queda do estiramento das paredes atriais",
       "Aumento do estiramento atrial"
     ],
     "correct": 3,
@@ -665,10 +665,10 @@ window.CARDIO_BANK = [
     "topic": "Hemodinâmica",
     "q": "Mantendo o fluxo constante, aumentar a área total de secção transversal provoca:",
     "a": [
-      "Aumento obrigatório da velocidade",
-      "Ausência de mudança da velocidade",
+      "Aumento da velocidade média",
+      "Manutenção da velocidade média",
       "Redução da velocidade média",
-      "Inversão obrigatória do sentido do fluxo"
+      "Aumento da velocidade na mesma proporção da área"
     ],
     "correct": 2,
     "explain": "Pela relação velocidade = fluxo/área, aumentar a área com fluxo constante reduz a velocidade média.",

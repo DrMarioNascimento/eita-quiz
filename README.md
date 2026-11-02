@@ -116,4 +116,10 @@ repositório. Nunca inclua credenciais em arquivos versionados ou em `assets/`.
 - As escritas docentes seguem uma fila, evitando inversão entre resultado, pausa, reinício e próxima pergunta. A retomada preserva o contador de rodadas para não colidir com respostas anteriores.
 - O aluno vê a alternativa escolhida durante o envio e uma confirmação após a gravação. O encerramento permite entrar em outra sala.
 
-Verificação local: `node --test tests/*` e `node scripts/prepare-hosting.cjs`. Os testes cobrem abertura sem download, indisponibilidade de armazenamento, envio e falha de respostas, ciclo de conexão, conteúdo das rodadas e ordenação das escritas. Não substituem teste com uma turma real ou medição de tráfego em produção.
+Verificação local: `node --test tests/*.test.*` e `node scripts/prepare-hosting.cjs`. Os testes cobrem abertura sem download, indisponibilidade de armazenamento, envio e falha de respostas, ciclo de conexão, conteúdo das rodadas e ordenação das escritas. Não substituem teste com uma turma real ou medição de tráfego em produção.
+
+### Editor e verificação da conexão
+
+**Banco de questões → Editar perguntas e tempos** abre campos separados para enunciado, alternativas, correta, tempo, explicação, tema e fonte. É possível navegar, adicionar, excluir e desfazer a última exclusão. **Aplicar alterações** atualiza o banco; **Cancelar** descarta o rascunho. Todos os temas são preservados e o banco editado permanece no armazenamento desta aba. O formato anterior continua em **Edição avançada em texto**.
+
+**Entrada → Conexão da sala** mostra confirmações e seus tempos, além de permitir baixar um diagnóstico agregado sem conteúdo pessoal. A sala online tem limite de **60 participantes**, também indicado na interface. O ensaio suporta 60 participantes simulados. Detalhes e limites dos testes em [docs/VALIDACAO-2026-11-02.md](docs/VALIDACAO-2026-11-02.md); alterações das 24 questões revistas em [docs/REVISAO-BANCO.md](docs/REVISAO-BANCO.md).

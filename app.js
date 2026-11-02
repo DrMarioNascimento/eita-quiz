@@ -149,6 +149,8 @@ function updateLifeEdge(id,life){
 function render(){
   safe($('teamValue'),Math.round(teamLife)+'%');
   safe($('bossValue'),Math.round(bossLife)+'%');
+  $('teamMeter').setAttribute('aria-valuenow',String(Math.round(teamLife)));
+  $('bossMeter').setAttribute('aria-valuenow',String(Math.round(bossLife)));
   $('bossFill').style.clipPath=`inset(0 ${100-bossLife}% 0 0)`;
   $('teamFill').style.clipPath=`inset(0 ${100-teamLife}% 0 0)`;
   battery($('teamBattery'),teamLife);
@@ -616,30 +618,7 @@ $('pause').onclick=()=>{
 };
 $('finish').onclick=resolve;
 $('reset').onclick=reset;
-$('edit').onclick=()=>{
-  if(!window.eitaTeacherAuthorized||locked)return;
-  $('quizText').value=(questionBank||quiz).map(q=>[q.q,...q.a,q.correct+1,q.time,q.explain].join('\n')).join('\n---\n');
-  safe($('error'),'');
-  $('editor').showModal()
-};
 $('questionCount').onchange=()=>{if(!locked)reset();};
-$('cancel').onclick=()=>$('editor').close();
-$('save').onclick=()=>{
-  if(!window.eitaTeacherAuthorized||locked)return;
-  try{
-    const items=$('quizText').value.split(/^---\s*$/m).map(block=>{
-      const lines=block.trim().split('\n').map(x=>x.trim());const correct=Number(lines[5])-1,time=Number(lines[6]);if(lines.length<7||lines.slice(0,5).some(x=>!x)||!Number.isInteger(correct)||correct<0||correct>3||!Number.isFinite(time)||time<5||time>300)throw Error('Cada bloco precisa de enunciado, 4 alternativas, correta de 1 a 4 e tempo de 5 a 300 segundos.');return{
-        q:lines[0],a:lines.slice(1,5),correct,time,explain:lines.slice(7).join(' ')
-      }
-    });
-    questionBank=items;bankLabel='';
-    quiz=items;
-    $('editor').close();
-    reset()
-  }catch(e){
-    safe($('error'),e.message)
-  }
-};
 reset();
 
 // Recalcula medidas quando o navegador muda de monitor, largura ou zoom.
@@ -784,6 +763,7 @@ window.eitaGame={
   setRoster(roster){if(locked)return;entrants.splice(0,entrants.length,...roster.map(p=>({name:p.name,avatar:p.emoji})));avatarByName.clear();roster.forEach(p=>avatarByName.set(p.name,p.emoji));prepare();},
   isLocked:()=>locked,
   // 20/10/2026: banco vindo da planilha (planilha.js), só na memória desta aba.
+  getBank(){return (questionBank||quiz).map(item=>({...item,a:[...item.a]}));},
   setBank(items,label){if(locked||!items.length)return false;questionBank=items;bankLabel=label||'';reset();return true;},
   reset,
   animals:animalAvatars
