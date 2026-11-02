@@ -23,7 +23,7 @@ jobs:
       - name: Check JavaScript and prepare application files
         run: |
           for file in *.js scripts/*.cjs; do node --check "$file"; done
-          node --test tests/*
+          node --test tests/*.test.*
           node scripts/prepare-hosting.cjs
       - name: Publish approved main branch
         uses: FirebaseExtended/action-hosting-deploy@v0

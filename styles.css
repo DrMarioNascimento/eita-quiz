@@ -1825,3 +1825,65 @@ html.eita-fs-estreita header .brand-tagline,html.eita-fs-estreita header .header
 .intro-actions button:focus-visible{outline:3px solid #fff;outline-offset:4px}
 .student-answers button.answer-selected:disabled{opacity:1;color:#fff;background:#174f4c;border:2px solid #98ffe2;box-shadow:0 0 0 2px #08162d}
 #studentResult{min-height:1.5em;font-weight:700}
+
+/* Leitura do professor: o fundo continua presente, com texto sobre painéis estáveis. */
+aside{background:linear-gradient(150deg,#13243bef,#0b1528f5)}
+.menu-step.control-card{background:linear-gradient(145deg,#243952f5,#111f34fa)}
+.step-sub{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;line-height:1.45;color:#d0e0f0;font-size:13px}
+.step-text{overflow-wrap:anywhere}
+.step-note,.menu-group,.muted{color:#c9d9ec}
+.menu-step .step-body p{line-height:1.55}
+.battle-label{background:#0b192bef;border:1px solid #7898ba55;border-radius:8px;padding:6px 9px;line-height:1.4;text-shadow:none;font-size:12px}
+.question .log{color:#d8e8fa;line-height:1.5}
+.question .option{line-height:1.5;overflow-wrap:anywhere}
+button,input,select,textarea{font:inherit}
+:where(button,a,input,select,textarea,summary):focus-visible{outline:3px solid #b7f5ff;outline-offset:3px}
+button,input,select{min-height:44px}
+.fullscreen-button{width:44px;height:44px}
+.skip-link{position:fixed;left:12px;top:-100px;z-index:100001;padding:12px;background:#e8f4ff;color:#08162d;border-radius:8px}
+.skip-link:focus{top:12px}
+#editor{width:min(900px,calc(100vw - 32px));max-width:calc(100vw - 32px);max-height:90dvh;box-sizing:border-box;padding:24px;overflow:auto;color:#edf5ff;background:#10213a;border:1px solid #9cbed9;border-radius:18px}
+#editor::backdrop{background:#020816c9}
+#editorForm{margin:0;min-width:0}
+#editor h2{margin-top:0;font-size:22px}
+#editor label{display:block;margin:14px 0 6px;color:#edf5ff}
+#editor :is(textarea,input,select){width:100%;box-sizing:border-box;min-width:0;margin:0;background:#192d48;color:#fff;border:1px solid #8da9c4;border-radius:8px;padding:10px;font-size:16px;line-height:1.45}
+#editor textarea{resize:vertical}
+#editor :is(p,small){line-height:1.5}
+.editor-heading,.editor-toolbar,.editor-actions{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.editor-heading{justify-content:space-between}
+.editor-toolbar{margin:12px 0}
+#editor .editor-toolbar button{width:auto;flex:1 1 120px;margin:0;padding:9px 12px;min-height:44px}
+.editor-alternatives,.editor-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+#advancedEditor{margin:18px 0;padding:12px;border:1px solid #7d9cbc;border-radius:10px;background:#142943}
+#advancedEditor summary{cursor:pointer;min-height:32px}
+#editor .editor-actions{position:sticky;bottom:-24px;margin:18px -8px -8px;padding:14px 8px;background:#10213af5;border-top:1px solid #7898ba66}
+#editor .editor-actions button{width:auto;flex:1;margin:0;min-height:48px}
+#error{color:#ffd5bf;font-weight:700}
+.connection-diagnostics{margin-top:16px;border-top:1px solid #7898ba66;padding-top:12px}
+.connection-diagnostics summary{cursor:pointer;min-height:44px;display:flex;align-items:center}
+.connection-diagnostics p{font-size:13px;overflow-wrap:anywhere}
+.intro-actions button{width:auto;flex:0 1 280px}
+.student-page{box-sizing:border-box}
+.student-page .control-card{background:linear-gradient(145deg,#1c2f49f5,#101d33fa)}
+.student-answers button{line-height:1.5;overflow-wrap:anywhere;text-align:left;padding:14px}
+@media(max-width:600px){
+ .editor-alternatives,.editor-pair{grid-template-columns:1fr;gap:0}
+ #editor{padding:16px;max-height:94dvh;width:calc(100vw - 16px);max-width:calc(100vw - 16px)}
+ #editor .editor-actions{bottom:-16px}
+ .step-sub{font-size:13px}
+ body .student-page{margin:12px auto;padding:12px;width:100%}
+ body .student-page .control-card{padding:16px}
+ .emoji-picker{gap:8px}
+ body .emoji-picker button{width:60px;height:60px}
+ header{padding:12px;gap:12px}
+ .brand{min-width:0;flex-wrap:wrap}
+ .brand-tagline{font-size:18px}
+ .header-actions{max-width:100%;flex-wrap:wrap}
+ .options{grid-template-columns:1fr;min-height:0}
+ .battle-label{font-size:11px}
+ .intro-actions button{flex-basis:100%}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
