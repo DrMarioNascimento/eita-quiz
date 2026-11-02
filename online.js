@@ -21,8 +21,8 @@ function openRoomQr(){
 }
 const api={active:false,
  async begin(q,squads,mode){
-   round++;
-   await publish(questionPayload(q,squads,mode,roster,round,Timestamp.fromMillis(Date.now()+q.time*1000)));
+   const nextRound=++round;
+   await publish(()=>questionPayload(q,squads,mode,roster,nextRound,Timestamp.fromMillis(Date.now()+q.time*1000)));
  },
  async finish(){
    await publish({status:'resolving',paused:false,question:null});

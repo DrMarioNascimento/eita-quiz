@@ -10,7 +10,7 @@ export function createRoomWriter(write){
  let tail=Promise.resolve();
  return {
   send(target,patch,isCurrent=()=>true){
-   const next=tail.catch(()=>{}).then(()=>isCurrent()?write(target,patch):undefined);
+   const next=tail.catch(()=>{}).then(()=>isCurrent()?write(target,typeof patch==='function'?patch():patch):undefined);
    tail=next;
    return next;
   },

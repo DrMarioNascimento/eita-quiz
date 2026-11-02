@@ -12,7 +12,8 @@ function listen(){
  unsub?.();
  return new Promise((resolve,reject)=>{
   let initial=true;
-  unsub=onSnapshot(room,snapshot=>{
+  unsub=onSnapshot(room,{includeMetadataChanges:true},snapshot=>{
+   if(initial&&snapshot.metadata?.fromCache)return;
    state=snapshot.exists()?snapshot.data():{status:'closed'};
    if(initial){initial=false;resolve(snapshot);}
    if(joined){render();updateTimer();}

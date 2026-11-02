@@ -39,3 +39,12 @@ test('sala encerrada não recebe transições que ainda estavam na fila',async()
  await Promise.resolve();await Promise.resolve();open=false;release();
  await Promise.all([first,stale]);await writer.flush();assert.equal(calls,1);
 });
+
+test('prazo é calculado na hora da escrita, depois de liberar a fila',async()=>{
+ let release,clock=10;const calls=[];
+ const writer=createRoomWriter(async(_room,patch)=>{calls.push(patch);if(patch.status==='result')await new Promise(resolve=>release=resolve);});
+ const first=writer.send('room',{status:'result'});
+ const next=writer.send('room',()=>({status:'question',deadline:clock+25}));
+ await Promise.resolve();await Promise.resolve();clock=20;release();await Promise.all([first,next]);
+ assert.equal(calls[1].deadline,45);
+});
