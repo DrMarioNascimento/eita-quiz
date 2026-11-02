@@ -1920,3 +1920,5 @@ body[data-workspace=batalha] header .brand-tagline{font-size:16px}
 body[data-workspace=batalha] header .header-actions>.beta-pill,body[data-workspace=batalha] header .header-actions>small{display:none}
 body[data-workspace=batalha] .boss-art,body[data-workspace=batalha] .team-art{max-width:340px;justify-self:center}
 @media(max-width:700px){body[data-workspace=batalha] header{padding:10px 12px;flex-wrap:wrap}body[data-workspace=batalha] header .brand-tagline{display:none}body[data-workspace=batalha] .workspace-switch{order:0}body[data-workspace=batalha] .workspace-switch button{padding:8px 10px}}
+
+@media(max-width:600px){.empty-roster{inset:8% 5% auto;padding:8px;font-size:13px;line-height:1.35}}
