@@ -199,6 +199,7 @@ function controls(){
   {const h=$('startHint');if(h){const msg=index<0&&!running?(!window.eitaOnline?.active?'Para começar, abra a sala em Entrada.':!entrants.length?'Aguardando participantes entrarem na sala…':''):'';h.textContent=msg;h.hidden=!msg;}}
   $('pause').disabled=!(running||intermission||attackPending);
   $('finish').disabled=!running;
+  const empty=$('emptyRoster');if(empty){empty.hidden=students.length>0;$('teamBattery').classList.toggle('roster-empty',!students.length);}
   const ended=bossLife<=0||teamLife<=0;
   $('start').textContent=ended?'Partida encerrada':index<0?'Iniciar Quiz':'Próxima pergunta';
   $('pause').textContent=paused?'Continuar':'Pausar';
@@ -456,6 +457,7 @@ async function start(){
     try{await window.eitaOnline.begin(quiz[index],squads,selected);}catch(error){running=false;locked=false;safe($('status'),'Não foi possível iniciar online. Tente novamente.');controls();return;}
     last=performance.now();
   }
+  window.eitaWorkspace?.battle();
   tick();
 }
 function tick(){
@@ -692,7 +694,8 @@ function fitSceneToViewport(force=false){
  const style=getComputedStyle(section),as=getComputedStyle(arena);
  const footer=credit&&getComputedStyle(credit).display!=='none'?credit.getBoundingClientRect().height+12:0;
  const viewport=window.visualViewport?.height||innerHeight;
- const usable=viewport-header.getBoundingClientRect().height-question.getBoundingClientRect().height-footer-parseFloat(style.paddingTop)-parseFloat(style.paddingBottom)-12;
+ const toolbar=document.body.dataset.workspace==='batalha'&&!document.documentElement.classList.contains('eita-fs')?document.querySelector('main>aside').getBoundingClientRect().height:0;
+ const usable=viewport-header.getBoundingClientRect().height-toolbar-question.getBoundingClientRect().height-footer-parseFloat(style.paddingTop)-parseFloat(style.paddingBottom)-12;
  const labels=arena.querySelector('.battle-label').getBoundingClientRect().height,meter=arena.querySelector('.art-meter').getBoundingClientRect().height;
  const height=Math.max(240,usable-parseFloat(as.paddingTop)-parseFloat(as.paddingBottom)-labels-meter-18);
  arena.style.setProperty('--battle-height',Math.floor(height)+'px');

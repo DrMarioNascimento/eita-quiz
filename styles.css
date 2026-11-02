@@ -1887,3 +1887,26 @@ button,input,select{min-height:44px}
 @media(prefers-reduced-motion:reduce){
  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+/* Preparação e batalha: o mesmo jogo, com a tarefa em primeiro plano. */
+header{flex-wrap:wrap;gap:12px}
+.workspace-switch{display:flex;gap:6px;padding:4px;border:1px solid #7089a44d;border-radius:14px;background:#0c192a}
+.workspace-switch button{width:auto;min-height:44px;margin:0;padding:8px 14px;border:1px solid transparent;border-radius:10px;background:transparent;color:#d6e5f4;font-weight:700}
+.workspace-switch button[aria-pressed=true]{background:linear-gradient(#3b6076,#213c55);border-color:#9fcbdf;box-shadow:0 3px 0 #07111f,inset 0 1px #ffffff22;color:#fff}
+body[data-workspace=batalha] main{display:block}
+body[data-workspace=batalha] main>aside{position:static;display:flex;justify-content:center;padding:8px 16px;border-right:0;border-bottom:1px solid #7089a455;background:#0b1729}
+body[data-workspace=batalha] main>aside>:not(#menu-controle){display:none}
+body[data-workspace=batalha] #menu-controle{width:min(640px,100%);margin:0;padding:0;border:0;box-shadow:none;background:none!important}
+body[data-workspace=batalha] #menu-controle>summary{display:none}
+body[data-workspace=batalha] #menu-controle>.step-body{padding:0}
+body[data-workspace=batalha] .control-capsule{margin:0 auto;max-width:400px}
+body[data-workspace=batalha] .question{padding:18px 24px;background:#102238f5;border-color:#7898ba88}
+body[data-workspace=batalha] .question h2{font-size:clamp(24px,2.5vw,36px);line-height:1.25;text-wrap:pretty}
+body[data-workspace=batalha] .question .option{font-size:clamp(18px,1.6vw,24px);padding:12px 16px;min-height:52px}
+body[data-workspace=batalha] .battle-label{font-size:14px}
+.empty-roster{position:absolute;z-index:5;inset:20% 8% auto;margin:0;padding:18px;border:1px solid #b1cfdf66;border-radius:16px;color:#f0f7ff;background:#10233beF;text-align:center;font-size:clamp(15px,1.5vw,20px);line-height:1.6}
+.empty-roster[hidden]{display:none}
+.roster-empty .liquid{opacity:.18}
+html.eita-fs .workspace-switch{display:none}
+html.eita-fs body[data-workspace=batalha] main>aside{position:fixed;padding:0;border:0;background:transparent}
+@media(max-width:600px){.workspace-switch{order:3}.workspace-switch button{padding:8px 16px}body[data-workspace=batalha] .question{padding:14px}body[data-workspace=batalha] main>aside{padding:8px}.empty-roster{inset:15% 5% auto;padding:12px}}
