@@ -3,7 +3,7 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, 'dist');
 const files = [
-  'index.html', 'aluno.html', '404.html', 'styles.css', 'animals.js',
+  'index.html', 'aluno.html', 'previa.html', 'previa.js', '404.html', 'styles.css', 'animals.js',
   'app.js', 'cardio-bank.js', 'chefes.js', 'cloud.js', 'firebase-config.js',
   'online.js', 'room-protocol.js', 'abertura.js', 'editor-model.js', 'editor.js', 'connection-metrics.js', 'planilha.js', 'ensaio.js', 'qr.js', 'student.js', 'typography.js', 'menu.js', 'tela-cheia.js'
 ];
