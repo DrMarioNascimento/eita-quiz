@@ -1,6 +1,29 @@
 <!doctype html>
-<html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Eita! — Um Quiz em Aliança</title>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Eita! — Um Quiz em Aliança</title>
+<meta name="description" content="Quiz cooperativo para aulas e encontros. Importe sua planilha de perguntas, abra uma sala e convide a turma pelo código ou QR Code.">
+<link rel="canonical" href="https://eita.dragongames.dev.br/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="Eita!">
+<meta property="og:title" content="Eita! — Um Quiz em Aliança">
+<meta property="og:description" content="Quiz cooperativo para aulas e encontros. Importe sua planilha de perguntas, abra uma sala e convide a turma pelo código ou QR Code.">
+<meta property="og:url" content="https://eita.dragongames.dev.br/">
+<meta property="og:image" content="https://eita.dragongames.dev.br/assets/eita-compartilhamento.jpg">
+<meta property="og:image:secure_url" content="https://eita.dragongames.dev.br/assets/eita-compartilhamento.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1400">
+<meta property="og:image:height" content="1400">
+<meta property="og:image:alt" content="Emblema dourado com lobo, leão, águia, urso e serpente sobre um fundo estrelado.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Eita! — Um Quiz em Aliança">
+<meta name="twitter:description" content="Quiz cooperativo para aulas e encontros. Importe sua planilha de perguntas, abra uma sala e convide a turma pelo código ou QR Code.">
+<meta name="twitter:image" content="https://eita.dragongames.dev.br/assets/eita-compartilhamento.jpg">
+<meta name="twitter:image:alt" content="Emblema dourado com lobo, leão, águia, urso e serpente sobre um fundo estrelado.">
 <link rel="preload" href="assets/fonts/eita-marca-nunito-900-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="styles.css?v=design-fit2-20261102">
+</head>
+<body>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute"><defs><filter id="chroma" color-interpolation-filters="sRGB" x="-10%" y="-10%" width="120%" height="120%"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 0 -0 0 0" result="unused"/><feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 -2 2 0 1"/></filter><filter id="energy" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 -2 2 0 1" result="cut"/><feFlood flood-color="#ff981f"/><feComposite in2="cut" operator="in"/></filter><filter id="video-key" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%"><feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 -2 2 0 1" result="keyed"/><feComponentTransfer in="keyed"><feFuncA type="linear" slope="1.15" intercept="-0.08"/></feComponentTransfer></filter></defs></svg><div id="introOverlay" role="dialog" aria-modal="true" aria-label="Abertura do Eita!">
 <video id="introVid" playsinline preload="none" poster="assets/alianca.png" aria-label="Vídeo de abertura do Eita!">
 <source data-src="assets/abertura.mp4" type="video/mp4">
@@ -29,5 +52,5 @@
 <details id="advancedEditor"><summary>Edição avançada em texto</summary><p class="muted">Um bloco por pergunta: enunciado, quatro alternativas, correta de 1 a 4, segundos e explicação. Separe com ---. Este formato substitui o banco e não contém temas ou fontes.</p><label for="quizText">Perguntas no formato de texto</label><textarea id="quizText" rows="10"></textarea><button id="importEditorText" type="button">Usar texto no formulário</button></details>
 <p id="error" role="alert"></p><p class="muted">O banco permanece nesta aba e não é enviado ao servidor. Fechar a aba descarta as alterações.</p><div class="editor-actions"><button id="save" type="submit" class="primary">Aplicar alterações</button><button id="cancel" type="button">Cancelar</button></div>
 </form></dialog>
-<dialog id="roomQrDialog" class="room-qr-dialog"><h2>Entre no jogo!</h2><div id="roomQr"></div><strong id="qrRoomCode"></strong><p>Escaneie com a câmera do celular.<br>Escolha seu nome e animal.</p><p id="qrRoster" aria-live="polite"></p><button id="dismissRoomQr" class="primary">Continuar para a partida</button></dialog><script src="animals.js?v=webp-20261020"></script><script src="qr.js"></script><script src="cardio-bank.js?v=revisao-20261102"></script><script src="chefes.js"></script><script src="workspace.js?v=design-20261102"></script><script src="app.js?v=design-20261102"></script><script src="planilha.js?v=editor-20261102"></script><script src="ensaio.js?v=editor-20261102"></script><script src="editor-model.js"></script><script src="editor.js"></script><script src="connection-metrics.js?v=editor-20261102"></script><script src="menu.js"></script><script src="tela-cheia.js?v=console-topo-20261020"></script><script src="typography.js"></script><script type="module" src="online.js?v=editor-20261102"></script></html>
+<dialog id="roomQrDialog" class="room-qr-dialog"><h2>Entre no jogo!</h2><div id="roomQr"></div><strong id="qrRoomCode"></strong><p>Escaneie com a câmera do celular.<br>Escolha seu nome e animal.</p><p id="qrRoster" aria-live="polite"></p><button id="dismissRoomQr" class="primary">Continuar para a partida</button></dialog><script src="animals.js?v=webp-20261020"></script><script src="qr.js"></script><script src="cardio-bank.js?v=revisao-20261102"></script><script src="chefes.js"></script><script src="workspace.js?v=design-20261102"></script><script src="app.js?v=design-20261102"></script><script src="planilha.js?v=editor-20261102"></script><script src="ensaio.js?v=editor-20261102"></script><script src="editor-model.js"></script><script src="editor.js"></script><script src="connection-metrics.js?v=editor-20261102"></script><script src="menu.js"></script><script src="tela-cheia.js?v=console-topo-20261020"></script><script src="typography.js"></script><script type="module" src="online.js?v=editor-20261102"></script></body></html>
 
