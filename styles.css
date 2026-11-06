@@ -1922,3 +1922,10 @@ body[data-workspace=batalha] .boss-art,body[data-workspace=batalha] .team-art{ma
 @media(max-width:700px){body[data-workspace=batalha] header{padding:10px 12px;flex-wrap:wrap}body[data-workspace=batalha] header .brand-tagline{display:none}body[data-workspace=batalha] .workspace-switch{order:0}body[data-workspace=batalha] .workspace-switch button{padding:8px 10px}}
 
 @media(max-width:600px){.empty-roster{inset:8% 5% auto;padding:8px;font-size:13px;line-height:1.35}}
+
+/* 06/11/2026: chefe Esqueleto em modelo 3D (glb3d, ver boss3d.js) — o canvas substitui o vídeo/arte
+   estática só quando #boss tem a classe glb-ativo; os outros chefes continuam no caminho de vídeo normal. */
+.boss canvas{position:absolute;inset:0;width:100%;height:100%;z-index:2;display:none;pointer-events:none}
+.boss.glb-ativo canvas{display:block}
+.boss.glb-ativo .base,.boss.glb-ativo .charge{display:none}
+.boss .quadro-3d{position:absolute;inset:0;width:100%;height:100%;z-index:2;object-fit:contain;pointer-events:none}

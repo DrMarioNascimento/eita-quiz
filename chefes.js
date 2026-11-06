@@ -1,9 +1,15 @@
 // Catálogo de chefes, fundos e trilhas do Eita!
 // 03/11/2026: mídias mais leves — vídeos VP9 com transparência em até 1080/1280 px, fundos em WebP 1920 px e
 // músicas em Opus 96 kbps. Os originais continuam na pasta (as versões em uso têm o sufixo -leve ou extensão nova).
+// 06/11/2026: Esqueleto migrado de vídeo para modelo 3D (glb3d) — ver boss3d.js. Melhora o enquadramento
+// (sem corte da animação) e reduz o tráfego (glb 4,98MB em texturas 2048px vs vídeo 7,89MB). O campo "video"
+// continua aqui como caminho de rollback (se glb3d for removido, o chefe volta a usar o vídeo normalmente).
 // Cada partida sorteia um chefe (com o seu papel de parede) e uma música, passando por todos antes de repetir.
 // som (opcional): áudio próprio que toca junto com o vídeo do ataque (o som do vídeo fica mudo).
-// Golpe: tempos em segundos do vídeo; origem/trajeto em coordenadas normalizadas do quadro (0–1).
+// Golpe: tempos em segundos do vídeo (ou do clipe 3D, se glb3d); origem/trajeto em coordenadas normalizadas do quadro (0–1).
+// glb3d (opcional): chefe renderizado em three.js em vez de vídeo. idle/ataque = nomes dos clipes de animação
+// no .glb; tIgnicao/tBola/tPuxada/tArremesso = tempos (s) do efeito de fogo e da bola na mão, dentro do clipe
+// de ataque — ajustados visualmente no protótipo teste-chefe-esqueleto-3d.html.
 window.EITA_CHEFES=[
   {
     id:'sombra',nome:'Sombra',video:'assets/chefe-7s-leve.webm',fundo:null,
@@ -29,7 +35,9 @@ window.EITA_CHEFES=[
   },
   {
     id:'esqueleto',nome:'Esqueleto',video:'assets/chefes/esqueleto-leve.webm',fundo:'assets/chefes/esqueleto-fundo.webp',
-    golpe:{tipo:'pow',inicio:5.15,viagem:.38,origem:[.96,.30],cor:'#ff5a1a'}
+    glb3d:{url:'assets/chefes-3d/esqueleto-teste.glb',idle:'Idle_4',ataque:'Crouch_Charge_and_Throw',
+      tIgnicao:0,tBola:2.0,tPuxada:4.5,tArremesso:5.1},
+    golpe:{tipo:'pow',inicio:5.1,viagem:.38,origem:[.323,.456],cor:'#ff5a1a'}
   }
 ];
 

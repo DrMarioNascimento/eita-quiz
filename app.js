@@ -215,6 +215,7 @@ function stopBossVideo(){
   const v=$('bossVideo');
   v.pause();
   v.currentTime=0;
+  if(chefeAtual&&chefeAtual.glb3d&&window.Boss3D)window.Boss3D.pararEVoltarAoIdle(0.15);
   $('boss').classList.remove('video-active');
   pararSomDoChefe();
   abafarMusica(false);
@@ -238,6 +239,10 @@ function playBossVideo(){
   followBossShot();
   v.muted=!!chefeAtual.som;
   tocarSomDoChefe();
+  if(chefeAtual&&chefeAtual.glb3d&&window.Boss3D){
+    window.Boss3D.iniciarAtaque();
+    return;
+  }
   const playing=v.play();
   if(playing)playing.catch(()=>{
     commitImpact();stopBossVideo()
@@ -268,14 +273,21 @@ function aplicarChefe(chefe){
  chefeAtual=chefe;
  const v=$('bossVideo'),main=document.querySelector('main');
  bossVisibleBounds=null;
- v.preload='metadata';
  v.setAttribute('aria-label','Animação de ataque de '+chefe.nome);
  $('boss').dataset.chefe=chefe.id;
- const atual=v.querySelector('source');
- if(!atual||atual.getAttribute('src')!==chefe.video){
-  v.replaceChildren();
-  const source=document.createElement('source');source.src=chefe.video;source.type='video/webm';v.append(source);
-  v.load();
+ document.querySelectorAll('#boss .quadro-3d').forEach(el=>el.remove());
+ $('bossCanvas').style.visibility='';
+ $('boss').classList.toggle('glb-ativo',!!(chefe.glb3d&&window.Boss3D));
+ if(chefe.glb3d&&window.Boss3D){
+  window.Boss3D.preparar(chefe).then(()=>{ if(chefeAtual===chefe) window.Boss3D.mostrar(chefe); });
+ } else {
+  v.preload='metadata';
+  const atual=v.querySelector('source');
+  if(!atual||atual.getAttribute('src')!==chefe.video){
+   v.replaceChildren();
+   const source=document.createElement('source');source.src=chefe.video;source.type='video/webm';v.append(source);
+   v.load();
+  }
  }
  if(main){
   if(chefe.fundo){main.style.backgroundImage='url("'+chefe.fundo+'")';main.classList.add('fundo-chefe');}
@@ -346,9 +358,13 @@ function muzzleAt(time){
  }
  const point=track[track.length-1];return {x:point[1],y:point[2]};
 }
+function bossFrameRect(){return (chefeAtual&&chefeAtual.glb3d&&window.Boss3D?$('bossCanvas'):$('bossVideo')).getBoundingClientRect();}
 function cancelBossShot(){
  const v=$('bossVideo');
- if(bossShotFrame!==null){if(v.cancelVideoFrameCallback)v.cancelVideoFrameCallback(bossShotFrame);else cancelAnimationFrame(bossShotFrame);}
+ if(bossShotFrame!==null){
+  if(chefeAtual&&chefeAtual.glb3d&&window.Boss3D)cancelAnimationFrame(bossShotFrame);
+  else if(v.cancelVideoFrameCallback)v.cancelVideoFrameCallback(bossShotFrame);else cancelAnimationFrame(bossShotFrame);
+ }
  bossShotFrame=null;$('bossShot').classList.remove('active');
  $('bossProjectile').className='boss-projectile';
 }
@@ -367,7 +383,7 @@ function mostrarImpacto(x,y){
 }
 function updateBossShot(time){
  const g=chefeAtual.golpe,shot=$('bossShot'),ativo=$('boss').classList.contains('video-active');
- const scene=$('arena').getBoundingClientRect(),video=$('bossVideo').getBoundingClientRect(),battery=$('teamBattery').getBoundingClientRect();
+ const scene=$('arena').getBoundingClientRect(),video=bossFrameRect(),battery=$('teamBattery').getBoundingClientRect();
  if(g.tipo==='raio'){
   const active=time>=g.inicio&&time<=g.fim&&ativo;
   shot.classList.toggle('active',active);
@@ -399,7 +415,17 @@ function updateBossShot(time){
  proj.style.setProperty('--golpe-angulo',Math.atan2(y1-y0,x1-x0)+'rad');
 }
 function followBossShot(){
- cancelBossShot();const v=$('bossVideo');
+ cancelBossShot();
+ if(chefeAtual&&chefeAtual.glb3d&&window.Boss3D){
+  const frame3d=()=>{
+   if(!$('boss').classList.contains('video-active'))return;
+   updateBossShot(window.Boss3D.tempoAtaque());
+   bossShotFrame=requestAnimationFrame(frame3d);
+  };
+  bossShotFrame=requestAnimationFrame(frame3d);
+  return;
+ }
+ const v=$('bossVideo');
  const frame=(now,metadata)=>{
   if(!$('boss').classList.contains('video-active'))return;
   updateBossShot(metadata?.mediaTime??v.currentTime);
@@ -416,6 +442,10 @@ $('bossVideo').onerror=()=>{
   commitImpact();
   stopBossVideo()
 };
+if(window.Boss3D)window.Boss3D.aoTerminarAtaque(()=>{
+  commitImpact();
+  stopBossVideo()
+});
 async function start(){
   if(!window.eitaOnline?.active){safe($('status'),'Abra a sala em Entrada e aguarde os participantes entrarem.');return;}
   if(window.eitaOnline?.active){
@@ -526,6 +556,15 @@ async function resolve(){
     if(bossLife<=0){
       result='Vitória! O grupo derrotou o chefão.';
       stopBossVideo();
+      if(chefeAtual&&chefeAtual.glb3d&&window.Boss3D){
+        const png=window.Boss3D.capturarQuadroPng();
+        if(png){
+          const img=document.createElement('img');
+          img.src=png;img.className='quadro-3d';img.alt='';
+          $('boss').appendChild(img);
+          $('bossCanvas').style.visibility='hidden';
+        }
+      }
       shatter($('boss'),'#ffba56')
     }else if(teamLife<=0){
       result='O grupo ficou sem energia. Fim da batalha.';
@@ -539,7 +578,7 @@ async function resolve(){
     if(bossLife>0&&teamLife>0&&$('advanceMode').value!=='manual'){
       intermission=true;
       paused=false;
-      remaining=Math.max(5,Number.isFinite($('bossVideo').duration)&&$('boss').classList.contains('video-active')?Math.max(0,$('bossVideo').duration-$('bossVideo').currentTime):0);
+      remaining=Math.max(5,$('boss').classList.contains('video-active')?(chefeAtual&&chefeAtual.glb3d&&window.Boss3D?Math.max(0,window.Boss3D.duracaoAtaque(chefeAtual)-window.Boss3D.tempoAtaque()):(Number.isFinite($('bossVideo').duration)?Math.max(0,$('bossVideo').duration-$('bossVideo').currentTime):0)):0);
       last=performance.now();
       handle=requestAnimationFrame(tick);
       safe($('transition'),`Próxima pergunta em ${Math.ceil(remaining)} s`)
@@ -614,7 +653,12 @@ $('pause').onclick=()=>{
   pausarMusica(paused);
   const v=$('bossVideo');
   if($('boss').classList.contains('video-active')){
-    if(paused){v.pause();if(trilha.somChefe)trilha.somChefe.pause();}
+    if(chefeAtual&&chefeAtual.glb3d&&window.Boss3D){
+      window.Boss3D.pausar(paused);
+      if(paused){if(trilha.somChefe)trilha.somChefe.pause();}
+      else if(trilha.somChefe){const p=trilha.somChefe.play();if(p&&p.catch)p.catch(()=>{});}
+    }
+    else if(paused){v.pause();if(trilha.somChefe)trilha.somChefe.pause();}
     else{v.play().catch(()=>stopBossVideo());if(trilha.somChefe){const p=trilha.somChefe.play();if(p&&p.catch)p.catch(()=>{});}}
   }controls()
 };
@@ -640,7 +684,7 @@ function fitVideoToStill(){
  positionStudentShot();
 }
 function positionStudentShot(){
- const scene=$('arena').getBoundingClientRect(),video=$('bossVideo').getBoundingClientRect(),team=$('teamBattery').getBoundingClientRect();
+ const scene=$('arena').getBoundingClientRect(),video=bossFrameRect(),team=$('teamBattery').getBoundingClientRect();
  const bounds=bossVisibleBounds||{top:.135,bottom:.955};
  const chestX=video.left-scene.left+video.width*((bounds.left??0)+(bounds.right??1))/2,chestY=video.top-scene.top+video.height*(bounds.top+(bounds.bottom-bounds.top)*.38);
  $('arena').style.setProperty('--student-shot-y',chestY+'px');

@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teste — Esqueleto 3D (Eita!)</title>
+<!--
+  TESTE ISOLADO — não é referenciado pelo index.html nem pelo app.js.
+  Objetivo: validar se o chefe "Esqueleto" em .glb (Meshy + Mixamo) substitui bem
+  o vídeo atual, antes de qualquer alteração nos arquivos de produção.
+
+  Sequência pedida: em pé parado → pega fogo → arma a bola de fogo na mão →
+  arremessa para a direita → impacto na "bateria" dos alunos.
+
+  O clip de animação usado é "Crouch_Charge_and_Throw" (7.67s) — é o mais próximo
+  disponível no .glb (Running/Walking/Crouch_Charge_and_Throw/Idle_4). O "pega fogo"
+  não existe como animação de osso — no glb original isso era um efeito visual do
+  próprio Meshy, não ficou nos dados exportados (textura é só baseColor+metallicRoughness,
+  sem emissive). Aqui ele foi recriado como efeito (emissivo + partículas tipo brasa),
+  então o timing é ajustável nos controles abaixo até bater com o que você vê.
+
+  O impacto reaproveita exatamente o sistema de efeito que já existe no app.js/styles.css
+  (.golpe-impacto, .boss-projectile.tipo-pow, battery-shell.impacto) — mesmas classes,
+  mesmas keyframes, coladas aqui para o teste ficar autocontido.
+-->
+<style>
+  :root{color-scheme:dark}
+  html,body{margin:0;height:100%;background:#0a0a0d;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#eee}
+  #palco{position:relative;width:100%;height:68vh;min-height:420px;overflow:hidden;background:#05050a}
+  #fundo{position:absolute;inset:0;background:url('assets/chefes-3d/esqueleto-fundo.webp') center/cover;filter:brightness(.55) saturate(1.1)}
+  #cena3d{position:absolute;inset:0}
+  #cena3d canvas{display:block;width:100%!important;height:100%!important}
+
+  #teamBattery{position:absolute;right:4%;bottom:8%;width:clamp(70px,9vw,120px);height:clamp(70px,9vw,120px);border-radius:16px;
+    background:radial-gradient(circle at 35% 30%,#7fd1ff,#1c6fa8 70%);box-shadow:0 0 24px 4px #3aa6ffaa;
+    display:flex;align-items:center;justify-content:center;font-size:12px;text-align:center;padding:6px;box-sizing:border-box}
+  .battery-shell.impacto{animation:golpe-tremor .5s cubic-bezier(.36,.07,.19,.97)}
+  @keyframes golpe-tremor{0%,100%{transform:translate(0,0);filter:none}10%{transform:translate(12px,-3px);filter:brightness(1.8)}25%{transform:translate(-10px,3px);filter:brightness(1.4)}40%{transform:translate(8px,-2px)}55%{transform:translate(-6px,2px)}70%{transform:translate(4px,0)}85%{transform:translate(-2px,0)}}
+
+  /* === reaproveitado de styles.css (produção) === */
+  .boss-projectile{position:absolute;z-index:14;left:0;top:0;display:none;pointer-events:none;--golpe-cor:#ff5a1a;--golpe-t:0;transform:translate(-50%,-50%) rotate(var(--golpe-angulo,0rad))}
+  .boss-projectile.active{display:block}
+  .boss-projectile.tipo-pow{width:clamp(90px,8vw,150px);height:clamp(90px,8vw,150px);transform:translate(-50%,-50%) rotate(calc(var(--golpe-t) * 260deg)) scale(calc(.6 + var(--golpe-t) * .7));filter:drop-shadow(0 0 14px var(--golpe-cor))}
+  .boss-projectile.tipo-pow:after{content:'';position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,#fff 0 16%,#ffe84d 30%,var(--golpe-cor) 58%,#e0261b 80%)}
+  .golpe-impacto{position:absolute;z-index:15;width:clamp(160px,15vw,280px);height:clamp(160px,15vw,280px);pointer-events:none;transform:translate(-50%,-50%);--golpe-cor:#ff5a1a}
+  .golpe-impacto,.golpe-impacto:before,.golpe-impacto:after{border-radius:50%}
+  .golpe-impacto{background:radial-gradient(circle,#fff 0 12%,var(--golpe-cor) 34%,color-mix(in srgb,var(--golpe-cor) 40%,transparent) 52%,transparent 70%);animation:golpe-flash .75s ease-out forwards}
+  .golpe-impacto:before{content:'';position:absolute;inset:0;border:5px solid #fff;box-shadow:0 0 18px 6px var(--golpe-cor),inset 0 0 18px 6px var(--golpe-cor);animation:golpe-onda .75s ease-out forwards}
+  .golpe-impacto:after{content:'';position:absolute;inset:-20%;border-radius:0;background:repeating-conic-gradient(from 8deg,#fff 0 4deg,transparent 4deg 30deg);-webkit-mask:radial-gradient(circle,transparent 0 28%,#000 30% 48%,transparent 62%);mask:radial-gradient(circle,transparent 0 28%,#000 30% 48%,transparent 62%);animation:golpe-raios .6s ease-out forwards}
+  @keyframes golpe-flash{0%{transform:translate(-50%,-50%) scale(.25);opacity:1}35%{opacity:1}100%{transform:translate(-50%,-50%) scale(1.35);opacity:0}}
+  @keyframes golpe-onda{0%{transform:scale(.2);opacity:1}100%{transform:scale(1.6);opacity:0}}
+  @keyframes golpe-raios{0%{transform:scale(.4) rotate(0);opacity:1}100%{transform:scale(1.5) rotate(25deg);opacity:0}}
+  /* === fim do trecho reaproveitado === */
+
+  #painel{padding:14px 18px 40px;max-width:720px;margin:0 auto}
+  #painel h1{font-size:16px;margin:0 0 4px}
+  #painel p.sub{margin:0 0 18px;color:#999;font-size:13px}
+  .linha{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:13px}
+  .linha label{width:200px;flex:0 0 200px;color:#ccc}
+  .linha input[type=range]{flex:1}
+  .linha output{width:56px;text-align:right;color:#8bd}
+  .botoes{display:flex;gap:10px;margin:18px 0}
+  button{background:#2a2a35;color:#eee;border:1px solid #444;border-radius:8px;padding:10px 16px;font-size:14px;cursor:pointer}
+  button:hover{background:#383846}
+  button.principal{background:#c0431f;border-color:#ff7a3d}
+  button.principal:hover{background:#d94f26}
+  #status{font-size:12px;color:#8bd;min-height:18px;margin-top:6px}
+  #marcador{position:absolute;z-index:20;pointer-events:none;width:10px;height:10px;border-radius:50%;background:#0f0;box-shadow:0 0 8px 3px #0f08;transform:translate(-50%,-50%);display:none}
+</style>
+</head>
+<body>
+
+<div id="palco">
+  <div id="fundo"></div>
+  <div id="cena3d"></div>
+  <div id="teamBattery">turma</div>
+  <div id="bossProjectile" class="boss-projectile"></div>
+  <div id="marcador" title="posição da mão (debug)"></div>
+</div>
+
+<div id="painel">
+  <h1>Teste — Esqueleto 3D</h1>
+  <p class="sub">Ajuste os tempos abaixo observando a animação. Quando bater com o vídeo atual, me diga os valores (ou já aprova) que eu levo pro código definitivo.</p>
+
+  <div class="botoes">
+    <button id="btnIdle">Parado (idle)</button>
+    <button id="btnAtacar" class="principal">▶ Atacar</button>
+    <button id="btnDebugMao">Mostrar mão (debug)</button>
+  </div>
+
+  <div class="linha" style="margin-top:-4px">
+    <label for="chkLoop" style="width:auto;flex:none">
+      <input id="chkLoop" type="checkbox" checked style="vertical-align:middle;margin-right:6px">
+      Loop automático (parado → ataque → parado, repetindo sozinho, como um vídeo contínuo)
+    </label>
+  </div>
+
+  <div class="linha"><label for="rotY">Rotação do personagem</label><input id="rotY" type="range" min="-180" max="180" value="0"><output id="rotYv">0°</output></div>
+  <div class="linha"><label for="tIgnicao">Início do fogo (s)</label><input id="tIgnicao" type="range" min="0" max="7.6" step="0.05" value="0"><output id="tIgnicaoV">0.0s</output></div>
+  <div class="linha"><label for="tBola">Bola aparece entre as mãos (s)</label><input id="tBola" type="range" min="0" max="7.6" step="0.05" value="2.0"><output id="tBolaV">2.0s</output></div>
+  <div class="linha"><label for="tPuxada">Mão puxa pra trás c/ a bola (s)</label><input id="tPuxada" type="range" min="0" max="7.6" step="0.05" value="4.5"><output id="tPuxadaV">4.5s</output></div>
+  <div class="linha"><label for="tArremesso">Solta no fim da extensão (s)</label><input id="tArremesso" type="range" min="0" max="7.6" step="0.05" value="5.1"><output id="tArremessoV">5.10s</output></div>
+  <div class="linha"><label for="tVoo">Duração do voo da bola (s)</label><input id="tVoo" type="range" min="0.15" max="1.2" step="0.05" value="0.55"><output id="tVooV">0.55s</output></div>
+
+  <div id="status">carregando modelo…</div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+const $ = id => document.getElementById(id);
+const palco = $('palco'), cenaDiv = $('cena3d'), status = $('status');
+
+// ---------- cena three.js ----------
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(32, palco.clientWidth/palco.clientHeight, 0.1, 100);
+const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(palco.clientWidth, palco.clientHeight);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+cenaDiv.appendChild(renderer.domElement);
+
+scene.add(new THREE.AmbientLight(0x8899aa, 0.55));
+const keyLight = new THREE.DirectionalLight(0xfff2e0, 1.1);
+keyLight.position.set(2, 4, 3);
+scene.add(keyLight);
+const fireLight = new THREE.PointLight(0xff5a1a, 0, 6, 2);
+scene.add(fireLight);
+
+let modelRoot, mixer, mao, maoEsq, antebraco, acaoIdle, acaoAtaque, material;
+let bbCenter = new THREE.Vector3(), bbSize = new THREE.Vector3();
+
+// textura de brilho suave (gradiente radial), usada nas chamas e na bola — sem lib externa
+function texturaBrilho(corNucleo, corBorda){
+  const c = document.createElement('canvas'); c.width = c.height = 64;
+  const ctx = c.getContext('2d');
+  const g = ctx.createRadialGradient(32,32,0,32,32,32);
+  g.addColorStop(0, corNucleo); g.addColorStop(0.4, corBorda); g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g; ctx.fillRect(0,0,64,64);
+  return new THREE.CanvasTexture(c);
+}
+const texChama = texturaBrilho('#fff6d8','rgba(255,90,20,0.9)');
+
+// "estilo motoqueiro fantasma": duas camadas de chama — labaredas grandes subindo + fagulhas rápidas
+const N_LABAREDA = 140, N_FAGULHA = 110;
+function criarCamadaFogo(n, tam, cor, opacidadeMax){
+  const geo = new THREE.BufferGeometry();
+  const pos = new Float32Array(n*3);
+  geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  const mat = new THREE.PointsMaterial({map:texChama, color:cor, size:tam, transparent:true, opacity:0,
+    blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true});
+  const pts = new THREE.Points(geo, mat);
+  scene.add(pts);
+  const vel = new Float32Array(n);       // velocidade de subida
+  const faseX = new Float32Array(n);     // fase do balanço lateral
+  const basePos = new Float32Array(n*3); // posição-base (x,z) e altura de nascimento (y)
+  for(let i=0;i<n;i++){ vel[i]=0.5+Math.random()*0.9; faseX[i]=Math.random()*Math.PI*2; }
+  return {pts, geo, pos, mat, vel, faseX, basePos, opacidadeMax};
+}
+const labaredas = criarCamadaFogo(N_LABAREDA, 0.16, 0xff5a1a, 0.95);
+const fagulhas = criarCamadaFogo(N_FAGULHA, 0.045, 0xffd27a, 0.9);
+
+// bola de fogo carregada entre as mãos — esfera emissiva + sprite de brilho por cima
+const bolaMat = new THREE.MeshBasicMaterial({color:0xfff2b0, transparent:true, opacity:0});
+const bolaMesh = new THREE.Mesh(new THREE.SphereGeometry(0.075, 20, 16), bolaMat);
+const bolaGlowMat = new THREE.SpriteMaterial({map:texChama, color:0xff7a1a, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false});
+const bolaGlow = new THREE.Sprite(bolaGlowMat);
+bolaGlow.scale.set(0.5,0.5,0.5);
+bolaMesh.add(bolaGlow);
+scene.add(bolaMesh);
+const bolaLight = new THREE.PointLight(0xffb347, 0, 2.5, 2);
+scene.add(bolaLight);
+
+const loader = new GLTFLoader();
+loader.load('assets/chefes-3d/esqueleto-teste.glb', (gltf)=>{
+  modelRoot = gltf.scene;
+  scene.add(modelRoot);
+
+  modelRoot.traverse(o=>{
+    if(o.isMesh){ material = o.material; o.frustumCulled = false; }
+  });
+  mao = modelRoot.getObjectByName('mixamorig_RightHand') || modelRoot.getObjectByName('mixamorigRightHand') || modelRoot.getObjectByName('mixamorig:RightHand');
+  maoEsq = modelRoot.getObjectByName('mixamorig_LeftHand') || modelRoot.getObjectByName('mixamorigLeftHand') || modelRoot.getObjectByName('mixamorig:LeftHand');
+  // nomes de bone variam conforme o exportador sanitiza (ou não) o ":" — procura por sufixo por garantia
+  if(!mao) modelRoot.traverse(o=>{ if(/RightHand$/i.test(o.name)) mao = o; });
+  if(!maoEsq) modelRoot.traverse(o=>{ if(/LeftHand$/i.test(o.name)) maoEsq = o; });
+  antebraco = modelRoot.getObjectByName('mixamorig_RightForeArm') || modelRoot.getObjectByName('mixamorigRightForeArm') || modelRoot.getObjectByName('mixamorig:RightForeArm');
+  if(!antebraco) modelRoot.traverse(o=>{ if(/RightForeArm$/i.test(o.name)) antebraco = o; });
+
+  const box = new THREE.Box3().setFromObject(modelRoot);
+  box.getCenter(bbCenter); box.getSize(bbSize);
+
+  // posiciona as duas camadas de fogo espalhadas pelo volume do personagem, com nascedouro pra reciclar ao subir
+  for(const camada of [labaredas, fagulhas]){
+    for(let i=0;i<camada.vel.length;i++){
+      const x = bbCenter.x + (Math.random()-0.5)*bbSize.x*0.85;
+      const y0 = box.min.y + Math.random()*bbSize.y*0.9;
+      const z = bbCenter.z + (Math.random()-0.5)*bbSize.z*0.85;
+      camada.basePos[i*3+0]=x; camada.basePos[i*3+1]=box.min.y; camada.basePos[i*3+2]=z;
+      camada.pos[i*3+0]=x; camada.pos[i*3+1]=y0; camada.pos[i*3+2]=z;
+    }
+    camada.geo.attributes.position.needsUpdate = true;
+    camada.topoY = box.max.y + bbSize.y*0.35; // até onde a chama sobe antes de reciclar
+    camada.baseY = box.min.y;
+  }
+
+  enquadrarCamera();
+
+  mixer = new THREE.AnimationMixer(modelRoot);
+  const clipIdle = THREE.AnimationClip.findByName(gltf.animations, 'Idle_4');
+  const clipAtaque = THREE.AnimationClip.findByName(gltf.animations, 'Crouch_Charge_and_Throw');
+  acaoIdle = mixer.clipAction(clipIdle);
+  acaoAtaque = mixer.clipAction(clipAtaque);
+  acaoAtaque.setLoop(THREE.LoopOnce);
+  acaoAtaque.clampWhenFinished = true;
+  acaoIdle.play();
+
+  // quando o clipe de ataque chega no fim sozinho, volta pro idle automaticamente — sem isso o
+  // personagem fica "congelado" na pose de arremesso depois do clampWhenFinished
+  mixer.addEventListener('finished', (ev)=>{
+    if(ev.action === acaoAtaque) voltarAoIdle(0.4);
+  });
+
+  status.textContent = 'modelo carregado — ' + gltf.animations.map(a=>a.name+' ('+a.duration.toFixed(2)+'s)').join(', ');
+
+  // loop automático ligado por padrão: parado → ataque → parado, repetindo sozinho — simula o
+  // comportamento de um vídeo contínuo (pra poder olhar a pose inicial/final em idle sem precisar
+  // ficar clicando, e pra avaliar o fluxo de carregamento/dados como ele rodaria de verdade no jogo)
+  if($('chkLoop').checked) agendarProximoCiclo(PAUSA_IDLE_INICIAL);
+},
+(xhr)=>{ if(xhr.lengthComputable) status.textContent = 'carregando… ' + Math.round(xhr.loaded/xhr.total*100) + '%'; },
+(err)=>{ status.textContent = 'erro ao carregar o .glb — veja o console'; console.error(err); });
+
+function enquadrarCamera(){
+  const maxDim = Math.max(bbSize.x, bbSize.y, bbSize.z);
+  const dist = maxDim / (2*Math.tan(camera.fov*Math.PI/360)) * 1.55; // margem de segurança
+  camera.position.set(bbCenter.x, bbCenter.y + bbSize.y*0.05, bbCenter.z + dist);
+  camera.lookAt(bbCenter.x, bbCenter.y + bbSize.y*0.05, bbCenter.z);
+}
+
+window.addEventListener('resize', ()=>{
+  camera.aspect = palco.clientWidth/palco.clientHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(palco.clientWidth, palco.clientHeight);
+});
+
+// ---------- controles do painel ----------
+const rotY = $('rotY'), rotYv = $('rotYv');
+rotY.addEventListener('input', ()=>{ rotYv.textContent = rotY.value+'°'; if(modelRoot) modelRoot.rotation.y = rotY.value*Math.PI/180; });
+
+function ligarSlider(id, idOut, sufixo){
+  const el = $(id), out = $(idOut);
+  el.addEventListener('input', ()=> out.textContent = parseFloat(el.value).toFixed(2)+sufixo);
+}
+ligarSlider('tIgnicao','tIgnicaoV','s');
+ligarSlider('tBola','tBolaV','s');
+ligarSlider('tPuxada','tPuxadaV','s');
+ligarSlider('tArremesso','tArremessoV','s');
+ligarSlider('tVoo','tVooV','s');
+
+// ---------- loop automático (parado → ataque → parado, repetindo sozinho) ----------
+// pausa em idle entre um ataque e o próximo, simulando o espaçamento de um vídeo contínuo
+const PAUSA_IDLE_ENTRE_CICLOS = 2200;
+const PAUSA_IDLE_INICIAL = 1800; // um pouco de idle visível antes do primeiro ataque, ao carregar a página
+let loopTimer = null;
+function agendarProximoCiclo(atrasoMs){
+  clearTimeout(loopTimer);
+  loopTimer = setTimeout(()=>{ if($('chkLoop').checked) iniciarAtaque(); }, atrasoMs);
+}
+$('chkLoop').addEventListener('change', ()=>{
+  if(!$('chkLoop').checked) clearTimeout(loopTimer);
+  else if(!estadoAtaque) agendarProximoCiclo(600); // religou o loop estando em idle: começa logo
+});
+
+// usado tanto pelo botão "Parado (idle)" quanto automaticamente quando o clipe de ataque termina sozinho
+function voltarAoIdle(duracaoFade){
+  if(!mixer) return;
+  acaoAtaque.fadeOut(duracaoFade);
+  acaoIdle.reset().fadeIn(duracaoFade).play();
+  estadoAtaque = null;
+  soltarBolaDaMao(); // senão a bola fica "grudada" na mão pra próxima vez que carregar
+  labaredas.mat.opacity = 0; fagulhas.mat.opacity = 0; fireLight.intensity = 0;
+  bolaMat.opacity = 0; bolaGlowMat.opacity = 0; bolaLight.intensity = 0;
+  if(material){ material.emissive.setHex(0x000000); material.emissiveIntensity = 0; }
+  if($('chkLoop').checked) agendarProximoCiclo(PAUSA_IDLE_ENTRE_CICLOS);
+}
+$('btnIdle').addEventListener('click', ()=> voltarAoIdle(0.25));
+
+let estadoAtaque = null; // {inicio: performance.now(), lancado:false}
+function iniciarAtaque(){
+  if(!mixer) return;
+  clearTimeout(loopTimer); // um ataque manual no meio do loop não deve disparar um segundo em cima
+  acaoIdle.fadeOut(0.3);
+  acaoAtaque.reset().fadeIn(0.3).play();
+  estadoAtaque = { t0: acaoAtaque.time, lancado:false };
+  soltarBolaDaMao(); // começa cada ataque com a bola solta na cena (fase de carregar é em espaço de mundo)
+  $('bossProjectile').className = 'boss-projectile';
+}
+$('btnAtacar').addEventListener('click', iniciarAtaque);
+
+let mostrarMaoDebug = false;
+$('btnDebugMao').addEventListener('click', ()=> mostrarMaoDebug = !mostrarMaoDebug);
+
+// utilitário de análise: força o clip num instante exato e lê a posição de cada mão no mundo
+// (uso só pra calibrar tempos — não roda sozinho)
+window.__amostraMaos = (t)=>{
+  acaoIdle.enabled = false;
+  if(!acaoAtaque.isRunning()) acaoAtaque.reset().play(); // precisa ter sido "play()ada" pra entrar na lista ativa do mixer
+  acaoAtaque.paused = true; acaoAtaque.enabled = true; acaoAtaque.weight = 1; acaoAtaque.time = t;
+  mixer.update(0);
+  const d = new THREE.Vector3(), e = new THREE.Vector3();
+  if(mao) mao.getWorldPosition(d);
+  if(maoEsq) maoEsq.getWorldPosition(e);
+  return { t, dir:[+d.x.toFixed(4),+d.y.toFixed(4),+d.z.toFixed(4)], esq:[+e.x.toFixed(4),+e.y.toFixed(4),+e.z.toFixed(4)] };
+};
+
+// utilitário de teste: força o clip num instante e posiciona a bola exatamente como o loop real faria,
+// sem precisar esperar o requestAnimationFrame — só para inspeção visual via screenshot
+window.__forcarPoseBola = (t)=>{
+  acaoIdle.enabled = false;
+  if(!acaoAtaque.isRunning()) acaoAtaque.reset().play();
+  acaoAtaque.paused = true; acaoAtaque.enabled = true; acaoAtaque.weight = 1; acaoAtaque.time = t;
+  mixer.update(0);
+  const tBola = parseFloat($('tBola').value);
+  const tPuxada = parseFloat($('tPuxada').value);
+  const tArremesso = parseFloat($('tArremesso').value);
+  let posMundo;
+  if(t < tBola){ posMundo = posEntreAsMaos(); }
+  else if(t < tPuxada || !mao){ posMundo = posEntreAsMaos(); }
+  else { posMundo = posNaPalma(); }
+  bolaMesh.position.copy(posMundo);
+  bolaLight.position.copy(posMundo);
+  bolaMat.opacity = 1; bolaGlowMat.opacity = 0.9; bolaMesh.scale.setScalar(1);
+  renderer.render(scene, camera);
+  const d = new THREE.Vector3(); if(mao) mao.getWorldPosition(d);
+  const localNaMao = mao ? mao.worldToLocal(posMundo.clone()) : null;
+  return { t, fase: t<tPuxada?'carregando':(t<tArremesso?'puxada/extensao':'depois'), bola:[+posMundo.x.toFixed(3),+posMundo.y.toFixed(3),+posMundo.z.toFixed(3)], pulso:[+d.x.toFixed(3),+d.y.toFixed(3),+d.z.toFixed(3)], local:localNaMao?[+localNaMao.x.toFixed(4),+localNaMao.y.toFixed(4),+localNaMao.z.toFixed(4)]:null };
+};
+
+// console.log(__eitaDebug()) a qualquer momento pra ver os números exatos do instante atual
+window.__eitaDebug = () => ({
+  tempoClipAtaque: acaoAtaque ? +acaoAtaque.time.toFixed(3) : null,
+  fogoOpacidade: +labaredas.mat.opacity.toFixed(3),
+  bolaOpacidade: +bolaMat.opacity.toFixed(3),
+  jaLancou: estadoAtaque ? estadoAtaque.lancado : null,
+  projetilClasse: $('bossProjectile').className,
+  impactosNaTela: document.querySelectorAll('.golpe-impacto').length
+});
+
+window.__diagBola = () => {
+  const bp = new THREE.Vector3(); bolaMesh.getWorldPosition(bp);
+  const mp = new THREE.Vector3(); if(mao) mao.getWorldPosition(mp);
+  return {
+    clipTime: +acaoAtaque.time.toFixed(3),
+    bolaParentIsMao: bolaMesh.parent === mao,
+    bolaParentName: bolaMesh.parent ? bolaMesh.parent.name : null,
+    bolaWorld: [+bp.x.toFixed(3), +bp.y.toFixed(3), +bp.z.toFixed(3)],
+    maoWorld: [+mp.x.toFixed(3), +mp.y.toFixed(3), +mp.z.toFixed(3)],
+    bolaLocal: [+bolaMesh.position.x.toFixed(4), +bolaMesh.position.y.toFixed(4), +bolaMesh.position.z.toFixed(4)],
+    bolaOpacity: bolaMat.opacity,
+    bolaScale: +bolaMesh.scale.x.toFixed(3),
+    bolaTela: projetarTela(bp)
+  };
+};
+
+window.__escalaOsso = ()=>{
+  const pos=new THREE.Vector3(), quat=new THREE.Quaternion(), scl=new THREE.Vector3();
+  mao.matrixWorld.decompose(pos, quat, scl);
+  return { scl: [+scl.x.toFixed(5), +scl.y.toFixed(5), +scl.z.toFixed(5)], bolaLocalScale: bolaMesh.scale.x };
+};
+
+function projetarTela(worldPos){
+  const v = worldPos.clone().project(camera);
+  const rect = palco.getBoundingClientRect();
+  return { x: (v.x*0.5+0.5)*rect.width, y: (1-(v.y*0.5+0.5))*rect.height };
+}
+
+function dispararBola(origemXY){
+  const proj = $('bossProjectile');
+  const battery = $('teamBattery').getBoundingClientRect();
+  const palcoRect = palco.getBoundingClientRect();
+  const x0 = origemXY.x, y0 = origemXY.y;
+  const x1 = battery.left - palcoRect.left + battery.width*0.5;
+  const y1 = battery.top - palcoRect.top + battery.height*0.5;
+  const duracao = parseFloat($('tVoo').value) * 1000;
+  const inicio = performance.now();
+  const cor = '#ff5a1a';
+  function passo(agora){
+    const t = Math.min(1, (agora-inicio)/duracao);
+    const ease = t*t*(1.6-0.6*t);
+    const x = x0+(x1-x0)*ease, y = y0+(y1-y0)*ease - Math.sin(Math.PI*t)*18;
+    proj.className = 'boss-projectile active tipo-pow';
+    proj.style.left = x+'px'; proj.style.top = y+'px';
+    proj.style.setProperty('--golpe-cor', cor);
+    proj.style.setProperty('--golpe-t', t.toFixed(3));
+    if(t<1) requestAnimationFrame(passo);
+    else { proj.className='boss-projectile'; mostrarImpacto(x1,y1,cor); }
+  }
+  requestAnimationFrame(passo);
+}
+
+function mostrarImpacto(x,y,cor){
+  const burst = document.createElement('div');
+  burst.className = 'golpe-impacto';
+  burst.style.left = x+'px'; burst.style.top = y+'px';
+  burst.style.setProperty('--golpe-cor', cor);
+  palco.appendChild(burst);
+  setTimeout(()=>burst.remove(), 900);
+  const shell = $('teamBattery');
+  shell.classList.remove('impacto'); void shell.offsetWidth; shell.classList.add('impacto');
+  setTimeout(()=>shell.classList.remove('impacto'), 520);
+}
+
+// ponto médio entre as duas mãos, em coordenadas de mundo — é onde a bola fica "presa" na fase de carregar
+const vMaoDir = new THREE.Vector3(), vMaoEsq = new THREE.Vector3(), vMeio = new THREE.Vector3();
+function posEntreAsMaos(){
+  if(mao) mao.getWorldPosition(vMaoDir);
+  if(maoEsq) maoEsq.getWorldPosition(vMaoEsq);
+  if(mao && maoEsq) return vMeio.addVectors(vMaoDir, vMaoEsq).multiplyScalar(0.5);
+  return (mao ? vMaoDir : vMaoEsq).clone();
+}
+
+// posição na PALMA da mão direita (não no pulso) — o osso "RightHand" fica no pulso, então a bola
+// "afundava" no corpo ou ficava solta longe dos dedos dependendo da pose. Aqui ela é empurrada um
+// pouco além do pulso, na direção antebraço→mão, pra ficar onde os dedos realmente estão.
+// Usada só para o instante em que a bola é "travada" na mão (ver prenderBolaNaMao) e para o ponto de soltura.
+const vAntebraco = new THREE.Vector3(), vDirecaoMao = new THREE.Vector3(), vPalma = new THREE.Vector3(), vPosBolaAtual = new THREE.Vector3();
+const DIST_PALMA = 0.16; // ajuste fino se ainda não bater com o tamanho da mão do modelo
+function posNaPalma(){
+  mao.getWorldPosition(vMaoDir);
+  if(!antebraco) return vMaoDir;
+  antebraco.getWorldPosition(vAntebraco);
+  vDirecaoMao.subVectors(vMaoDir, vAntebraco).normalize();
+  return vPalma.copy(vMaoDir).addScaledVector(vDirecaoMao, DIST_PALMA);
+}
+
+// trava a bola como FILHA do osso da mão direita — a partir daqui ela segue a mão automaticamente em
+// cada frame (puxada, giro, extensão), sem precisar recalcular a posição manualmente. attach() preserva
+// a posição/rotação atual no mundo ao trocar de pai, então a bola não "pula" no instante da travada.
+//
+// Pegadinha do rig: o osso da mão carrega uma escala de mundo MUITO pequena (bone.scl ≈ 0.01 — comum em
+// esqueletos Mixamo, onde a escala "real" fica compensada lá em cima, na Armature). Então um
+// bolaMesh.scale=1 vira praticamente invisível quando ele passa a ser filho desse osso (1 × 0.01 ≈ nada).
+// ESCALA_COMPENSA_MAO guarda o inverso dessa escala pra gente continuar pedindo "bola do tamanho 0.6–1"
+// em termos visuais, e o código converte isso pra escala local certa.
+let escalaMundoMao = 1, escalaCompensaMao = 1;
+const vPosAux = new THREE.Vector3(), vQuatAux = new THREE.Quaternion(), vEscalaAux = new THREE.Vector3();
+function prenderBolaNaMao(){
+  if(!mao || bolaMesh.parent === mao) return;
+  const posAtual = posNaPalma();
+  bolaMesh.position.copy(posAtual);
+  mao.attach(bolaMesh);
+  mao.attach(bolaLight);
+  mao.matrixWorld.decompose(vPosAux, vQuatAux, vEscalaAux);
+  escalaMundoMao = vEscalaAux.x || 1;
+  escalaCompensaMao = 1/escalaMundoMao;
+}
+// solta a bola de volta pra cena — necessário antes da fase de carregar (que posiciona em espaço de mundo
+// via posEntreAsMaos) e ao resetar o ataque, senão ela continuaria presa à mão da rodada anterior.
+function soltarBolaDaMao(){
+  if(bolaMesh.parent === mao){ scene.attach(bolaMesh); }
+  if(bolaLight.parent === mao){ scene.attach(bolaLight); }
+  escalaCompensaMao = 1;
+}
+// escala "visual" pedida (ex.: 0.6–1) convertida pra escala local correta, considerando se a bola
+// está presa num osso minúsculo (fase 2) ou solta na cena em escala normal (fase 1)
+function aplicarEscalaBola(escalaVisual){
+  bolaMesh.scale.setScalar(escalaVisual * (bolaMesh.parent===mao ? escalaCompensaMao : 1));
+}
+
+function atualizarCamadaFogo(camada, dt, prog, flicker){
+  const n = camada.vel.length;
+  for(let i=0;i<n;i++){
+    camada.pos[i*3+1] += camada.vel[i]*dt*(0.6+prog); // sobe continuamente enquanto há chama
+    camada.pos[i*3+0] = camada.basePos[i*3+0] + Math.sin(performance.now()*0.002 + camada.faseX[i])*0.025;
+    if(camada.pos[i*3+1] > camada.topoY){ // recicla a labareda lá embaixo
+      camada.pos[i*3+1] = camada.baseY + Math.random()*0.05;
+      camada.basePos[i*3+0] += (Math.random()-0.5)*0.01; // leve variação pra não repetir sempre no mesmo fio
+    }
+  }
+  camada.geo.attributes.position.needsUpdate = true;
+  camada.mat.opacity = prog*camada.opacidadeMax*flicker;
+}
+
+// ---------- loop ----------
+const clock = new THREE.Clock();
+function animar(){
+  requestAnimationFrame(animar);
+  const dt = clock.getDelta();
+  if(mixer) mixer.update(dt);
+
+  if(estadoAtaque && acaoAtaque){
+    const t = acaoAtaque.time;
+    const tIgnicao = parseFloat($('tIgnicao').value);
+    const tBola = parseFloat($('tBola').value);
+    const tPuxada = parseFloat($('tPuxada').value);
+    const tArremesso = parseFloat($('tArremesso').value);
+
+    // progresso do fogo: sobe em ~1s após tIgnicao ("pega fogo" rápido, estilo labareda), mantém até o arremesso, apaga depois
+    const prog = t < tIgnicao ? 0
+      : t < tIgnicao+1.0 ? (t-tIgnicao)/1.0
+      : t < tArremesso+0.4 ? 1
+      : Math.max(0, 1-(t-(tArremesso+0.4))/0.8);
+    const flicker = 0.7 + 0.3*Math.sin(t*27.0) + 0.15*Math.sin(t*53.0);
+
+    atualizarCamadaFogo(labaredas, dt, prog, flicker);
+    atualizarCamadaFogo(fagulhas, dt, prog, flicker);
+    fireLight.intensity = prog*2.6*flicker;
+    // emissivo alto — corpo visivelmente em brasa, tipo caveira do motoqueiro fantasma
+    if(material){ material.emissive.setHex(0xff3d0a); material.emissiveIntensity = prog*1.35*flicker; }
+
+    // fase 1 (tBola → tPuxada): bola CARREGANDO entre as duas mãos
+    // fase 2 (tPuxada → tArremesso): bola presa só na mão direita — vai pra trás com ela, depois pra frente,
+    //   e fica parada na posição final esticada até o instante exato do arremesso (sem soltar no meio do movimento)
+    if((mao||maoEsq) && t>=tBola && t<tArremesso){
+      let posMundo;
+      if(t < tPuxada || !mao){
+        posMundo = posEntreAsMaos(); // fase 1: carregando entre as duas mãos, posição calculada por frame
+        bolaMesh.position.copy(posMundo);
+        bolaLight.position.copy(posMundo);
+      } else {
+        prenderBolaNaMao(); // fase 2: bola TRAVADA na mão direita — a partir daqui ela já segue sozinha
+        posMundo = bolaMesh.getWorldPosition(vPosBolaAtual);
+      }
+      const carregando = Math.min(1, (t-tBola)/0.4); // "acende" a bola rapidinho ao surgir
+      bolaMat.opacity = carregando;
+      bolaGlowMat.opacity = carregando*0.9*flicker;
+      aplicarEscalaBola(0.6+carregando*0.4);
+      bolaLight.intensity = carregando*1.8*flicker;
+
+      const xy = projetarTela(posMundo);
+      $('marcador').style.display = mostrarMaoDebug ? 'block' : 'none';
+      $('marcador').style.left = xy.x+'px'; $('marcador').style.top = xy.y+'px';
+    } else {
+      bolaMat.opacity = 0; bolaGlowMat.opacity = 0; bolaLight.intensity = 0;
+      if(!mostrarMaoDebug) $('marcador').style.display = 'none';
+    }
+
+    // arremesso: dispara uma vez quando passar do tempo configurado, saindo da posição atual da mão direita
+    // (que a essa altura já está parada na extensão final do movimento, não no meio do swing)
+    if(!estadoAtaque.lancado && t>=tArremesso){
+      estadoAtaque.lancado = true;
+      bolaMat.opacity = 0; bolaGlowMat.opacity = 0; bolaLight.intensity = 0;
+      const posSolta = bolaMesh.parent === mao ? bolaMesh.getWorldPosition(vPosBolaAtual) : (mao ? posNaPalma() : posEntreAsMaos());
+      dispararBola(projetarTela(posSolta));
+    }
+  }
+
+  renderer.render(scene, camera);
+}
+animar();
+</script>
+</body>
+</html>
