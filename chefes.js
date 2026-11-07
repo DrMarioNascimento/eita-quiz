@@ -11,12 +11,14 @@
 // no .glb; tIgnicao/tBola/tPuxada/tArremesso = tempos (s) do efeito de fogo e da bola na mão, dentro do clipe
 // de ataque — ajustados visualmente no protótipo teste-chefe-esqueleto-3d.html.
 // 07/11/2026: Cão-Ninja migrado para 3D (Pug Ninja, Meshy + Mixamo; .glb sem compressão Draco, 2,98MB vs vídeo).
-// O .glb não tem clipe de idle: o idle é o trecho inicial (em pé) do próprio Sword_Judgment, em vai-e-volta.
+// O .glb não tem clipe de idle: o idle é a pose PARADA do 1º quadro do Walking (de frente, espadas para baixo —
+// igual à arte original do Pug); o vai-e-volta do início do Sword_Judgment parecia um loop estranho.
 // Ataque: salto → aterrissagem → giros → corte final para a direita, que lança o "corte" já existente;
 // a pose final fica mantida até o impacto. efeito:'nenhum' (sem fogo/bola); enquadrar:'envelope' (ver boss3d.js).
 // 07/11/2026: novo chefe IA Cyborg (3D desde o início, sem vídeo; .glb Meshopt + texturas WebP, 1,73MB).
 // Ataque em sequência: pisada furiosa → salto com mortal → trecho final do arremesso (carga da bola encurtada
-// de ~3s para ~0,7s), bola azul. Tempos tBola/tPuxada/tArremesso contados no clipe já emendado (6,43s).
+// de ~3s para ~0,7s), bola azul. Idle = pose PARADA do 1º quadro da pisada (em pé, braços para baixo, como a arte);
+// reflexo:1 porque o material é metálico (sem ambiente para refletir ele ficava quase preto). Tempos tBola/tPuxada/tArremesso contados no clipe já emendado (6,43s).
 window.EITA_CHEFES=[
   {
     id:'sombra',nome:'Sombra',video:'assets/chefe-7s-leve.webm',fundo:null,
@@ -30,7 +32,7 @@ window.EITA_CHEFES=[
   },
   {
     id:'cao-ninja',nome:'Cão-Ninja',video:'assets/chefes/cao-ninja-leve.webm',fundo:'assets/chefes/cao-ninja-fundo.webp',
-    glb3d:{url:'assets/chefes-3d/pug-ninja.glb',idle:{clip:'Sword_Judgment',de:0,ate:.3},ataque:'Sword_Judgment',
+    glb3d:{url:'assets/chefes-3d/pug-ninja.glb',idle:{clip:'Walking',quadro:0},ataque:'Sword_Judgment',
       efeito:'nenhum',enquadrar:'envelope',noLugar:true},
     golpe:{tipo:'corte',inicio:3.42,viagem:.4,origem:[.71,.35],cor:'#d4ff7a'}
   },
@@ -50,10 +52,10 @@ window.EITA_CHEFES=[
   },
   {
     id:'ia-cyborg',nome:'IA Cyborg',video:null,fundo:'assets/chefes/ia-cyborg-fundo.webp',
-    glb3d:{url:'assets/chefes-3d/ia-cyborg.glb',idle:{clip:'Angry_Ground_Stomp',de:0,ate:.07},
+    glb3d:{url:'assets/chefes-3d/ia-cyborg.glb',idle:{clip:'Angry_Ground_Stomp',quadro:0},
       ataque:[{clip:'Angry_Ground_Stomp',de:0,ate:1.37},{clip:'Wall_Push_Jump_and_Flip',de:0,ate:1.88},{clip:'Crouch_Charge_and_Throw',de:3.6,ate:6.8}],
       efeito:'bola',cor:0x2aa8ff,enquadrar:'envelope',noLugar:true,
-      luz:1.8,tIgnicao:3.3,tBola:3.48,tPuxada:4.13,tArremesso:5.08},
+      reflexo:1,luz:1.2,tIgnicao:3.3,tBola:3.48,tPuxada:4.13,tArremesso:5.08},
     golpe:{tipo:'pow',inicio:5.08,viagem:.55,origem:[.67,.6],cor:'#3ad1ff'}
   }
 ];

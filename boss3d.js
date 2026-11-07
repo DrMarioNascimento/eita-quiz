@@ -25,6 +25,7 @@
 // 07/11/2026 (Cão-Ninja / Pug Ninja): três opções novas por chefe em chefes.js, sem mudar o Esqueleto:
 //  - glb3d.efeito: 'fogo' (padrão, fogo + bola na mão do Esqueleto) ou 'nenhum' (só a animação);
 //  - glb3d.idle pode ser um trecho de clipe {clip, de, ate} (s), tocado em vai-e-volta — para .glb sem clipe de idle;
+//    ou uma pose parada {clip, quadro} (s) — um único instante do clipe, sem movimento;
 //  - glb3d.noLugar:true — zera o avanço em profundidade do quadril no clipe de ataque (golpe no lugar);
 //  - glb3d.enquadrar:'envelope' — a câmera é ajustada pelo espaço que o personagem ocupa em TODAS as poses do
 //    idle e do ataque (saltos, giros, espada estendida), e não pela pose T de repouso do arquivo. Evita o corte
@@ -33,10 +34,11 @@
 //  - .glb comprimido: o carregador agora abre Meshopt (EXT_meshopt_compression) e Draco (KHR_draco_mesh_compression);
 //  - glb3d.ataque pode ser uma SEQUÊNCIA de trechos [{clip,de,ate}, ...] — vira um único clipe, emendado com
 //    transição suave (0,2 s) e cada trecho recomeçando no mesmo ponto do chão (sem "pular" de lugar);
+//  - glb3d.reflexo: intensidade do reflexo de ambiente para personagens metálicos (ex. 1); sem ele, sem reflexo;
 //  - glb3d.luz: multiplica a luz ambiente/principal só desse chefe (personagens escuros sobre fundos escuros);
 //  - glb3d.efeito:'bola' (só a bola carregada nas mãos, sem o corpo em chamas) e glb3d.cor (cor da bola, ex. 0x2aa8ff).
 window.Boss3D = (function(){
-  let THREE, GLTFLoader, MeshoptDecoder, DRACOLoader;
+  let THREE, GLTFLoader, MeshoptDecoder, DRACOLoader, RoomEnvironment, envReflexo=null;
   let prontoPromise = null;
   let scene, camera, renderer, canvas;
   let fireLight, keyLight, ambLight;
@@ -59,7 +61,8 @@ window.Boss3D = (function(){
       GLTFLoader = mod.GLTFLoader;
       return Promise.all([
         import('https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/libs/meshopt_decoder.module.js').then(m=>{ MeshoptDecoder=m.MeshoptDecoder; }).catch(()=>{}),
-        import('https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/loaders/DRACOLoader.js').then(m=>{ DRACOLoader=m.DRACOLoader; }).catch(()=>{})
+        import('https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/loaders/DRACOLoader.js').then(m=>{ DRACOLoader=m.DRACOLoader; }).catch(()=>{}),
+        import('https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/environments/RoomEnvironment.js').then(m=>{ RoomEnvironment=m.RoomEnvironment; }).catch(()=>{})
       ]);
     }).then(()=>{
       inicializarCena();
@@ -83,6 +86,12 @@ window.Boss3D = (function(){
     fireLight = new THREE.PointLight(0xff5a1a, 0, 6, 2);
     scene.add(fireLight);
 
+    if(RoomEnvironment){
+      // ambiente de reflexo (estúdio neutro gerado em código, sem baixar imagem) — usado só pelos chefes com glb3d.reflexo
+      const pmrem=new THREE.PMREMGenerator(renderer);
+      envReflexo=pmrem.fromScene(new RoomEnvironment(),0.04).texture;
+      pmrem.dispose();
+    }
     texChama = texturaBrilho('#fff6d8','rgba(255,90,20,0.9)');
     texturasLabareda = [texturaLabareda(1), texturaLabareda(2), texturaLabareda(3)];
 
@@ -322,7 +331,15 @@ window.Boss3D = (function(){
         const mixer=new THREE.AnimationMixer(modelRoot);
         const idleDef=chefe.glb3d.idle;
         let clipIdle;
-        if(idleDef && typeof idleDef==='object'){
+        if(idleDef && typeof idleDef==='object' && idleDef.quadro!=null){
+          // pose parada: um único instante do clipe (em s), sem loop visível
+          const base=THREE.AnimationClip.findByName(gltf.animations, idleDef.clip);
+          const tracks=base.tracks.map(tr=>{
+            const v=Array.from(tr.createInterpolant().evaluate(idleDef.quadro));
+            return new tr.constructor(tr.name,[0,1],v.concat(v));
+          });
+          clipIdle=new THREE.AnimationClip(chefe.id+'-idle',1,tracks);
+        } else if(idleDef && typeof idleDef==='object'){
           const base=THREE.AnimationClip.findByName(gltf.animations, idleDef.clip);
           const fps=30;
           clipIdle=THREE.AnimationUtils.subclip(base, (chefe.id+'-idle'), Math.round((idleDef.de||0)*fps), Math.round(idleDef.ate*fps), fps);
@@ -336,7 +353,7 @@ window.Boss3D = (function(){
         }
         const envelope=chefe.glb3d.enquadrar==='envelope'?medirEnvelope(modelRoot, mixer, [clipIdle, clipAtaque]):null;
         const acaoIdle=mixer.clipAction(clipIdle);
-        if(idleDef && typeof idleDef==='object') acaoIdle.setLoop(THREE.LoopPingPong);
+        if(idleDef && typeof idleDef==='object' && idleDef.quadro==null) acaoIdle.setLoop(THREE.LoopPingPong);
         const acaoAtaque=mixer.clipAction(clipAtaque);
         acaoAtaque.setLoop(THREE.LoopOnce);
         acaoAtaque.clampWhenFinished=true;
@@ -376,6 +393,9 @@ window.Boss3D = (function(){
     aplicarCorBola(entrada);
     const luz=entrada.tempos.luz||1; // glb3d.luz: realce de iluminação do personagem (1 = padrão)
     ambLight.intensity=0.55*luz; keyLight.intensity=1.1*luz;
+    // glb3d.reflexo: materiais metálicos refletem um ambiente (sem isso o metal fica quase preto)
+    scene.environment=(entrada.tempos.reflexo&&envReflexo)?envReflexo:null;
+    scene.environmentIntensity=entrada.tempos.reflexo||1;
     soltarBolaDaMao(entrada);
     entrada.acaoAtaque.stop();
     entrada.acaoIdle.reset().play();
