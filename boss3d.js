@@ -27,6 +27,7 @@
 //  - glb3d.idle pode ser um trecho de clipe {clip, de, ate} (s), tocado em vai-e-volta — para .glb sem clipe de idle;
 //    ou uma pose parada {clip, quadro} (s) — um único instante do clipe, sem movimento;
 //  - glb3d.noLugar:true — zera o avanço em profundidade do quadril no clipe de ataque (golpe no lugar);
+//    noLugar:'xz' zera também o deslocamento lateral;
 //  - glb3d.enquadrar:'envelope' — a câmera é ajustada pelo espaço que o personagem ocupa em TODAS as poses do
 //    idle e do ataque (saltos, giros, espada estendida), e não pela pose T de repouso do arquivo. Evita o corte
 //    da animação no quadro (refaz a antiga characterFrame). Recalculado quando o canvas muda de tamanho.
@@ -348,7 +349,10 @@ window.Boss3D = (function(){
         if(chefe.glb3d.noLugar && clipAtaque){
           // trava o avanço em profundidade (eixo z do quadril): o golpe acontece no lugar, sem vir para a câmera
           for(const tr of clipAtaque.tracks){
-            if(/Hips\.position$/.test(tr.name)){ const z0=tr.values[2]; for(let i=2;i<tr.values.length;i+=3) tr.values[i]=z0; }
+            if(/Hips\.position$/.test(tr.name)){
+              const eixos=chefe.glb3d.noLugar==='xz'?[0,2]:[2]; // 'xz' também trava o deslocamento lateral (ex.: rolamento)
+              for(const e of eixos){ const v0=tr.values[e]; for(let i=e;i<tr.values.length;i+=3) tr.values[i]=v0; }
+            }
           }
         }
         const envelope=chefe.glb3d.enquadrar==='envelope'?medirEnvelope(modelRoot, mixer, [clipIdle, clipAtaque]):null;

@@ -18,7 +18,13 @@
 // 07/11/2026: novo chefe IA Cyborg (3D desde o início, sem vídeo; .glb Meshopt + texturas WebP, 1,73MB).
 // Ataque em sequência: pisada furiosa → salto com mortal → trecho final do arremesso (carga da bola encurtada
 // de ~3s para ~0,7s), bola azul. Idle = pose PARADA do 1º quadro da pisada (em pé, braços para baixo, como a arte);
-// reflexo:1 porque o material é metálico (sem ambiente para refletir ele ficava quase preto). Tempos tBola/tPuxada/tArremesso contados no clipe já emendado (6,43s).
+// 07/11 20h: novo papel de parede do Esqueleto (parque assombrado); "?v=" no caminho força o navegador a baixar
+// a imagem nova (o site guarda imagens em cache por 7 dias). Ao trocar um fundo de novo, mude o ?v=.
+// reflexo:1 porque o material é metálico (sem ambiente para refletir ele ficava quase preto).
+// 07/11 20h30: Onça migrada para 3D (jaguar Meshy + Mixamo; .glb 29,6MB → 1,59MB com texturas 2048 WebP + Meshopt)
+// e com fundo próprio (floresta). Idle = pose parada do 1º quadro do rolamento (em pé). Ataque: rolamento no lugar
+// (noLugar:'xz') → arremesso: bola laranja se forma na mão e é lançada em 2,19s com o braço esticado para a direita;
+// no fim volta suave à pose inicial. O vídeo continua como rollback. Tempos tBola/tPuxada/tArremesso contados no clipe já emendado (6,43s).
 window.EITA_CHEFES=[
   {
     id:'sombra',nome:'Sombra',video:'assets/chefe-7s-leve.webm',fundo:null,
@@ -41,11 +47,15 @@ window.EITA_CHEFES=[
     golpe:{tipo:'corte',inicio:6.2,viagem:.4,origem:[.96,.27],cor:'#ffcf5a'}
   },
   {
-    id:'onca',nome:'Onça',video:'assets/chefes/onca-leve.webm',fundo:'assets/chefes/biblioteca-fundo.webp',
-    golpe:{tipo:'pow',inicio:5.35,viagem:.36,origem:[.95,.42],cor:'#ff8a1f'}
+    id:'onca',nome:'Onça',video:'assets/chefes/onca-leve.webm',fundo:'assets/chefes/onca-fundo.webp',
+    glb3d:{url:'assets/chefes-3d/onca.glb',idle:{clip:'Roll_Dodge_3',quadro:0},
+      ataque:[{clip:'Roll_Dodge_3',de:0,ate:1.63},{clip:'Right_Hand_Sword_Slash',de:0,ate:1.5}],
+      efeito:'bola',cor:0xff8a1f,enquadrar:'envelope',noLugar:'xz',
+      tIgnicao:1.6,tBola:1.7,tPuxada:1.75,tArremesso:2.19},
+    golpe:{tipo:'pow',inicio:2.19,viagem:.36,origem:[.64,.38],cor:'#ff8a1f'}
   },
   {
-    id:'esqueleto',nome:'Esqueleto',video:'assets/chefes/esqueleto-leve.webm',fundo:'assets/chefes/esqueleto-fundo.webp',
+    id:'esqueleto',nome:'Esqueleto',video:'assets/chefes/esqueleto-leve.webm',fundo:'assets/chefes/esqueleto-fundo.webp?v=20261107c',
     glb3d:{url:'assets/chefes-3d/esqueleto-teste.glb',idle:'Idle_4',ataque:'Crouch_Charge_and_Throw',
       tIgnicao:0,tBola:2.0,tPuxada:4.5,tArremesso:5.1},
     golpe:{tipo:'pow',inicio:5.1,viagem:.55,origem:[.323,.456],cor:'#ff5a1a'}
