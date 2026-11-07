@@ -176,7 +176,7 @@ window.Boss3D = (function(){
 
   function enquadrarCamera(bbCenter,bbSize){
     const maxDim=Math.max(bbSize.x,bbSize.y,bbSize.z);
-    const dist=maxDim/(2*Math.tan(camera.fov*Math.PI/360))*1.55;
+    const dist=maxDim/(2*Math.tan(camera.fov*Math.PI/360))*1.2;
     camera.position.set(bbCenter.x, bbCenter.y+bbSize.y*0.05, bbCenter.z+dist);
     camera.lookAt(bbCenter.x, bbCenter.y+bbSize.y*0.05, bbCenter.z);
   }

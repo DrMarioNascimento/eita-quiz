@@ -1724,6 +1724,8 @@ main>section{display:flex;flex-direction:column;gap:12px;min-width:0}
 .question #transition{margin:5px 0}
 .question .timer{height:44px;min-height:44px;min-width:150px;margin-top:10px;font-size:21px}
 .arena{flex:none;padding:16px;gap:20px;--battle-height:410px}
+/* Telão largo (TV/projetor): a caixa do chefe cresce com a altura da tela, em vez de ficar travada em 410px — senão o personagem fica minúsculo numa tela bem larga. */
+@media(min-width:1400px){.arena{--battle-height:min(62vh,760px)}}
 .team-side,.boss-side{grid-template-rows:auto 105px var(--battle-height);align-items:stretch;row-gap:8px}
 .boss-art,.team-art,.boss-art .meter-frame,.team-art .meter-frame{height:105px}
 .boss-art .art-slot,.team-art .art-slot{top:64.5px;height:11px}
