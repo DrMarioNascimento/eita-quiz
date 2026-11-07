@@ -22,11 +22,24 @@
 //  duracaoAtaque(chefe)       -> duração total do clipe de ataque (para o cálculo de "remaining")
 //  aoTerminarAtaque(fn)       -> registra callback chamado quando o clipe de ataque termina sozinho
 //  capturarQuadroPng()        -> dataURL do quadro atual do canvas (usado no efeito de "vitória")
+// 07/11/2026 (Cão-Ninja / Pug Ninja): três opções novas por chefe em chefes.js, sem mudar o Esqueleto:
+//  - glb3d.efeito: 'fogo' (padrão, fogo + bola na mão do Esqueleto) ou 'nenhum' (só a animação);
+//  - glb3d.idle pode ser um trecho de clipe {clip, de, ate} (s), tocado em vai-e-volta — para .glb sem clipe de idle;
+//  - glb3d.noLugar:true — zera o avanço em profundidade do quadril no clipe de ataque (golpe no lugar);
+//  - glb3d.enquadrar:'envelope' — a câmera é ajustada pelo espaço que o personagem ocupa em TODAS as poses do
+//    idle e do ataque (saltos, giros, espada estendida), e não pela pose T de repouso do arquivo. Evita o corte
+//    da animação no quadro (refaz a antiga characterFrame). Recalculado quando o canvas muda de tamanho.
+// 07/11/2026 (IA Cyborg): mais três opções em chefes.js:
+//  - .glb comprimido: o carregador agora abre Meshopt (EXT_meshopt_compression) e Draco (KHR_draco_mesh_compression);
+//  - glb3d.ataque pode ser uma SEQUÊNCIA de trechos [{clip,de,ate}, ...] — vira um único clipe, emendado com
+//    transição suave (0,2 s) e cada trecho recomeçando no mesmo ponto do chão (sem "pular" de lugar);
+//  - glb3d.luz: multiplica a luz ambiente/principal só desse chefe (personagens escuros sobre fundos escuros);
+//  - glb3d.efeito:'bola' (só a bola carregada nas mãos, sem o corpo em chamas) e glb3d.cor (cor da bola, ex. 0x2aa8ff).
 window.Boss3D = (function(){
-  let THREE, GLTFLoader;
+  let THREE, GLTFLoader, MeshoptDecoder, DRACOLoader;
   let prontoPromise = null;
   let scene, camera, renderer, canvas;
-  let fireLight, keyLight;
+  let fireLight, keyLight, ambLight;
   let texChama, texturasLabareda;
   let subLabaredas, fagulhas;
   let bolaMesh, bolaMat, bolaGlow, bolaGlowMat, bolaLight;
@@ -44,6 +57,11 @@ window.Boss3D = (function(){
       return import('https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/loaders/GLTFLoader.js');
     }).then(mod=>{
       GLTFLoader = mod.GLTFLoader;
+      return Promise.all([
+        import('https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/libs/meshopt_decoder.module.js').then(m=>{ MeshoptDecoder=m.MeshoptDecoder; }).catch(()=>{}),
+        import('https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/loaders/DRACOLoader.js').then(m=>{ DRACOLoader=m.DRACOLoader; }).catch(()=>{})
+      ]);
+    }).then(()=>{
       inicializarCena();
     });
     return prontoPromise;
@@ -57,7 +75,8 @@ window.Boss3D = (function(){
     renderer.setPixelRatio(Math.min(devicePixelRatio,2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-    scene.add(new THREE.AmbientLight(0x8899aa, 0.55));
+    ambLight = new THREE.AmbientLight(0x8899aa, 0.55);
+    scene.add(ambLight);
     keyLight = new THREE.DirectionalLight(0xfff2e0, 1.1);
     keyLight.position.set(2,4,3);
     scene.add(keyLight);
@@ -102,6 +121,8 @@ window.Boss3D = (function(){
     camera.aspect = w/h;
     camera.updateProjectionMatrix();
     renderer.setSize(w,h,false);
+    const ativo=chefeAtivoId&&cache.get(chefeAtivoId);
+    if(ativo&&ativo.envelope) enquadrarEnvelope(ativo.envelope);
   }
 
   function texturaBrilho(corNucleo, corBorda){
@@ -181,6 +202,99 @@ window.Boss3D = (function(){
     camera.lookAt(bbCenter.x, bbCenter.y+bbSize.y*0.05, bbCenter.z);
   }
 
+  // Enquadramento por envelope: amostra as poses dos clipes e guarda uma nuvem de pontos do mesh deformado
+  // (com skinning) — a câmera é ajustada para que TODOS esses pontos caibam no quadro, com os pés embaixo.
+  function medirEnvelope(modelRoot, mixer, clipes){
+    const pts=[]; const v=new THREE.Vector3();
+    const meshes=[]; modelRoot.traverse(o=>{ if(o.isSkinnedMesh) meshes.push(o); });
+    for(const clip of clipes){
+      if(!clip) continue;
+      const acao=mixer.clipAction(clip);
+      const passos=Math.max(8,Math.ceil(clip.duration*12));
+      for(let i=0;i<=passos;i++){
+        mixer.stopAllAction(); acao.reset().play(); mixer.setTime(clip.duration*i/passos);
+        modelRoot.updateMatrixWorld(true);
+        for(const m of meshes){
+          m.skeleton.update();
+          const n=m.geometry.attributes.position.count, passo=Math.max(1,Math.floor(n/700));
+          for(let k=0;k<n;k+=passo){ m.getVertexPosition(k,v); v.applyMatrix4(m.matrixWorld); pts.push(v.x,v.y,v.z); }
+        }
+      }
+    }
+    mixer.stopAllAction();
+    return pts.length?new Float32Array(pts):null;
+  }
+  function enquadrarEnvelope(pts){
+    const MARGEM_X=0.94, TOPO=0.92, BASE=-0.94; // limites em coordenadas de tela (−1..1)
+    let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity,minZ=Infinity,maxZ=-Infinity;
+    for(let i=0;i<pts.length;i+=3){ minX=Math.min(minX,pts[i]);maxX=Math.max(maxX,pts[i]);minY=Math.min(minY,pts[i+1]);maxY=Math.max(maxY,pts[i+1]);minZ=Math.min(minZ,pts[i+2]);maxZ=Math.max(maxZ,pts[i+2]); }
+    const c=new THREE.Vector3((minX+maxX)/2,(minY+maxY)/2,(minZ+maxZ)/2);
+    const v=new THREE.Vector3();
+    const medir=(d,px,py)=>{
+      camera.position.set(c.x+px,c.y+py,c.z+d); camera.lookAt(c.x+px,c.y+py,c.z); camera.updateMatrixWorld(true);
+      let a=Infinity,b=-Infinity,e=Infinity,f=-Infinity;
+      for(let i=0;i<pts.length;i+=3){ v.set(pts[i],pts[i+1],pts[i+2]).project(camera); a=Math.min(a,v.x);b=Math.max(b,v.x);e=Math.min(e,v.y);f=Math.max(f,v.y); }
+      return {a,b,e,f};
+    };
+    let px=0,py=0,d=Math.max(maxX-minX,maxY-minY)*3+(maxZ-minZ);
+    for(let it=0;it<4;it++){
+      // distância: o que couber na largura e na altura disponíveis
+      let lo=(maxZ-c.z)+0.05, hi=d*4+1;
+      for(let k=0;k<30;k++){ const m=(lo+hi)/2, r=medir(m,px,py); if((r.b-r.a)<=2*MARGEM_X && (r.f-r.e)<=(TOPO-BASE)) hi=m; else lo=m; }
+      d=hi;
+      // deslocamento: centraliza na horizontal e assenta os pés na base do quadro
+      const r=medir(d,px,py), meiaAlt=Math.tan(camera.fov*Math.PI/360)*d, meiaLarg=meiaAlt*camera.aspect;
+      px+=((r.a+r.b)/2)*meiaLarg;
+      py+=(r.e-BASE)*meiaAlt;
+    }
+    medir(d,px,py);
+  }
+
+  // Emenda trechos de clipes num clipe só (reamostrado a 30 qps). Cada trecho começa no mesmo ponto do chão
+  // (x/z do quadril) que o primeiro; nos primeiros 0,2 s de cada trecho a pose é misturada com o fim do anterior.
+  function montarSequencia(animacoes, trechos, nome){
+    const FPS=30, MIX=0.2;
+    const fontes=trechos.map(t=>{ const clip=THREE.AnimationClip.findByName(animacoes,t.clip); return {clip, de:t.de||0, ate:(t.ate!=null?t.ate:clip.duration)}; });
+    const nomes=new Map();
+    for(const f of fontes) for(const tr of f.clip.tracks) if(!nomes.has(tr.name)) nomes.set(tr.name, tr.constructor);
+    const saida=new Map(); for(const [n] of nomes) saida.set(n,{times:[],values:[]});
+    let offset=0, hipsBase=null;
+    const q1=new THREE.Quaternion(), q2=new THREE.Quaternion();
+    fontes.forEach((f,idx)=>{
+      const nQuadros=Math.max(1,Math.round((f.ate-f.de)*FPS));
+      const interp=new Map(); for(const tr of f.clip.tracks) interp.set(tr.name, tr.createInterpolant());
+      let hipsIni=null;
+      for(const [n,dest] of saida){
+        const it=interp.get(n); if(!it) continue;
+        const ehHips=/Hips\.position$/.test(n), ehQuat=nomes.get(n)===THREE.QuaternionKeyframeTrack;
+        const tam=it.valueSize;
+        const anterior=dest.values.length?dest.values.slice(dest.values.length-tam):null;
+        for(let k=0;k<=nQuadros;k++){
+          if(idx>0 && k===0) continue; // o 1º quadro do trecho coincide com o último do anterior
+          const t=Math.min(f.ate, f.de+k/FPS);
+          let v=Array.from(it.evaluate(t));
+          if(ehHips){
+            if(!hipsIni) hipsIni=Array.from(it.evaluate(f.de));
+            if(!hipsBase) hipsBase=hipsIni.slice();
+            v[0]+=hipsBase[0]-hipsIni[0]; v[2]+=hipsBase[2]-hipsIni[2];
+          }
+          const tl=k/FPS;
+          if(idx>0 && anterior && tl<MIX){
+            const w=1-tl/MIX;
+            if(ehQuat){ q1.fromArray(v); q2.fromArray(anterior); q1.slerp(q2,w); v=q1.toArray(); }
+            else v=v.map((x,i)=>x+(anterior[i]-x)*w);
+          }
+          dest.times.push(offset+tl); dest.values.push(...v);
+        }
+      }
+      hipsIni=null;
+      offset+=nQuadros/FPS;
+    });
+    const tracks=[];
+    for(const [n,dest] of saida) if(dest.times.length) tracks.push(new (nomes.get(n))(n, dest.times, dest.values));
+    return new THREE.AnimationClip(nome, offset, tracks);
+  }
+
   function disponivel(chefe){ return !!(chefe && chefe.glb3d && chefe.glb3d.url); }
 
   function preparar(chefe){
@@ -188,6 +302,8 @@ window.Boss3D = (function(){
     if(cache.has(chefe.id)) return Promise.resolve();
     return carregarThree().then(()=> new Promise((resolve,reject)=>{
       const loader=new GLTFLoader();
+      if(MeshoptDecoder) loader.setMeshoptDecoder(MeshoptDecoder);
+      if(DRACOLoader){ const draco=new DRACOLoader(); draco.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/'); loader.setDRACOLoader(draco); }
       loader.load(chefe.glb3d.url, (gltf)=>{
         const modelRoot=gltf.scene;
         let material=null;
@@ -204,9 +320,23 @@ window.Boss3D = (function(){
         box.getCenter(bbCenter); box.getSize(bbSize);
 
         const mixer=new THREE.AnimationMixer(modelRoot);
-        const clipIdle=THREE.AnimationClip.findByName(gltf.animations, chefe.glb3d.idle);
-        const clipAtaque=THREE.AnimationClip.findByName(gltf.animations, chefe.glb3d.ataque);
+        const idleDef=chefe.glb3d.idle;
+        let clipIdle;
+        if(idleDef && typeof idleDef==='object'){
+          const base=THREE.AnimationClip.findByName(gltf.animations, idleDef.clip);
+          const fps=30;
+          clipIdle=THREE.AnimationUtils.subclip(base, (chefe.id+'-idle'), Math.round((idleDef.de||0)*fps), Math.round(idleDef.ate*fps), fps);
+        } else clipIdle=THREE.AnimationClip.findByName(gltf.animations, idleDef);
+        const clipAtaque=Array.isArray(chefe.glb3d.ataque)?montarSequencia(gltf.animations, chefe.glb3d.ataque, chefe.id+'-ataque'):THREE.AnimationClip.findByName(gltf.animations, chefe.glb3d.ataque);
+        if(chefe.glb3d.noLugar && clipAtaque){
+          // trava o avanço em profundidade (eixo z do quadril): o golpe acontece no lugar, sem vir para a câmera
+          for(const tr of clipAtaque.tracks){
+            if(/Hips\.position$/.test(tr.name)){ const z0=tr.values[2]; for(let i=2;i<tr.values.length;i+=3) tr.values[i]=z0; }
+          }
+        }
+        const envelope=chefe.glb3d.enquadrar==='envelope'?medirEnvelope(modelRoot, mixer, [clipIdle, clipAtaque]):null;
         const acaoIdle=mixer.clipAction(clipIdle);
+        if(idleDef && typeof idleDef==='object') acaoIdle.setLoop(THREE.LoopPingPong);
         const acaoAtaque=mixer.clipAction(clipAtaque);
         acaoAtaque.setLoop(THREE.LoopOnce);
         acaoAtaque.clampWhenFinished=true;
@@ -219,7 +349,7 @@ window.Boss3D = (function(){
 
         cache.set(chefe.id, {
           modelRoot, mixer, acaoIdle, acaoAtaque, mao, maoEsq, antebraco, material,
-          bbCenter, bbSize, box, duracao:clipAtaque?clipAtaque.duration:0,
+          bbCenter, bbSize, box, envelope, efeito:chefe.glb3d.efeito||'fogo', cor:(chefe.glb3d.cor!=null?chefe.glb3d.cor:null), duracao:clipAtaque?clipAtaque.duration:0,
           tempos:Object.assign({tIgnicao:0,tBola:2.0,tPuxada:4.5,tArremesso:5.1}, chefe.glb3d)
         });
         resolve();
@@ -238,10 +368,14 @@ window.Boss3D = (function(){
     if(chefeAtivoId!==chefe.id){
       scene.add(entrada.modelRoot);
       posicionarFogoNoPersonagem(entrada.box, entrada.bbCenter, entrada.bbSize);
-      enquadrarCamera(entrada.bbCenter, entrada.bbSize);
+      if(entrada.envelope) enquadrarEnvelope(entrada.envelope);
+      else enquadrarCamera(entrada.bbCenter, entrada.bbSize);
     }
     chefeAtivoId=chefe.id;
     estadoAtaque=null;
+    aplicarCorBola(entrada);
+    const luz=entrada.tempos.luz||1; // glb3d.luz: realce de iluminação do personagem (1 = padrão)
+    ambLight.intensity=0.55*luz; keyLight.intensity=1.1*luz;
     soltarBolaDaMao(entrada);
     entrada.acaoAtaque.stop();
     entrada.acaoIdle.reset().play();
@@ -264,6 +398,14 @@ window.Boss3D = (function(){
     }
   }
 
+  function aplicarCorBola(entrada){
+    // padrão (Esqueleto): núcleo creme, brilho e luz alaranjados; com glb3d.cor, tudo na cor pedida
+    if(entrada.cor==null){ bolaMat.color.setHex(0xfff2b0); bolaGlowMat.color.setHex(0xff7a1a); bolaLight.color.setHex(0xffb347); return; }
+    const c=new THREE.Color(entrada.cor);
+    bolaMat.color.copy(c).lerp(new THREE.Color(0xffffff),0.75);
+    bolaGlowMat.color.copy(c);
+    bolaLight.color.copy(c);
+  }
   function zerarEfeitos(entrada){
     for(const c of subLabaredas) c.mat.opacity=0;
     fagulhas.mat.opacity=0; fireLight.intensity=0;
@@ -356,7 +498,8 @@ window.Boss3D = (function(){
     if(!entrada) return;
     entrada.mixer.update(dt);
 
-    if(estadoAtaque){
+    if(estadoAtaque && entrada.efeito!=='nenhum'){
+      const comFogo=entrada.efeito==='fogo';
       const t=entrada.acaoAtaque.time;
       const tp=entrada.tempos;
       const prog = t<tp.tIgnicao?0
@@ -365,15 +508,14 @@ window.Boss3D = (function(){
         : Math.max(0,1-(t-(tp.tArremesso+0.4))/0.8);
       const flicker=0.7+0.3*Math.sin(t*27.0)+0.15*Math.sin(t*53.0);
 
-      for(let i=0;i<subLabaredas.length;i++){
+      if(comFogo) for(let i=0;i<subLabaredas.length;i++){
         const c=subLabaredas[i];
         const flickerCamada=0.7+0.3*Math.sin(t*(23+i*7))+0.15*Math.sin(t*(47+i*11));
         atualizarCamadaFogo(c,dt,prog,flickerCamada);
         c.mat.size=c.tamBase*(0.85+0.3*flickerCamada);
       }
-      atualizarCamadaFogo(fagulhas,dt,prog,flicker);
-      fireLight.intensity=prog*2.6*flicker;
-      if(entrada.material){ entrada.material.emissive.setHex(0xff3d0a); entrada.material.emissiveIntensity=prog*1.35*flicker; }
+      if(comFogo){ atualizarCamadaFogo(fagulhas,dt,prog,flicker); fireLight.intensity=prog*2.6*flicker; }
+      if(comFogo && entrada.material){ entrada.material.emissive.setHex(0xff3d0a); entrada.material.emissiveIntensity=prog*1.35*flicker; }
 
       if((entrada.mao||entrada.maoEsq) && t>=tp.tBola && t<tp.tArremesso){
         const posMundo=new THREE.Vector3();

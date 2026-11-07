@@ -1929,5 +1929,5 @@ body[data-workspace=batalha] .boss-art,body[data-workspace=batalha] .team-art{ma
    estática só quando #boss tem a classe glb-ativo; os outros chefes continuam no caminho de vídeo normal. */
 .boss canvas{position:absolute;inset:0;width:100%;height:100%;z-index:2;display:none;pointer-events:none}
 .boss.glb-ativo canvas{display:block}
-.boss.glb-ativo .base,.boss.glb-ativo .charge{display:none}
+.boss.glb-ativo .base,.boss.glb-ativo .charge,.boss.glb-ativo video{display:none} /* 07/11: o vídeo do chefe anterior não aparece atrás do 3D */
 .boss .quadro-3d{position:absolute;inset:0;width:100%;height:100%;z-index:2;object-fit:contain;pointer-events:none}
