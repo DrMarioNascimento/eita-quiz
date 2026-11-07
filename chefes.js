@@ -37,7 +37,7 @@ window.EITA_CHEFES=[
     id:'esqueleto',nome:'Esqueleto',video:'assets/chefes/esqueleto-leve.webm',fundo:'assets/chefes/esqueleto-fundo.webp',
     glb3d:{url:'assets/chefes-3d/esqueleto-teste.glb',idle:'Idle_4',ataque:'Crouch_Charge_and_Throw',
       tIgnicao:0,tBola:2.0,tPuxada:4.5,tArremesso:5.1},
-    golpe:{tipo:'pow',inicio:5.1,viagem:.38,origem:[.323,.456],cor:'#ff5a1a'}
+    golpe:{tipo:'pow',inicio:5.1,viagem:.55,origem:[.323,.456],cor:'#ff5a1a'}
   }
 ];
 
