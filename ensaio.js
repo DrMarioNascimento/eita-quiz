@@ -28,14 +28,14 @@
  }
 
  function ligar(){
-  if(ligado||window.eitaOnline?.active){aviso('Encerre a sala antes de usar o ensaio.');return;}
+  if(ligado||window.eitaOnline?.active){aviso('Encerre a sala antes de usar a simulação.');return;}
   if(window.eitaGame?.isLocked())return;
   real=window.eitaOnline;window.eitaOnline=fake;ligado=true;
   montarRoster(Math.max(2,Math.min(60,Number($('rehearsalSize').value)||12)));
   window.eitaGame.reset();window.eitaGame.setRoster(roster);
   $('createRoom').disabled=true;$('startRehearsal').hidden=true;$('rehearsalSize').disabled=true;$('stopRehearsal').hidden=false;
-  document.querySelector('header small').textContent='Modo ensaio · respostas simuladas';
-  aviso(`Ensaio com ${roster.length} participantes simulados. Vá em Controle da partida e clique em Iniciar.`);
+  document.querySelector('header small').textContent='Modo simulação · respostas simuladas';
+  aviso(`Simulação com ${roster.length} participantes simulados. Vá em Controle da partida e clique em Iniciar.`);
  }
  function desligar(){
   if(!ligado)return;
@@ -43,7 +43,7 @@
   window.eitaGame.setRoster([]);window.eitaGame.reset();
   $('createRoom').disabled=false;$('startRehearsal').hidden=false;$('rehearsalSize').disabled=false;$('stopRehearsal').hidden=true;
   document.querySelector('header small').textContent='Abra uma sala para começar';
-  aviso('Ensaio encerrado.');
+  aviso('Simulação encerrada.');
  }
  function aviso(t){const p=$('rehearsalNotice');if(p)p.textContent=t;}
 

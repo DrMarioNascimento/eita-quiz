@@ -11,16 +11,15 @@
   const code=($('roomCode').textContent||'').replace(/^C[óo]digo:\s*/,'');
   const roster=$('roomRoster').textContent.trim();
   const ensaio=!!window.eitaEnsaio?.ativo();
-  set('sub-entrada',ensaio?'Ensaio com participantes simulados':open?['Sala '+code,roster].filter(Boolean).join(' · '):'Sala online');
-  badge('sub-entradaBadge',ensaio?'ensaio':open?'aberta':'',ensaio?'live':open?'ok':'');
+  set('sub-entrada',ensaio?'Simulação com participantes simulados':open?['Sala '+code,roster].filter(Boolean).join(' · '):'Sala online ou simulação');
+  badge('sub-entradaBadge',ensaio?'simulação':open?'aberta':'',ensaio?'live':open?'ok':'');
   const r=$('rehearsal');if(r)r.hidden=open;
 
   const mode=$('mode');
-  set('sub-montagem',mode.value==='individual'?'Individual cooperativo':'Esquadrões de '+$('size').value+' · '+(mode.value==='own'?'vida por esquadrão':'vida compartilhada'));
+  // 08/11/2026: textos fixos que descrevem o bloco (antes mostravam o resumo da escolha atual)
+  set('sub-montagem','Modo de jogo: Individual Cooperativo, tipo de Esquadrões');
 
-  const n=+$('questionCount').value||0;
-  const g=$('goal')?.value||'50';
-  set('sub-config',n+(n===1?' pergunta':' perguntas')+' · meta '+(g==='50'?'>50%':g+'%')+' · '+($('advanceMode').value==='manual'?'manual':'automático'));
+  set('sub-config','Quantidade de perguntas, meta de acerto e avanço');
 
   const pause=$('pause');pause.dataset.icon=/continuar/i.test(pause.textContent)?'play':'pause';
   const playing=!$('pause').disabled;
@@ -30,7 +29,7 @@
   wasPlaying=playing;
 
   set('sub-regras','Golpe, dano e morte súbita');
-  set('sub-manual','Guia completo em PDF · v1.3');
+  set('sub-manual','Guia completo em PDF · v1.4');
   set('sub-banco',($('bankSummary').textContent||'').split('·')[0].trim());
  }
  function start(){

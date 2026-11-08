@@ -25,6 +25,14 @@
 // e com fundo próprio (floresta). Idle = pose parada do 1º quadro do rolamento (em pé). Ataque: rolamento no lugar
 // (noLugar:'xz') → arremesso: bola laranja se forma na mão e é lançada em 2,19s com o braço esticado para a direita;
 // no fim volta suave à pose inicial. O vídeo continua como rollback. Tempos tBola/tPuxada/tArremesso contados no clipe já emendado (6,43s).
+// 08/11/2026: IA Cyborg com novo .glb (mesmo modelo + clipe Idle_11; 16,3MB → 2,03MB, só os 3 clipes usados, WebP + Meshopt).
+// Idle = Idle_11 em loop (posição inicial e final). Ataque: cambalhota empurrando a parede (Wall_Push_Jump_and_Flip,
+// clipe inteiro, 2s) → agacha e carrega o tiro (Crouch_Charge_and_Throw inteiro, 7,67s; a bola se forma entre as mãos,
+// passa para a mão direita e é lançada) → volta suave ao Idle_11. Tempos = os do Esqueleto no mesmo clipe (+2s da cambalhota).
+// 08/11/2026: Onça com novo .glb (mesmo jaguar + clipes Idle_11 e Wave_One_Hand; 11,3MB → 0,95MB, só os 4 clipes usados).
+// Idle = Idle_11 em loop, virado ~15° para a direita de quem olha (giro gravado no próprio clipe do .glb; no ataque ela
+// volta de frente na transição). Ataque: rolamento → corte com a espada (lança a bola laranja, tempos iguais aos de antes)
+// → acena com a mão (Wave_One_Hand inteiro, 4,1s) → volta suave ao Idle_11.
 window.EITA_CHEFES=[
   {
     id:'sombra',nome:'Sombra',video:'assets/chefe-7s-leve.webm',fundo:null,
@@ -48,8 +56,8 @@ window.EITA_CHEFES=[
   },
   {
     id:'onca',nome:'Onça',video:'assets/chefes/onca-leve.webm',fundo:'assets/chefes/onca-fundo.webp',
-    glb3d:{url:'assets/chefes-3d/onca.glb',idle:{clip:'Roll_Dodge_3',quadro:0},
-      ataque:[{clip:'Roll_Dodge_3',de:0,ate:1.63},{clip:'Right_Hand_Sword_Slash',de:0,ate:1.5}],
+    glb3d:{url:'assets/chefes-3d/onca.glb?v=20261108',idle:'Idle_11',
+      ataque:[{clip:'Roll_Dodge_3',de:0,ate:1.63},{clip:'Right_Hand_Sword_Slash',de:0,ate:1.5},{clip:'Wave_One_Hand',de:0,ate:4.1}],
       efeito:'bola',cor:0xff8a1f,enquadrar:'envelope',noLugar:'xz',
       tIgnicao:1.6,tBola:1.7,tPuxada:1.75,tArremesso:2.19},
     golpe:{tipo:'pow',inicio:2.19,viagem:.36,origem:[.64,.38],cor:'#ff8a1f'}
@@ -62,11 +70,11 @@ window.EITA_CHEFES=[
   },
   {
     id:'ia-cyborg',nome:'IA Cyborg',video:null,fundo:'assets/chefes/ia-cyborg-fundo.webp',
-    glb3d:{url:'assets/chefes-3d/ia-cyborg.glb',idle:{clip:'Angry_Ground_Stomp',quadro:0},
-      ataque:[{clip:'Angry_Ground_Stomp',de:0,ate:1.37},{clip:'Wall_Push_Jump_and_Flip',de:0,ate:1.88},{clip:'Crouch_Charge_and_Throw',de:3.6,ate:6.8}],
+    glb3d:{url:'assets/chefes-3d/ia-cyborg.glb?v=20261108',idle:'Idle_11',
+      ataque:[{clip:'Wall_Push_Jump_and_Flip',de:0,ate:2},{clip:'Crouch_Charge_and_Throw',de:0,ate:7.67}],
       efeito:'bola',cor:0x2aa8ff,enquadrar:'envelope',noLugar:true,
-      reflexo:1,luz:1.2,tIgnicao:3.3,tBola:3.48,tPuxada:4.13,tArremesso:5.08},
-    golpe:{tipo:'pow',inicio:5.08,viagem:.55,origem:[.67,.6],cor:'#3ad1ff'}
+      reflexo:1,luz:1.2,tIgnicao:3.8,tBola:4.0,tPuxada:6.5,tArremesso:7.1},
+    golpe:{tipo:'pow',inicio:7.1,viagem:.55,origem:[.67,.6],cor:'#3ad1ff'}
   }
 ];
 
