@@ -33,6 +33,10 @@
 // Idle = Idle_11 em loop, virado ~15° para a direita de quem olha (giro gravado no próprio clipe do .glb; no ataque ela
 // volta de frente na transição). Ataque: rolamento → corte com a espada (lança a bola laranja, tempos iguais aos de antes)
 // → acena com a mão (Wave_One_Hand inteiro, 4,1s) → volta suave ao Idle_11.
+// 08/11/2026: Artemis migrada para 3D (Meshy em pose T + rig e animações do Mixamo, pacote Longbow; .glb WebP + Meshopt).
+// Espelhada e girada 45° para mirar para a direita (onde fica o grupo) com o rosto visível; arco da versão Tripo preso na mão.
+// Idle = Standing_Idle_01 (postura de arqueira). Ataque: puxa a flecha (Draw) → mira 1s (Overdraw) → solta (Recoil, flecha sai
+// no começo do recoil) → volta ao idle. O vídeo continua como rollback; o som do ataque é o mesmo de antes.
 window.EITA_CHEFES=[
   {
     id:'sombra',nome:'Sombra',video:'assets/chefe-7s-leve.webm',fundo:null,
@@ -42,7 +46,10 @@ window.EITA_CHEFES=[
   {
     id:'artemis',nome:'Artemis',video:'assets/chefes/artemis-leve.webm',fundo:'assets/chefes/artemis-fundo.webp',
     som:{src:'assets/audio/artemis.webm',ganho:.65},
-    golpe:{tipo:'flecha',inicio:4.05,viagem:.34,origem:[.97,.30],cor:'#ffc83d'}
+    glb3d:{url:'assets/chefes-3d/artemis.glb?v=20261108',idle:'Standing_Idle_01',
+      ataque:[{clip:'Standing_Draw_Arrow'},{clip:'Standing_Aim_Overdraw',de:0,ate:1.0},{clip:'Standing_Aim_Recoil'}],
+      efeito:'nenhum',enquadrar:'envelope',noLugar:'xz'},
+    golpe:{tipo:'flecha',inicio:2.27,viagem:.34,origem:[.64,.24],cor:'#ffc83d'}
   },
   {
     id:'cao-ninja',nome:'Cão-Ninja',video:'assets/chefes/cao-ninja-leve.webm',fundo:'assets/chefes/cao-ninja-fundo.webp',
