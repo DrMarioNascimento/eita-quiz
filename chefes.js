@@ -56,7 +56,7 @@ window.EITA_CHEFES=[
   },
   {
     id:'onca',nome:'Onça',video:'assets/chefes/onca-leve.webm',fundo:'assets/chefes/onca-fundo.webp',
-    glb3d:{url:'assets/chefes-3d/onca.glb?v=20261108',idle:'Idle_11',
+    glb3d:{url:'assets/chefes-3d/onca.glb?v=20261108b',idle:'Idle_11',
       ataque:[{clip:'Roll_Dodge_3',de:0,ate:1.63},{clip:'Right_Hand_Sword_Slash',de:0,ate:1.5},{clip:'Wave_One_Hand',de:0,ate:4.1}],
       efeito:'bola',cor:0xff8a1f,enquadrar:'envelope',noLugar:'xz',
       tIgnicao:1.6,tBola:1.7,tPuxada:1.75,tArremesso:2.19},
