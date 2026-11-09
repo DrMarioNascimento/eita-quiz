@@ -38,6 +38,8 @@
 // Idle = pose parada do 1º quadro do Archery_Shot. .glb WebP + Meshopt, 1,71MB. O vídeo continua como rollback.
 // 08/11 22h: flecha animada saindo da aljava (atrás do ombro), girando e encaixando no arco; corda do arco estica em V
 // na puxada (shape key) e vibra no disparo; comemoração no fim (ergue o arco, queixo para cima, aceno). Ataque 6,87s.
+// 08/11 22h40: ossos nos dedos (mão do arco fecha na empunhadura; mão da corda pega a flecha, faz gancho e abre no disparo);
+// âncora da corda embaixo do queixo com a cabeça virada para o alvo (a mão não cobre mais o rosto); corda em V sem faixas.
 window.EITA_CHEFES=[
   {
     id:'sombra',nome:'Sombra',video:'assets/chefe-7s-leve.webm',fundo:null,
@@ -47,7 +49,7 @@ window.EITA_CHEFES=[
   {
     id:'artemis',nome:'Artemis',video:'assets/chefes/artemis-leve.webm',fundo:'assets/chefes/artemis-fundo.webp',
     som:{src:'assets/audio/artemis.webm',ganho:.65},
-    glb3d:{url:'assets/chefes-3d/artemis.glb?v=20261108c',idle:{clip:'Archery_Shot',quadro:0},ataque:'Archery_Shot',
+    glb3d:{url:'assets/chefes-3d/artemis.glb?v=20261108d',idle:{clip:'Archery_Shot',quadro:0},ataque:'Archery_Shot',
       efeito:'nenhum',enquadrar:'envelope',noLugar:'xz'},
     golpe:{tipo:'flecha',inicio:3.93,viagem:.34,origem:[.66,.27],cor:'#ffc83d'}
   },
